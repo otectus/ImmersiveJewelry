@@ -1,0 +1,16 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:amulet",
+  "stones": 1,
+  "setting": {
+    "style": "bezel",
+    "points": 8
+  },
+  "allowed_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:emerald"
+  ],
+  "protection": 1.4,
+  "sort_order": 11,
+  "name": "design.immersive_jewelry.locket_amulet"
+}

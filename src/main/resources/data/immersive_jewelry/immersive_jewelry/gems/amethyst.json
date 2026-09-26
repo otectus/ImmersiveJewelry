@@ -1,0 +1,33 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/amethyst"
+  },
+  "hardness": 7,
+  "brittleness": 0.4,
+  "default_trait": "immersive_jewelry:warding",
+  "base_color": "#A36AD8",
+  "sparkle_color": "#EBD2FF",
+  "cutting": {
+    "difficulty": 0.7,
+    "size_retention": 0.9
+  },
+  "supported_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald",
+    "immersive_jewelry:brilliant"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round"
+  ],
+  "rarity": "common",
+  "appraisal": {
+    "size_min": 0.7,
+    "size_max": 1.3,
+    "quality_mean": 0.5,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.25,
+    "inclusions_spread": 0.2
+  }
+}

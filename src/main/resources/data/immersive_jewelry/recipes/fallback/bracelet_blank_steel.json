@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:fallback_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:nuggets/steel"
+      }
+    }
+  ],
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "N N",
+    "NNN"
+  ],
+  "key": {
+    "N": {
+      "tag": "forge:nuggets/steel"
+    }
+  },
+  "result": {
+    "item": "immersive_jewelry:bracelet_blank",
+    "count": 1,
+    "nbt": "{immersive_jewelry:{Metal:\"forge:steel\",Fallback:1b}}"
+  }
+}

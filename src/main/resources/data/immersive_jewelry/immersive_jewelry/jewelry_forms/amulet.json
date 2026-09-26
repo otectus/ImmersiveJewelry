@@ -1,0 +1,10 @@
+{
+  "slot": "necklace",
+  "blank": "immersive_jewelry:amulet_frame",
+  "max_gems": 3,
+  "base_integrity": 1.0,
+  "enchantability": 14,
+  "metal_units": 6,
+  "anvil_pattern": "immersive_jewelry:amulet_frame",
+  "sort_order": 1
+}

@@ -1,0 +1,10 @@
+{
+  "difficulty": 1.0,
+  "facets": 8,
+  "pattern": "step",
+  "quality_modifier": 0.97,
+  "size_retention": 0.8,
+  "stability": 1.18,
+  "visual_profile": "emerald",
+  "sort_order": 2
+}

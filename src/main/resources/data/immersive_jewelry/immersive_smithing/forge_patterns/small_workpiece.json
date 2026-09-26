@@ -1,0 +1,11 @@
+{
+  "base_phases": 2,
+  "units_per_extra_phase": 12,
+  "min_phases": 2,
+  "max_phases": 3,
+  "zone_half_width": 0.065,
+  "min_speed": 0.5,
+  "max_speed": 0.85,
+  "acceleration": 0.35,
+  "transition_ms": 400
+}

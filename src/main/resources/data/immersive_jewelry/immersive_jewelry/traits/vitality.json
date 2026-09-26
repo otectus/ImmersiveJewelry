@@ -1,0 +1,67 @@
+{
+  "name": "trait.immersive_jewelry.vitality",
+  "theme": "trait.immersive_jewelry.vitality.theme",
+  "color": "#D8243E",
+  "category": "offense",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:momentum",
+      "name": "effect.immersive_jewelry.name.kindling_strikes",
+      "category": "offense",
+      "max_stacks": 3,
+      "window": 60,
+      "damage_per_stack": 0.75,
+      "payoff_damage": 2.5,
+      "ignite_seconds": 3
+    },
+    "amulet": {
+      "type": "immersive_jewelry:emergency_ward",
+      "name": "effect.immersive_jewelry.name.last_ember",
+      "category": "defense",
+      "health_threshold": 0.35,
+      "effects": [
+        {
+          "effect": "fire_resistance",
+          "amplifier": 0,
+          "duration": 200
+        },
+        {
+          "effect": "regeneration",
+          "amplifier": 1,
+          "duration": 80
+        }
+      ],
+      "absorption": 4,
+      "extinguish": true,
+      "cooldown": 2400
+    },
+    "bracelet": {
+      "type": "immersive_jewelry:charge_strike",
+      "name": "effect.immersive_jewelry.name.fervor",
+      "category": "offense",
+      "sprint_ticks": 30,
+      "window": 40,
+      "damage": 2.0,
+      "knockback": 0.5
+    },
+    "circlet": {
+      "type": "immersive_jewelry:attribute",
+      "name": "effect.immersive_jewelry.name.pyromancers_focus",
+      "category": "magic",
+      "modifiers": [
+        {
+          "attribute": "irons_spellbooks:fire_spell_power",
+          "amount": 0.1,
+          "operation": "multiply_base"
+        }
+      ],
+      "fallback": {
+        "type": "immersive_jewelry:experience_boost",
+        "name": "effect.immersive_jewelry.name.vital_spark",
+        "category": "magic",
+        "bonus": 0.0,
+        "heal_per_point": 0.1
+      }
+    }
+  }
+}

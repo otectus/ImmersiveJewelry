@@ -1,0 +1,14 @@
+{
+  "name": "metal.forge.bronze",
+  "color": "#C98B4B",
+  "potency": 0.95,
+  "integrity": 1.15,
+  "enchantability": 1.0,
+  "responsiveness": 1.08,
+  "affinities": {
+    "offense": 1.06
+  },
+  "repair": {
+    "tag": "forge:nuggets/bronze"
+  }
+}

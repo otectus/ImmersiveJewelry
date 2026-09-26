@@ -1,0 +1,11 @@
+{
+  "name": "metal.forge.terrasteel",
+  "color": "#52C848",
+  "potency": 1.15,
+  "integrity": 1.35,
+  "enchantability": 1.2,
+  "affinities": {
+    "defense": 1.06,
+    "magic": 1.06
+  }
+}

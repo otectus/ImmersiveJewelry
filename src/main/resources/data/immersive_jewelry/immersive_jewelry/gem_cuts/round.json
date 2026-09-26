@@ -1,0 +1,10 @@
+{
+  "difficulty": 0.85,
+  "facets": 6,
+  "pattern": "radial",
+  "quality_modifier": 1.0,
+  "size_retention": 0.72,
+  "stability": 1.0,
+  "visual_profile": "round",
+  "sort_order": 1
+}

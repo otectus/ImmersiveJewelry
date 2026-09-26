@@ -1,0 +1,141 @@
+{
+  "block.lapidary_wheel.mount": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.mount",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/mount"
+    ]
+  },
+  "block.lapidary_wheel.spin": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.spin",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/spin"
+    ]
+  },
+  "block.lapidary_wheel.grind": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.grind",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/grind_1",
+      "immersive_jewelry:block/lapidary_wheel/grind_2",
+      "immersive_jewelry:block/lapidary_wheel/grind_3"
+    ]
+  },
+  "block.lapidary_wheel.chip": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.chip",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/chip_1",
+      "immersive_jewelry:block/lapidary_wheel/chip_2"
+    ]
+  },
+  "block.lapidary_wheel.facet": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.facet",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/facet"
+    ]
+  },
+  "block.lapidary_wheel.finish": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.finish",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/finish"
+    ]
+  },
+  "block.lapidary_wheel.lap": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.lap",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/lap"
+    ]
+  },
+  "block.jewelers_bench.place": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.place",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/place"
+    ]
+  },
+  "block.jewelers_bench.prong": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.prong",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/prong_1",
+      "immersive_jewelry:block/jewelers_bench/prong_2",
+      "immersive_jewelry:block/jewelers_bench/prong_3"
+    ]
+  },
+  "block.jewelers_bench.seat": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.seat",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/seat"
+    ]
+  },
+  "block.jewelers_bench.bend": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.bend",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/bend"
+    ]
+  },
+  "block.jewelers_bench.polish": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.polish",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/polish"
+    ]
+  },
+  "block.jewelers_bench.finish": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.finish",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/finish"
+    ]
+  },
+  "block.jewelers_bench.repair": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.repair",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/repair"
+    ]
+  },
+  "item.jewelry.equip": {
+    "subtitle": "subtitles.immersive_jewelry.item.jewelry.equip",
+    "sounds": [
+      "immersive_jewelry:item/jewelry/equip"
+    ]
+  },
+  "item.design_sketch.learn": {
+    "subtitle": "subtitles.immersive_jewelry.item.design_sketch.learn",
+    "sounds": [
+      "immersive_jewelry:item/design_sketch/learn"
+    ]
+  },
+  "jewelry.effect.trigger": {
+    "subtitle": "subtitles.immersive_jewelry.jewelry.effect.trigger",
+    "sounds": [
+      "immersive_jewelry:jewelry/effect/trigger_1",
+      "immersive_jewelry:jewelry/effect/trigger_2"
+    ]
+  },
+  "jewelry.effect.ward": {
+    "subtitle": "subtitles.immersive_jewelry.jewelry.effect.ward",
+    "sounds": [
+      "immersive_jewelry:jewelry/effect/ward"
+    ]
+  },
+  "jewelry.effect.sense": {
+    "subtitle": "subtitles.immersive_jewelry.jewelry.effect.sense",
+    "sounds": [
+      "immersive_jewelry:jewelry/effect/sense"
+    ]
+  },
+  "ui.cue": {
+    "subtitle": "subtitles.immersive_jewelry.ui.cue",
+    "sounds": [
+      "immersive_jewelry:ui/cue"
+    ]
+  },
+  "ui.fail": {
+    "subtitle": "subtitles.immersive_jewelry.ui.fail",
+    "sounds": [
+      "immersive_jewelry:ui/fail"
+    ]
+  },
+  "entity.villager.work_jeweler": {
+    "subtitle": "subtitles.immersive_jewelry.entity.villager.work_jeweler",
+    "sounds": [
+      "immersive_jewelry:entity/villager/work_jeweler_1",
+      "immersive_jewelry:entity/villager/work_jeweler_2"
+    ]
+  }
+}

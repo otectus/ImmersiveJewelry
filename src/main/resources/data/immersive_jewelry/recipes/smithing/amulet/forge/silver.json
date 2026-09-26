@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/silver"
+      }
+    }
+  ],
+  "material": "forge:silver",
+  "metal_units": 6,
+  "result": {
+    "item": "immersive_jewelry:amulet_frame",
+    "nbt": "{immersive_jewelry:{Metal:\"forge:silver\",MetalColor:14212838,MetalName:\"{\\\"translate\\\": \\\"metal.forge.silver\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:amulet_frame"
+}

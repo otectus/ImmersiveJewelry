@@ -1,0 +1,14 @@
+{
+  "name": "metal.forge.aluminum",
+  "color": "#D5D9DB",
+  "potency": 0.9,
+  "integrity": 0.9,
+  "enchantability": 1.0,
+  "responsiveness": 1.1,
+  "affinities": {
+    "mobility": 1.08
+  },
+  "repair": {
+    "tag": "forge:nuggets/aluminum"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/tin"
+      }
+    }
+  ],
+  "material": "forge:tin",
+  "metal_units": 9,
+  "result": {
+    "item": "immersive_jewelry:bracelet_blank",
+    "nbt": "{immersive_jewelry:{Metal:\"forge:tin\",MetalColor:12568262,MetalName:\"{\\\"translate\\\": \\\"metal.forge.tin\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:bracelet_blank"
+}

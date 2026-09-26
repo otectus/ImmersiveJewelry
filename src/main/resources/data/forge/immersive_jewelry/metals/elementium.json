@@ -1,0 +1,11 @@
+{
+  "name": "metal.forge.elementium",
+  "color": "#F07AC0",
+  "potency": 1.08,
+  "integrity": 1.0,
+  "enchantability": 1.35,
+  "affinities": {
+    "mobility": 1.1,
+    "magic": 1.05
+  }
+}

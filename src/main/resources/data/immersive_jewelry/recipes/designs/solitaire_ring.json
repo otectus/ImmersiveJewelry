@@ -1,0 +1,16 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:ring",
+  "stones": 1,
+  "setting": {
+    "style": "prong",
+    "points": 4
+  },
+  "allowed_cuts": [
+    "immersive_jewelry:round",
+    "immersive_jewelry:brilliant",
+    "immersive_jewelry:emerald"
+  ],
+  "sort_order": 0,
+  "name": "design.immersive_jewelry.solitaire_ring"
+}

@@ -1,0 +1,32 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/ruby"
+  },
+  "hardness": 9,
+  "brittleness": 0.35,
+  "default_trait": "immersive_jewelry:vitality",
+  "base_color": "#D4213E",
+  "sparkle_color": "#FF9FB0",
+  "cutting": {
+    "difficulty": 1.0,
+    "size_retention": 0.85
+  },
+  "supported_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald",
+    "immersive_jewelry:brilliant"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:brilliant"
+  ],
+  "rarity": "rare",
+  "appraisal": {
+    "size_min": 0.6,
+    "size_max": 1.3,
+    "quality_mean": 0.55,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.25,
+    "inclusions_spread": 0.2
+  }
+}

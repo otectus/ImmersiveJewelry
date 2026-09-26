@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:fallback_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/copper"
+      }
+    }
+  ],
+  "category": "misc",
+  "pattern": [
+    "I I",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/copper"
+    }
+  },
+  "result": {
+    "item": "immersive_jewelry:amulet_frame",
+    "count": 2,
+    "nbt": "{immersive_jewelry:{Metal:\"minecraft:copper\",Fallback:1b}}"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "metal.forge.manasteel",
+  "color": "#5AA8F0",
+  "potency": 1.08,
+  "integrity": 1.2,
+  "enchantability": 1.3,
+  "affinities": {
+    "magic": 1.12
+  }
+}

@@ -1,0 +1,17 @@
+Built-in image_gen; reference input: contact sheet of art/references/*.png.
+The atlas informs the editable, normalized 16px maps in art/jewelry_pixels.py.
+
+Use case: stylized-concept
+Asset type: a production pixel-art sprite atlas for the Minecraft mod Immersive Jewelry.
+Reference image: the supplied contact sheet contains the user's actual 16x16 pixel jewelry and gem reference sprites. Match their silhouette vocabulary, tilted perspective, chunky pixel clusters, deep shaded inner edges, broad white reflections, and richly modeled chunky surfaces. Do not copy the sheet's labels or background.
+Generate one square 3-column by 3-row atlas. Exactly NINE icons, each centered in its own equal-sized cell with generous transparent padding. The whole atlas must be an exact 48x48 logical pixel grid enlarged with NEAREST NEIGHBOR, each sprite occupying its own 16x16 logical-pixel cell. Each art pixel must be the same size. All icons STRICTLY GRAYSCALE: opaque shades 35, 65, 95, 130, 170, 205, 235, 255, plus a genuinely transparent background. Crisp pixel art, NO antialiasing, NO blur, NO gradients within a pixel, NO text, NO borders, NO grid lines.
+Row 1 left: a thick tilted ring hoop, like reference item894; flat empty round setting at upper left, setting center at pixel (5,4) in this 16px tile, bright front-left shoulders, dark inner hole, weighty band reaching lower right. No gemstone.
+Row 1 middle: a necklace/amulet like reference item890; a loosely angular silver chain occupying the upper and right of tile, large empty pendant bezel hanging on lower left with center (4,11). No gemstone.
+Row 1 right: a broad solid bracelet bangle like reference item556; elliptical angled thick hoop with open center, broad shining lower-right front face, empty gem setting center (10,11). No gemstone.
+Row 2 left: an elegant circlet in tilted three-quarter view, narrow rear arc along top, sweeping broad front band along bottom, central pointed raised decorative bezel at center (8,10); 2 subtle shoulder points. Open dark transparent interior. No gemstone.
+Row 2 middle: a loose ROUND cut gem inspired by reference item548; substantial round octagonal silhouette, large irregular triangular faceted crown, high-contrast angular light on upper-left, dark polygon facets bottom-right. Full 13x13 pixels.
+Row 2 right: a loose BRILLIANT cut gem like reference item551; WIDE classic diamond side-view with broad flat top, bevel shoulders and sharp bottom tip. Bold triangular facets, white upper shoulders, deep dark rim, full 14x11 pixels.
+Row 3 left: a loose EMERALD cut gem like reference item540; tall rectangular octagon with clipped corners, nested stepped reflective facets framing a large asymmetric central table, full 11x14 pixels.
+Row 3 middle: a loose CABOCHON gem like reference item535; oval rounded dome, an irregular crescent white upper-left reflection and dark inner-right pool, broad curved bands of gray, full 11x13 pixels.
+Row 3 right: a ROUGH gemstone cluster inspired by reference item544 and the long shard item534; two intergrown jagged crystal chunks, sloping white cleaved faces, dark lower facets, chunky irregular outline, full 13x14 pixels.
+The nine icons must all read clearly as hand-pixeled Minecraft inventory sprites at actual 16x16. Match the references' actual angular contours and proportions, avoid thin wire rings, avoid smooth vector artwork. No environmental shadows. Transparent holes through the jewelry.

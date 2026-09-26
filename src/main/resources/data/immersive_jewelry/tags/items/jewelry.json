@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "immersive_jewelry:ring",
+    "immersive_jewelry:amulet",
+    "immersive_jewelry:bracelet",
+    "immersive_jewelry:circlet"
+  ]
+}

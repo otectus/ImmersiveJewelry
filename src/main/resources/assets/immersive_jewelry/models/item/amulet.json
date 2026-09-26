@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "immersive_jewelry:item/amulet/frame",
+    "layer1": "immersive_jewelry:item/amulet/recess",
+    "layer2": "immersive_jewelry:item/amulet/highlight"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.1
+      },
+      "model": "immersive_jewelry:item/amulet_round"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.2
+      },
+      "model": "immersive_jewelry:item/amulet_brilliant"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.3
+      },
+      "model": "immersive_jewelry:item/amulet_emerald"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.4
+      },
+      "model": "immersive_jewelry:item/amulet_cabochon"
+    }
+  ]
+}

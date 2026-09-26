@@ -1,0 +1,52 @@
+{
+  "name": "trait.immersive_jewelry.shadow",
+  "theme": "trait.immersive_jewelry.shadow.theme",
+  "color": "#6E5A88",
+  "category": "defense",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:siphon",
+      "name": "effect.immersive_jewelry.name.umbral_siphon",
+      "category": "offense",
+      "share": 0.08,
+      "max_heal": 3,
+      "cooldown": 10
+    },
+    "amulet": {
+      "type": "immersive_jewelry:damage_reduction",
+      "name": "effect.immersive_jewelry.name.obsidian_veil",
+      "category": "defense",
+      "against": [
+        "projectile",
+        "explosion"
+      ],
+      "reduction": 0.18,
+      "label": "projectiles_blasts"
+    },
+    "bracelet": {
+      "type": "immersive_jewelry:on_hurt",
+      "name": "effect.immersive_jewelry.name.shadowstep",
+      "category": "mobility",
+      "min_damage": 5,
+      "effects": [
+        {
+          "effect": "invisibility",
+          "amplifier": 0,
+          "duration": 60
+        },
+        {
+          "effect": "speed",
+          "amplifier": 0,
+          "duration": 60
+        }
+      ],
+      "cooldown": 900
+    },
+    "circlet": {
+      "type": "immersive_jewelry:stealth",
+      "name": "effect.immersive_jewelry.name.shade_circlet",
+      "category": "utility",
+      "reduction": 0.3
+    }
+  }
+}

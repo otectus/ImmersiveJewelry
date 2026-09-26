@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/electrum"
+      }
+    }
+  ],
+  "material": "forge:electrum",
+  "metal_units": 6,
+  "result": {
+    "item": "immersive_jewelry:amulet_frame",
+    "nbt": "{immersive_jewelry:{Metal:\"forge:electrum\",MetalColor:15194506,MetalName:\"{\\\"translate\\\": \\\"metal.forge.electrum\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:amulet_frame"
+}

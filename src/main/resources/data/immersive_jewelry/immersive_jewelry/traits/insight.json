@@ -1,0 +1,47 @@
+{
+  "name": "trait.immersive_jewelry.insight",
+  "theme": "trait.immersive_jewelry.insight.theme",
+  "color": "#3558C8",
+  "category": "utility",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:trophy_experience",
+      "name": "effect.immersive_jewelry.name.scholars_seal",
+      "category": "utility",
+      "bonus": 0.35
+    },
+    "amulet": {
+      "type": "immersive_jewelry:adaptive_ward",
+      "name": "effect.immersive_jewelry.name.lesson_learned",
+      "category": "defense",
+      "reduction": 0.15,
+      "duration": 600
+    },
+    "bracelet": [
+      {
+        "type": "immersive_jewelry:attribute",
+        "name": "effect.immersive_jewelry.name.tidewalker",
+        "category": "mobility",
+        "modifiers": [
+          {
+            "attribute": "forge:swim_speed",
+            "amount": 0.25,
+            "operation": "multiply_base"
+          }
+        ]
+      },
+      {
+        "type": "immersive_jewelry:mining_focus",
+        "category": "utility",
+        "mode": "underwater",
+        "bonus": 0.5
+      }
+    ],
+    "circlet": {
+      "type": "immersive_jewelry:experience_boost",
+      "name": "effect.immersive_jewelry.name.insight",
+      "category": "magic",
+      "bonus": 0.25
+    }
+  }
+}

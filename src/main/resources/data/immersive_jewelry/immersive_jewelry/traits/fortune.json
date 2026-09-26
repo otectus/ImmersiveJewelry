@@ -1,0 +1,88 @@
+{
+  "name": "trait.immersive_jewelry.fortune",
+  "theme": "trait.immersive_jewelry.fortune.theme",
+  "color": "#F2A33A",
+  "category": "mobility",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:looting_bonus",
+      "name": "effect.immersive_jewelry.name.fortunes_favor",
+      "category": "utility",
+      "first_level_power": 0.55,
+      "second_level_power": 1.35
+    },
+    "amulet": {
+      "type": "immersive_jewelry:emergency_ward",
+      "name": "effect.immersive_jewelry.name.quicksilver_flight",
+      "category": "mobility",
+      "health_threshold": 0.4,
+      "effects": [
+        {
+          "effect": "speed",
+          "amplifier": 1,
+          "duration": 100
+        },
+        {
+          "effect": "jump_boost",
+          "amplifier": 0,
+          "duration": 100
+        }
+      ],
+      "cooldown": 1800
+    },
+    "bracelet": [
+      {
+        "type": "immersive_jewelry:conditional_effect",
+        "name": "effect.immersive_jewelry.name.momentum_stride",
+        "category": "mobility",
+        "condition": {
+          "type": "sprinting",
+          "min_ticks": 40
+        },
+        "effects": [
+          {
+            "effect": "speed",
+            "amplifier": 0,
+            "duration": 40
+          }
+        ],
+        "strong_power": 1.4
+      },
+      {
+        "type": "immersive_jewelry:fall_cushion",
+        "category": "mobility",
+        "reduction": 0.2,
+        "jump_boost": 0.05
+      }
+    ],
+    "circlet": {
+      "type": "immersive_jewelry:attribute",
+      "name": "effect.immersive_jewelry.name.quick_wit",
+      "category": "magic",
+      "modifiers": [
+        {
+          "attribute": "irons_spellbooks:cooldown_reduction",
+          "amount": 0.08,
+          "operation": "multiply_base"
+        }
+      ],
+      "fallback": {
+        "type": "immersive_jewelry:on_kill",
+        "name": "effect.immersive_jewelry.name.adrenal_spark",
+        "category": "magic",
+        "effects": [
+          {
+            "effect": "haste",
+            "amplifier": 1,
+            "duration": 100
+          },
+          {
+            "effect": "speed",
+            "amplifier": 0,
+            "duration": 100
+          }
+        ]
+      }
+    }
+  }
+}

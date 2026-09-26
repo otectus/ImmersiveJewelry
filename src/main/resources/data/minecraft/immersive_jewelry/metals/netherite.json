@@ -1,0 +1,14 @@
+{
+  "name": "metal.minecraft.netherite",
+  "color": "#4E434C",
+  "potency": 1.1,
+  "integrity": 1.6,
+  "enchantability": 1.1,
+  "affinities": {
+    "offense": 1.08,
+    "defense": 1.08
+  },
+  "repair": {
+    "item": "minecraft:netherite_scrap"
+  }
+}

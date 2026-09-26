@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/terrasteel"
+      }
+    }
+  ],
+  "material": "forge:terrasteel",
+  "metal_units": 12,
+  "result": {
+    "item": "immersive_jewelry:circlet_frame",
+    "nbt": "{immersive_jewelry:{Metal:\"forge:terrasteel\",MetalColor:5425224,MetalName:\"{\\\"translate\\\": \\\"metal.forge.terrasteel\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:circlet_frame"
+}

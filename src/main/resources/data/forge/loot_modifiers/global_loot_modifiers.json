@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "entries": [
+    "immersive_jewelry:treasure_gems_dungeons",
+    "immersive_jewelry:treasure_gems_temples",
+    "immersive_jewelry:treasure_gems_treasure",
+    "immersive_jewelry:treasure_gems_strongholds",
+    "immersive_jewelry:treasure_gems_deep"
+  ]
+}

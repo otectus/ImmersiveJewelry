@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/steel"
+      }
+    }
+  ],
+  "material": "forge:steel",
+  "metal_units": 9,
+  "result": {
+    "item": "immersive_jewelry:bracelet_blank",
+    "nbt": "{immersive_jewelry:{Metal:\"forge:steel\",MetalColor:10134958,MetalName:\"{\\\"translate\\\": \\\"metal.forge.steel\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:bracelet_blank"
+}

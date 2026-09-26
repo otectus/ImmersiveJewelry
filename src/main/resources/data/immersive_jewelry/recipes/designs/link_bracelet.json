@@ -1,0 +1,17 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:bracelet",
+  "stones": 3,
+  "setting": {
+    "style": "prong",
+    "points": 4
+  },
+  "allowed_cuts": [
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald",
+    "immersive_jewelry:cabochon"
+  ],
+  "sketch": true,
+  "sort_order": 21,
+  "name": "design.immersive_jewelry.link_bracelet"
+}

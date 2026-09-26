@@ -1,0 +1,31 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/diamond"
+  },
+  "hardness": 10,
+  "brittleness": 0.35,
+  "default_trait": "immersive_jewelry:purity",
+  "base_color": "#6FE3E1",
+  "sparkle_color": "#FFFFFF",
+  "cutting": {
+    "difficulty": 1.1,
+    "size_retention": 0.85
+  },
+  "supported_cuts": [
+    "immersive_jewelry:round",
+    "immersive_jewelry:brilliant",
+    "immersive_jewelry:emerald"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:brilliant"
+  ],
+  "rarity": "rare",
+  "appraisal": {
+    "size_min": 0.6,
+    "size_max": 1.4,
+    "quality_mean": 0.6,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.15,
+    "inclusions_spread": 0.15
+  }
+}

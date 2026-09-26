@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "immersive_jewelry:item/gem/cut_round",
+    "layer1": "immersive_jewelry:item/gem/cut_round_sparkle"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.1
+      },
+      "model": "immersive_jewelry:item/cut_gem_round"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.2
+      },
+      "model": "immersive_jewelry:item/cut_gem_brilliant"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.3
+      },
+      "model": "immersive_jewelry:item/cut_gem_emerald"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:cut": 0.4
+      },
+      "model": "immersive_jewelry:item/cut_gem_cabochon"
+    }
+  ]
+}

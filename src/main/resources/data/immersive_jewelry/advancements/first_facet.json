@@ -1,0 +1,24 @@
+{
+  "parent": "immersive_jewelry:lapidary",
+  "display": {
+    "icon": {
+      "item": "immersive_jewelry:cut_gem",
+      "nbt": "{immersive_jewelry:{Version:1,Gem:\"immersive_jewelry:sapphire\",Size:0.8f,OriginalSize:1.0f,Natural:0.7f,Inclusions:0.1f,Cut:\"immersive_jewelry:brilliant\",CutQuality:0.95f}}"
+    },
+    "title": {
+      "translate": "advancements.immersive_jewelry.first_facet.title"
+    },
+    "description": {
+      "translate": "advancements.immersive_jewelry.first_facet.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

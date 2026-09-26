@@ -1,0 +1,13 @@
+.gradle/
+build/
+run/
+run-data/
+run-gametest/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+logs/
+*.log
+__pycache__/

@@ -1,0 +1,32 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/quartz"
+  },
+  "hardness": 7,
+  "brittleness": 0.45,
+  "default_trait": "immersive_jewelry:radiance",
+  "base_color": "#EFE6DA",
+  "sparkle_color": "#FFFFFF",
+  "cutting": {
+    "difficulty": 0.75,
+    "size_retention": 0.88
+  },
+  "supported_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald",
+    "immersive_jewelry:brilliant"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:emerald"
+  ],
+  "rarity": "common",
+  "appraisal": {
+    "size_min": 0.7,
+    "size_max": 1.3,
+    "quality_mean": 0.5,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.25,
+    "inclusions_spread": 0.2
+  }
+}

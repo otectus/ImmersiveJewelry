@@ -1,0 +1,32 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/emerald"
+  },
+  "hardness": 7.5,
+  "brittleness": 0.55,
+  "default_trait": "immersive_jewelry:verdancy",
+  "base_color": "#2EBD63",
+  "sparkle_color": "#B8FFD0",
+  "cutting": {
+    "difficulty": 0.9,
+    "size_retention": 0.85
+  },
+  "supported_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald",
+    "immersive_jewelry:brilliant"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:emerald"
+  ],
+  "rarity": "uncommon",
+  "appraisal": {
+    "size_min": 0.7,
+    "size_max": 1.4,
+    "quality_mean": 0.55,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.35,
+    "inclusions_spread": 0.2
+  }
+}

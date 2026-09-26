@@ -1,0 +1,10 @@
+{
+  "name": "metal.forge.tin",
+  "color": "#BFC6C6",
+  "potency": 0.88,
+  "integrity": 0.85,
+  "enchantability": 1.0,
+  "repair": {
+    "tag": "forge:nuggets/tin"
+  }
+}

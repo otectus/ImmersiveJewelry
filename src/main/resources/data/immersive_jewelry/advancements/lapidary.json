@@ -1,0 +1,32 @@
+{
+  "parent": "immersive_jewelry:root",
+  "display": {
+    "icon": {
+      "item": "immersive_jewelry:lapidary_wheel"
+    },
+    "title": {
+      "translate": "advancements.immersive_jewelry.lapidary.title"
+    },
+    "description": {
+      "translate": "advancements.immersive_jewelry.lapidary.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "wheel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "immersive_jewelry:lapidary_wheel"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

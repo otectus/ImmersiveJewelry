@@ -1,0 +1,19 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="${mod_license}"
+
+[[mods]]
+modId="immersive_jewelry_smoketest"
+version="${mod_version}"
+displayName="Immersive Jewelry Smoke Test Agent"
+authors="Otectus"
+description='''
+Test-only agent. Inert unless -Dimmersive_jewelry.smoketest.output is set. Never ship this.
+'''
+
+[[dependencies.immersive_jewelry_smoketest]]
+    modId="immersive_jewelry"
+    mandatory=true
+    versionRange="[${mod_version},)"
+    ordering="AFTER"
+    side="BOTH"

@@ -1,0 +1,17 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:ring",
+  "stones": 1,
+  "setting": {
+    "style": "bezel",
+    "points": 6
+  },
+  "allowed_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald"
+  ],
+  "protection": 1.35,
+  "sort_order": 1,
+  "name": "design.immersive_jewelry.bezel_ring"
+}

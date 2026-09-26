@@ -1,0 +1,32 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/topaz"
+  },
+  "hardness": 8,
+  "brittleness": 0.5,
+  "default_trait": "immersive_jewelry:fortune",
+  "base_color": "#F0A332",
+  "sparkle_color": "#FFE0A0",
+  "cutting": {
+    "difficulty": 0.85,
+    "size_retention": 0.88
+  },
+  "supported_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald",
+    "immersive_jewelry:brilliant"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:emerald"
+  ],
+  "rarity": "uncommon",
+  "appraisal": {
+    "size_min": 0.7,
+    "size_max": 1.4,
+    "quality_mean": 0.55,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.25,
+    "inclusions_spread": 0.2
+  }
+}

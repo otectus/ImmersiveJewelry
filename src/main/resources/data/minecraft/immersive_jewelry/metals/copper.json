@@ -1,0 +1,15 @@
+{
+  "name": "metal.minecraft.copper",
+  "color": "#D98656",
+  "potency": 0.95,
+  "integrity": 0.9,
+  "enchantability": 1.1,
+  "responsiveness": 1.2,
+  "affinities": {
+    "utility": 1.1,
+    "mobility": 1.05
+  },
+  "repair": {
+    "tag": "forge:ingots/copper"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:ring",
+  "stones": 3,
+  "setting": {
+    "style": "prong",
+    "points": 4,
+    "tightness": 1.2
+  },
+  "allowed_cuts": [
+    "immersive_jewelry:round",
+    "immersive_jewelry:brilliant"
+  ],
+  "sketch": true,
+  "sort_order": 2,
+  "name": "design.immersive_jewelry.trilogy_ring"
+}

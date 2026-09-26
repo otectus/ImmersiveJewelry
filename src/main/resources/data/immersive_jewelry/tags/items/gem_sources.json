@@ -1,0 +1,42 @@
+{
+  "replace": false,
+  "values": [
+    "immersive_jewelry:rough_gem",
+    {
+      "id": "#forge:gems/diamond",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/emerald",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/amethyst",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/lapis",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/quartz",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/ruby",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/sapphire",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/topaz",
+      "required": false
+    },
+    {
+      "id": "#forge:gems/onyx",
+      "required": false
+    }
+  ]
+}

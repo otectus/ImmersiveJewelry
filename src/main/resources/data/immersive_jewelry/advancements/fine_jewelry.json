@@ -1,0 +1,23 @@
+{
+  "parent": "immersive_jewelry:set_in_stone",
+  "display": {
+    "icon": {
+      "item": "immersive_jewelry:amulet"
+    },
+    "title": {
+      "translate": "advancements.immersive_jewelry.fine_jewelry.title"
+    },
+    "description": {
+      "translate": "advancements.immersive_jewelry.fine_jewelry.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

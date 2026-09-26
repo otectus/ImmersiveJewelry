@@ -1,0 +1,18 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:circlet",
+  "stones": 3,
+  "setting": {
+    "style": "prong",
+    "points": 4,
+    "tightness": 1.25
+  },
+  "allowed_cuts": [
+    "immersive_jewelry:brilliant",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald"
+  ],
+  "sketch": true,
+  "sort_order": 31,
+  "name": "design.immersive_jewelry.diadem"
+}

@@ -1,0 +1,11 @@
+Built-in image_gen. Edit target: the previous art/workshop_items.png (eight 32px icons).
+Master: workshop-16px-atlas.png. Production sprites are refined as editable 16px grids in
+art/workshop_pixels.py; art/workshop_items.png is a contact sheet of those native sprites.
+
+Use case: precise-object-edit
+Asset type: Minecraft inventory sprite atlas.
+Edit target: the supplied atlas has eight32px icons. Redesign each icon as genuine hand-pixeled16x16 artwork, preserving the eight object identities, same4-column2-row ordering, color themes and diagonal tool orientation. This is a LOW RESOLUTION pixel-art redesign: use much larger, fewer pixel clusters so each object reads at16 pixels.
+The complete atlas is logically64x32 pixels, each cell exactly16x16. Render it enlarged by a whole-number factor with nearest-neighbor, perfectly consistent square pixels. Each object fits within14x14 logical pixels, surrounded by a one-pixel transparent margin. Transparent background, no labels, no grid, no checkerboard.
+Top row: brown leather-handled flat-nose pliers with two separated silver jaws and one bright gold pivot; forest-green-handled fine pliers with visibly longer narrow silver jaws and one gold pivot; warm gray emery abrasive disc with stepped octagonal edge and clear square dark center hole; cool blue diamond abrasive disc with same square hole and three bright diamond flecks.
+Bottom row: shallow silver tin of red rouge with raised open lid, distinct bright metal rim and orange surface; crystalline pale lavender grit mound with just3large clusters and2loose chips; cream parchment sheet with folded corner and clear simple dark ring outline plus tiny red stone at its top; forest-green leather book with brown spine, pale right page edge, gold corner fittings and small gold/mint gem emblem.
+Pixel shapes must be highly intentional and legible. Use a limited palette of about8-12 opaque colors per sprite, strong deep colored outlines, broad upper-left reflections, saturated material midtones. All pixels opaque or transparent. NO antialiasing, soft gradients, realistic detail, small text, more than16 logical pixels per icon, thin subpixel marks. Simplify heavily and keep key functional features crisp.

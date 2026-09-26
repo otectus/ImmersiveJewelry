@@ -1,0 +1,10 @@
+{
+  "slot": "bracelet",
+  "blank": "immersive_jewelry:bracelet_blank",
+  "max_gems": 3,
+  "base_integrity": 1.2,
+  "enchantability": 10,
+  "metal_units": 9,
+  "anvil_pattern": "immersive_jewelry:bracelet_blank",
+  "sort_order": 2
+}

@@ -1,0 +1,10 @@
+{
+  "name": "metal.forge.mithril",
+  "color": "#9FD3E6",
+  "potency": 1.12,
+  "integrity": 1.3,
+  "enchantability": 1.4,
+  "affinities": {
+    "magic": 1.15
+  }
+}

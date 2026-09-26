@@ -1,0 +1,23 @@
+{
+  "parent": "immersive_jewelry:set_in_stone",
+  "display": {
+    "icon": {
+      "item": "immersive_jewelry:design_sketch"
+    },
+    "title": {
+      "translate": "advancements.immersive_jewelry.new_design.title"
+    },
+    "description": {
+      "translate": "advancements.immersive_jewelry.new_design.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

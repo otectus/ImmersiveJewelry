@@ -1,0 +1,52 @@
+{
+  "name": "trait.immersive_jewelry.radiance",
+  "theme": "trait.immersive_jewelry.radiance.theme",
+  "color": "#EDE3D6",
+  "category": "offense",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:projectile_focus",
+      "name": "effect.immersive_jewelry.name.marksmans_loop",
+      "category": "offense",
+      "bonus": 0.15
+    },
+    "amulet": {
+      "type": "immersive_jewelry:damage_reduction",
+      "name": "effect.immersive_jewelry.name.hearth_glass",
+      "category": "defense",
+      "against": [
+        "fire"
+      ],
+      "reduction": 0.25,
+      "label": "fire"
+    },
+    "bracelet": {
+      "type": "immersive_jewelry:attribute",
+      "name": "effect.immersive_jewelry.name.masons_reach",
+      "category": "utility",
+      "modifiers": [
+        {
+          "attribute": "forge:block_reach",
+          "amount": 0.75,
+          "operation": "addition"
+        }
+      ]
+    },
+    "circlet": {
+      "type": "immersive_jewelry:conditional_effect",
+      "name": "effect.immersive_jewelry.name.lumen",
+      "category": "magic",
+      "condition": {
+        "type": "in_darkness",
+        "max_light": 4
+      },
+      "effects": [
+        {
+          "effect": "night_vision",
+          "amplifier": 0,
+          "duration": 260
+        }
+      ]
+    }
+  }
+}

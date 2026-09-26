@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/copper"
+      }
+    }
+  ],
+  "material": "minecraft:copper",
+  "metal_units": 6,
+  "result": {
+    "item": "immersive_jewelry:amulet_frame",
+    "nbt": "{immersive_jewelry:{Metal:\"minecraft:copper\",MetalColor:14255702,MetalName:\"{\\\"translate\\\": \\\"metal.minecraft.copper\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:amulet_frame"
+}

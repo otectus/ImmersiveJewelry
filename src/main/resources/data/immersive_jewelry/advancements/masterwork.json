@@ -1,0 +1,23 @@
+{
+  "parent": "immersive_jewelry:fine_jewelry",
+  "display": {
+    "icon": {
+      "item": "immersive_jewelry:circlet"
+    },
+    "title": {
+      "translate": "advancements.immersive_jewelry.masterwork.title"
+    },
+    "description": {
+      "translate": "advancements.immersive_jewelry.masterwork.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

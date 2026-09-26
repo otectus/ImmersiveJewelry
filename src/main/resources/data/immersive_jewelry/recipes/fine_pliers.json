@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "G G",
+    "I I"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:gems/amethyst"
+    },
+    "G": {
+      "tag": "forge:nuggets/gold"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "result": {
+    "item": "immersive_jewelry:fine_pliers",
+    "count": 1
+  }
+}

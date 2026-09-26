@@ -1,0 +1,19 @@
+Built-in image_gen. Input 1: the eight existing workshop item icons.
+Input 2: art/previews/jewelry-detail.png, the completed jewelry style.
+Historical 32px workshop concept; superseded by workshop-16px-atlas.prompt.txt.
+Current production sprites are native 16px maps in art/workshop_pixels.py.
+
+Use case: stylized-concept
+Asset type: a single coherent production inventory sprite atlas for Immersive Jewelry, a Minecraft mod.
+Input image 1: existing eight tool/item icons; use only to preserve object identities, order and overall diagonal tool orientation.
+Input image 2: completed jewelry sprites; match the crisp chunky pixel clusters, deep colored shadows, bright facet highlights and elegant craftsmanship.
+Create ONE transparent-background 4-column, 2-row atlas of EIGHT icons, no text or labels. Each icon has an independent 16x16 logical-pixel cell, same pixel density, no overlapping cells. Enlarge pixel art nearest-neighbor. Target art occupies about14x14 logical pixels in each cell. Flat orthographic inventory illustrations with just a little three-quarter thickness. No blur, smooth shading, antialiasing, gradients, cast shadows, scenery, grid, borders, letters, numbers, floating extra objects. Actual transparent background. Every icon must remain readable at16px.
+Row1 left: ordinary jeweler's pliers, diagonal lower-left handles to upper-right short separated FLAT NOSE jaws. Clearly a pair of pliers with two separated reddish-brown wrapped leather handles, cool steel shanks, bronze pivot rivet, broad flat jaw ends. Crisp silver glints.
+Row1 second: precision fine pliers in same diagonal orientation. Visibly longer slender NEEDLE NOSE jaws, deep forest-green leather handles, small brass collars, pale steel points, bronze pivot. Distinct from the ordinary pliers.
+Row1 third: emery lap abrasive wheel, a thick stone grinding disc with clipped circular edges, small square dark axle hole, muted warm gray-brown stone, concentric stepped wear rings and a few dark grit flecks, edge thickness visible below, bright upper-left worn rim.
+Row1 fourth: diamond lap, same type of thick grinding disc, dark steel rim and cool teal-gray abrasive face, small square axle hole, pale icy-blue diamond grains, bright worn edge. It is a tool disc, not a jewelry ring.
+Row2 left: an OPEN shallow tin of red-orange jeweler's polishing rouge, hinged silver lid leaning behind it. Tin has dark blue-gray rim and bright silver lower edge; rouge has a flat richly russet waxy top with small peach highlights. Clear compact silhouette.
+Row2 second: a small mound of crushed gem grit, angular irregular tiny stones and powder with a couple separated chips. Muted lavender-gray pale quartz color, broad light face upper-left, dark plum-gray base. Looks crystalline and granular, not liquid.
+Row2 third: a folded cream parchment design sketch, slightly tilted; curled/folded upper-right corner and uneven paper edge, delicate charcoal drawing of a tiny ring with a red gemstone centered on the page, two small gray measurement ticks. No legible writing.
+Row2 fourth: a closed thick jeweler's handbook in three-quarter view; dark forest-green leather cover, brown spine, gold corner caps and clasp, cream layered page edges visible right and bottom, small golden diamond outline emblem on cover with pale mint central stone. Tiny burgundy bookmark below.
+Palette: restrained warm oak and walnut browns, cognac leather, forest green, cool blue-gray forged steel, muted honey brass, russet rouge and parchment. Strong silhouettes, thoughtful material detail, original clean pixel art closely related to the second reference.

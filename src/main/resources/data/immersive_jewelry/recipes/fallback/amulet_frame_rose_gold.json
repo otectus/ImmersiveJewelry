@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:fallback_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:nuggets/rose_gold"
+      }
+    }
+  ],
+  "category": "misc",
+  "pattern": [
+    "N N",
+    "N N",
+    " N "
+  ],
+  "key": {
+    "N": {
+      "tag": "forge:nuggets/rose_gold"
+    }
+  },
+  "result": {
+    "item": "immersive_jewelry:amulet_frame",
+    "count": 1,
+    "nbt": "{immersive_jewelry:{Metal:\"forge:rose_gold\",Fallback:1b}}"
+  }
+}

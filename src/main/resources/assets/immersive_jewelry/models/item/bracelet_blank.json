@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "immersive_jewelry:item/blank/bracelet_blank",
+    "layer1": "immersive_jewelry:item/blank/bracelet_blank_highlight"
+  }
+}

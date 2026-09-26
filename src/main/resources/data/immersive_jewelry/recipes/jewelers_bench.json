@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WNL",
+    "PPP",
+    "F F"
+  ],
+  "key": {
+    "W": {
+      "tag": "minecraft:wooden_slabs"
+    },
+    "N": {
+      "tag": "forge:nuggets/iron"
+    },
+    "L": {
+      "tag": "forge:leather"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "F": {
+      "tag": "minecraft:logs"
+    }
+  },
+  "result": {
+    "item": "immersive_jewelry:jewelers_bench",
+    "count": 1
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "metal.forge.steel",
+  "color": "#9AA5AE",
+  "potency": 0.92,
+  "integrity": 1.45,
+  "enchantability": 0.85,
+  "affinities": {
+    "defense": 1.1,
+    "offense": 1.05
+  },
+  "repair": {
+    "tag": "forge:nuggets/steel"
+  }
+}

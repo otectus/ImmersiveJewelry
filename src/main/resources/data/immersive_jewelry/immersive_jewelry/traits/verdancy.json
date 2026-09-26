@@ -1,0 +1,39 @@
+{
+  "name": "trait.immersive_jewelry.verdancy",
+  "theme": "trait.immersive_jewelry.verdancy.theme",
+  "color": "#2EBD63",
+  "category": "utility",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:bonemeal_boost",
+      "name": "effect.immersive_jewelry.name.verdant_touch",
+      "category": "utility",
+      "extra": 1.0
+    },
+    "amulet": {
+      "type": "immersive_jewelry:regeneration_pulse",
+      "name": "effect.immersive_jewelry.name.evergreen",
+      "category": "defense",
+      "heal": 1.0,
+      "period": 80,
+      "out_of_combat": 100
+    },
+    "bracelet": {
+      "type": "immersive_jewelry:harvest_restore",
+      "name": "effect.immersive_jewelry.name.foragers_band",
+      "category": "utility",
+      "food": 1,
+      "saturation": 0.4,
+      "cooldown": 20
+    },
+    "circlet": {
+      "type": "immersive_jewelry:restore_food",
+      "name": "effect.immersive_jewelry.name.verdant_mind",
+      "category": "utility",
+      "condition": "sunlight",
+      "period": 240,
+      "food": 1,
+      "saturation": 0.3
+    }
+  }
+}

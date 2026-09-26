@@ -1,0 +1,15 @@
+{
+  "gem_potency_multiplier": 1.06,
+  "integrity_multiplier": 0.92,
+  "enchantability_multiplier": 1.0,
+  "visual_profile": "polished",
+  "highlight_mix": 0.78,
+  "shade": 0.34,
+  "cost": {
+    "ingredient": {
+      "item": "immersive_jewelry:polishing_compound"
+    },
+    "count": 1
+  },
+  "sort_order": 0
+}

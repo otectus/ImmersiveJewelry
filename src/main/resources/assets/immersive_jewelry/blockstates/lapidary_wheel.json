@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "immersive_jewelry:block/lapidary_wheel"
+    },
+    "facing=east": {
+      "model": "immersive_jewelry:block/lapidary_wheel",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "immersive_jewelry:block/lapidary_wheel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "immersive_jewelry:block/lapidary_wheel",
+      "y": 270
+    }
+  }
+}

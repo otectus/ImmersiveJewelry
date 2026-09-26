@@ -1,0 +1,11 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:amulet",
+  "stones": 1,
+  "setting": {
+    "style": "prong",
+    "points": 6
+  },
+  "sort_order": 10,
+  "name": "design.immersive_jewelry.pendant_amulet"
+}

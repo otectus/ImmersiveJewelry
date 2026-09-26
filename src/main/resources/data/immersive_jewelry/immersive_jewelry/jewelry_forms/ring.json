@@ -1,0 +1,10 @@
+{
+  "slot": "ring",
+  "blank": "immersive_jewelry:ring_blank",
+  "max_gems": 3,
+  "base_integrity": 0.9,
+  "enchantability": 12,
+  "metal_units": 4,
+  "anvil_pattern": "immersive_jewelry:ring_blank",
+  "sort_order": 0
+}

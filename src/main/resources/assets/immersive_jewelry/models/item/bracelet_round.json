@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "immersive_jewelry:item/bracelet/frame",
+    "layer1": "immersive_jewelry:item/bracelet/recess",
+    "layer2": "immersive_jewelry:item/bracelet/highlight",
+    "layer3": "immersive_jewelry:item/bracelet/gem_round",
+    "layer4": "immersive_jewelry:item/bracelet/sparkle_round"
+  }
+}

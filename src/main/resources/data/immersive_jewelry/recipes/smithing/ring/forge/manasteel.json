@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/manasteel"
+      }
+    }
+  ],
+  "material": "forge:manasteel",
+  "metal_units": 4,
+  "result": {
+    "item": "immersive_jewelry:ring_blank",
+    "nbt": "{immersive_jewelry:{Metal:\"forge:manasteel\",MetalColor:5941488,MetalName:\"{\\\"translate\\\": \\\"metal.forge.manasteel\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:ring_blank"
+}

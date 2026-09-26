@@ -1,0 +1,14 @@
+{
+  "name": "metal.minecraft.iron",
+  "color": "#C9D0D4",
+  "potency": 0.9,
+  "integrity": 1.3,
+  "enchantability": 0.9,
+  "affinities": {
+    "defense": 1.08,
+    "magic": 0.9
+  },
+  "repair": {
+    "tag": "forge:nuggets/iron"
+  }
+}

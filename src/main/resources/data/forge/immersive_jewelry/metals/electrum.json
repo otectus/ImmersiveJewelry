@@ -1,0 +1,14 @@
+{
+  "name": "metal.forge.electrum",
+  "color": "#E7D98A",
+  "potency": 1.08,
+  "integrity": 0.85,
+  "enchantability": 1.5,
+  "responsiveness": 1.1,
+  "affinities": {
+    "magic": 1.12
+  },
+  "repair": {
+    "tag": "forge:nuggets/electrum"
+  }
+}

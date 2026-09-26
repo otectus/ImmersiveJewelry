@@ -1,0 +1,44 @@
+{
+  "name": "trait.immersive_jewelry.resonance",
+  "theme": "trait.immersive_jewelry.resonance.theme",
+  "color": "#B8C4CC",
+  "category": "utility",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:attribute",
+      "name": "effect.immersive_jewelry.name.resonant_luck",
+      "category": "utility",
+      "modifiers": [
+        {
+          "attribute": "minecraft:generic.luck",
+          "amount": 0.5,
+          "operation": "addition"
+        }
+      ]
+    },
+    "amulet": {
+      "type": "immersive_jewelry:attribute",
+      "name": "effect.immersive_jewelry.name.resonant_vigor",
+      "category": "defense",
+      "modifiers": [
+        {
+          "attribute": "minecraft:generic.max_health",
+          "amount": 2,
+          "operation": "addition"
+        }
+      ]
+    },
+    "bracelet": {
+      "type": "immersive_jewelry:fall_cushion",
+      "name": "effect.immersive_jewelry.name.resonant_step",
+      "category": "mobility",
+      "reduction": 0.2
+    },
+    "circlet": {
+      "type": "immersive_jewelry:experience_boost",
+      "name": "effect.immersive_jewelry.name.resonant_mind",
+      "category": "magic",
+      "bonus": 0.1
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "immersive_jewelry:item/gem/cut_round",
+    "layer1": "immersive_jewelry:item/gem/cut_round_sparkle"
+  }
+}

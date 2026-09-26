@@ -1,0 +1,10 @@
+{
+  "gem_potency_multiplier": 0.97,
+  "integrity_multiplier": 1.25,
+  "enchantability_multiplier": 0.95,
+  "stability_multiplier": 1.08,
+  "visual_profile": "burnished",
+  "highlight_mix": 0.3,
+  "shade": 0.24,
+  "sort_order": 1
+}

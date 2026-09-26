@@ -1,0 +1,19 @@
+{
+  "gem_potency_multiplier": 0.99,
+  "integrity_multiplier": 1.0,
+  "enchantability_multiplier": 1.3,
+  "category_multipliers": {
+    "magic": 1.08
+  },
+  "visual_profile": "antique",
+  "highlight_mix": 0.32,
+  "shade": 0.55,
+  "recess_color": "#2A1F14",
+  "cost": {
+    "ingredient": {
+      "item": "minecraft:gunpowder"
+    },
+    "count": 1
+  },
+  "sort_order": 2
+}

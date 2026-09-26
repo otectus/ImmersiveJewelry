@@ -1,0 +1,9 @@
+{
+  "ingredient": { "item": "minecraft:prismarine_crystals" },
+  "hardness": 6.0,
+  "brittleness": 0.5,
+  "default_trait": "gametest_pack:lunar",
+  "base_color": "#C6D8FF",
+  "cutting": { "difficulty": 0.55, "size_retention": 0.9 },
+  "supported_cuts": ["immersive_jewelry:cabochon", "immersive_jewelry:round"]
+}

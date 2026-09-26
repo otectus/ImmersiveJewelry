@@ -1,0 +1,32 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/onyx"
+  },
+  "hardness": 6.5,
+  "brittleness": 0.35,
+  "default_trait": "immersive_jewelry:shadow",
+  "base_color": "#3B3143",
+  "sparkle_color": "#9A88B0",
+  "cutting": {
+    "difficulty": 0.6,
+    "size_retention": 0.92
+  },
+  "supported_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round",
+    "immersive_jewelry:emerald"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:cabochon"
+  ],
+  "opaque": true,
+  "rarity": "uncommon",
+  "appraisal": {
+    "size_min": 0.8,
+    "size_max": 1.4,
+    "quality_mean": 0.5,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.2,
+    "inclusions_spread": 0.2
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "metal.forge.nickel",
+  "color": "#C5C1A6",
+  "potency": 0.92,
+  "integrity": 1.1,
+  "enchantability": 0.95,
+  "repair": {
+    "tag": "forge:nuggets/nickel"
+  }
+}

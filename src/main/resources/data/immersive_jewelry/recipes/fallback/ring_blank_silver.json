@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:fallback_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:nuggets/silver"
+      }
+    }
+  ],
+  "category": "misc",
+  "pattern": [
+    " N ",
+    "N N",
+    " N "
+  ],
+  "key": {
+    "N": {
+      "tag": "forge:nuggets/silver"
+    }
+  },
+  "result": {
+    "item": "immersive_jewelry:ring_blank",
+    "count": 1,
+    "nbt": "{immersive_jewelry:{Metal:\"forge:silver\",Fallback:1b}}"
+  }
+}

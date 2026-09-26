@@ -1,0 +1,12 @@
+{
+  "name": "metal.forge.rose_gold",
+  "color": "#E8A28E",
+  "potency": 1.05,
+  "integrity": 0.9,
+  "enchantability": 1.5,
+  "affinities": {
+    "utility": 1.08,
+    "magic": 1.08
+  },
+  "piglin_neutral": true
+}

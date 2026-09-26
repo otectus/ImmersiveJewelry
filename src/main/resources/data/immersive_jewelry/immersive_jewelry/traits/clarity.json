@@ -1,0 +1,71 @@
+{
+  "name": "trait.immersive_jewelry.clarity",
+  "theme": "trait.immersive_jewelry.clarity.theme",
+  "color": "#2F5BD6",
+  "category": "magic",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:focused_strike",
+      "name": "effect.immersive_jewelry.name.precise_focus",
+      "category": "offense",
+      "bonus": 0.15,
+      "min_charge": 0.95
+    },
+    "amulet": {
+      "type": "immersive_jewelry:conditional_effect",
+      "name": "effect.immersive_jewelry.name.tidal_clarity",
+      "category": "defense",
+      "condition": "submerged",
+      "effects": [
+        {
+          "effect": "water_breathing",
+          "amplifier": 0,
+          "duration": 100
+        },
+        {
+          "effect": "night_vision",
+          "amplifier": 0,
+          "duration": 260
+        }
+      ]
+    },
+    "bracelet": {
+      "type": "immersive_jewelry:quickdraw",
+      "name": "effect.immersive_jewelry.name.quickdraw",
+      "category": "offense",
+      "bonus": 0.2
+    },
+    "circlet": {
+      "type": "immersive_jewelry:attribute",
+      "name": "effect.immersive_jewelry.name.wellspring",
+      "category": "magic",
+      "modifiers": [
+        {
+          "attribute": "irons_spellbooks:max_mana",
+          "amount": 60,
+          "operation": "addition"
+        },
+        {
+          "attribute": "irons_spellbooks:mana_regen",
+          "amount": 0.1,
+          "operation": "multiply_base"
+        },
+        {
+          "attribute": "ars_nouveau:ars_nouveau.perk.max_mana",
+          "amount": 40,
+          "operation": "addition"
+        }
+      ],
+      "fallback": {
+        "type": "immersive_jewelry:effect_immunity",
+        "name": "effect.immersive_jewelry.name.clear_mind",
+        "category": "magic",
+        "effects": [
+          "nausea",
+          "blindness",
+          "darkness"
+        ]
+      }
+    }
+  }
+}

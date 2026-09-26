@@ -1,0 +1,48 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="${mod_authors}"
+logoFile="logo.png"
+description='''
+Jewelry is made, not crafted. Cut rough stones on the Lapidary Wheel, forge the frame with Immersive Smithing, set the stones by hand at the Jeweler's Bench and choose a finish. What a ring, amulet, bracelet or circlet does comes from what it is made of and how well: the gem sets the theme, the form how it shows, the metal and cut bias it, and your craftsmanship decides how strong it is. The reworked successor to Jewelcraft Reforged.
+'''
+
+[[dependencies.${mod_id}]]
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="curios"
+    mandatory=false
+    versionRange="${curios_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="immersive_smithing"
+    mandatory=false
+    versionRange="${immersive_smithing_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="jei"
+    mandatory=false
+    versionRange="[15.0,)"
+    ordering="NONE"
+    side="BOTH"

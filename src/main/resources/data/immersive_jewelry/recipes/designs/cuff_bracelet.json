@@ -1,0 +1,12 @@
+{
+  "type": "immersive_jewelry:jewelry_design",
+  "form": "immersive_jewelry:bracelet",
+  "stones": 1,
+  "setting": {
+    "style": "bezel",
+    "points": 6
+  },
+  "protection": 1.3,
+  "sort_order": 20,
+  "name": "design.immersive_jewelry.cuff_bracelet"
+}

@@ -1,0 +1,61 @@
+{
+  "name": "trait.immersive_jewelry.warding",
+  "theme": "trait.immersive_jewelry.warding.theme",
+  "color": "#A06CD5",
+  "category": "magic",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:mark_target",
+      "name": "effect.immersive_jewelry.name.resonant_mark",
+      "category": "offense",
+      "duration": 100,
+      "bonus": 0.15
+    },
+    "amulet": [
+      {
+        "type": "immersive_jewelry:cleanse",
+        "name": "effect.immersive_jewelry.name.warding_geode",
+        "category": "defense",
+        "cooldown": 600
+      },
+      {
+        "type": "immersive_jewelry:damage_reduction",
+        "category": "defense",
+        "against": [
+          "magic"
+        ],
+        "reduction": 0.12,
+        "label": "magic"
+      }
+    ],
+    "bracelet": {
+      "type": "immersive_jewelry:muffle_vibrations",
+      "name": "effect.immersive_jewelry.name.hush_band",
+      "category": "utility"
+    },
+    "circlet": {
+      "type": "immersive_jewelry:attribute",
+      "name": "effect.immersive_jewelry.name.arcane_attunement",
+      "category": "magic",
+      "modifiers": [
+        {
+          "attribute": "irons_spellbooks:spell_power",
+          "amount": 0.08,
+          "operation": "multiply_base"
+        },
+        {
+          "attribute": "ars_nouveau:ars_nouveau.perk.spell_damage",
+          "amount": 1.0,
+          "operation": "addition"
+        }
+      ],
+      "fallback": {
+        "type": "immersive_jewelry:sense_hostiles",
+        "name": "effect.immersive_jewelry.name.scrying",
+        "category": "magic",
+        "glow": 80,
+        "cooldown": 300
+      }
+    }
+  }
+}

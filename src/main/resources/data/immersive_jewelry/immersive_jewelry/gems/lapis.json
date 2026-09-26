@@ -1,0 +1,31 @@
+{
+  "ingredient": {
+    "tag": "forge:gems/lapis"
+  },
+  "hardness": 5.5,
+  "brittleness": 0.3,
+  "default_trait": "immersive_jewelry:insight",
+  "base_color": "#2B4EB0",
+  "sparkle_color": "#8FB0FF",
+  "cutting": {
+    "difficulty": 0.55,
+    "size_retention": 0.92
+  },
+  "supported_cuts": [
+    "immersive_jewelry:cabochon",
+    "immersive_jewelry:round"
+  ],
+  "favored_cuts": [
+    "immersive_jewelry:cabochon"
+  ],
+  "opaque": true,
+  "rarity": "common",
+  "appraisal": {
+    "size_min": 0.8,
+    "size_max": 1.4,
+    "quality_mean": 0.5,
+    "quality_spread": 0.3,
+    "inclusions_mean": 0.3,
+    "inclusions_spread": 0.2
+  }
+}

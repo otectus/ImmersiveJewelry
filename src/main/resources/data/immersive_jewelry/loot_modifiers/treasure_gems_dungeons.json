@@ -1,0 +1,26 @@
+{
+  "type": "immersive_jewelry:treasure_gems",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/simple_dungeon"
+        },
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/abandoned_mineshaft"
+        },
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/pillager_outpost"
+        }
+      ]
+    }
+  ],
+  "gem_chance": 0.3,
+  "max_gems": 2,
+  "sketch_chance": 0.03,
+  "min_rarity": 0
+}

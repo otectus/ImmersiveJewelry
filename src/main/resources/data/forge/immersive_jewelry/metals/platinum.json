@@ -1,0 +1,14 @@
+{
+  "name": "metal.forge.platinum",
+  "color": "#DDE8EC",
+  "potency": 1.1,
+  "integrity": 1.2,
+  "enchantability": 1.3,
+  "affinities": {
+    "magic": 1.06,
+    "defense": 1.06
+  },
+  "repair": {
+    "tag": "forge:nuggets/platinum"
+  }
+}

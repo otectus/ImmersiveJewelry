@@ -1,0 +1,15 @@
+{
+  "name": "metal.minecraft.gold",
+  "color": "#F2C541",
+  "potency": 1.05,
+  "integrity": 0.8,
+  "enchantability": 1.6,
+  "affinities": {
+    "magic": 1.15,
+    "defense": 0.95
+  },
+  "repair": {
+    "tag": "forge:nuggets/gold"
+  },
+  "piglin_neutral": true
+}

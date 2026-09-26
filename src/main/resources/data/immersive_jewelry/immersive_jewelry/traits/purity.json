@@ -1,0 +1,44 @@
+{
+  "name": "trait.immersive_jewelry.purity",
+  "theme": "trait.immersive_jewelry.purity.theme",
+  "color": "#8BE8E4",
+  "category": "defense",
+  "expressions": {
+    "ring": {
+      "type": "immersive_jewelry:critical_edge",
+      "name": "effect.immersive_jewelry.name.keen_edge",
+      "category": "offense",
+      "bonus": 0.25
+    },
+    "amulet": {
+      "type": "immersive_jewelry:absorption_shell",
+      "name": "effect.immersive_jewelry.name.adamant_ward",
+      "category": "defense",
+      "amount": 4,
+      "recharge": 200
+    },
+    "bracelet": {
+      "type": "immersive_jewelry:mining_focus",
+      "name": "effect.immersive_jewelry.name.diamond_grip",
+      "category": "utility",
+      "mode": "correct_tool",
+      "bonus": 0.18
+    },
+    "circlet": [
+      {
+        "type": "immersive_jewelry:amplify_jewelry",
+        "name": "effect.immersive_jewelry.name.prism_crown",
+        "category": "magic",
+        "bonus": 0.1
+      },
+      {
+        "type": "immersive_jewelry:effect_immunity",
+        "category": "magic",
+        "effects": [
+          "blindness",
+          "darkness"
+        ]
+      }
+    ]
+  }
+}

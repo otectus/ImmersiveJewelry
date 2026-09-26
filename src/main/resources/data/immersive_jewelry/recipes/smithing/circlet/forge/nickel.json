@@ -1,0 +1,23 @@
+{
+  "type": "immersive_smithing:smithing",
+  "conditions": [
+    {
+      "type": "immersive_jewelry:smithing_blanks"
+    },
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/nickel"
+      }
+    }
+  ],
+  "material": "forge:nickel",
+  "metal_units": 12,
+  "result": {
+    "item": "immersive_jewelry:circlet_frame",
+    "nbt": "{immersive_jewelry:{Metal:\"forge:nickel\",MetalColor:12960166,MetalName:\"{\\\"translate\\\": \\\"metal.forge.nickel\\\"}\"}}"
+  },
+  "forge_pattern": "immersive_jewelry:small_workpiece",
+  "anvil_pattern": "immersive_jewelry:circlet_frame"
+}

@@ -1,0 +1,26 @@
+{
+  "name": "metal.forge.silver",
+  "color": "#D8DEE6",
+  "potency": 1.0,
+  "integrity": 1.0,
+  "enchantability": 1.25,
+  "affinities": {
+    "defense": 1.12,
+    "magic": 1.05
+  },
+  "repair": {
+    "tag": "forge:nuggets/silver"
+  },
+  "bonus": [
+    {
+      "type": "immersive_jewelry:damage_reduction",
+      "name": "effect.immersive_jewelry.name.hallowed",
+      "category": "defense",
+      "against": [
+        "undead"
+      ],
+      "reduction": 0.1,
+      "label": "undead"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "slot": "head",
+  "blank": "immersive_jewelry:circlet_frame",
+  "max_gems": 3,
+  "base_integrity": 1.0,
+  "enchantability": 16,
+  "metal_units": 12,
+  "anvil_pattern": "immersive_jewelry:circlet_frame",
+  "sort_order": 3
+}
