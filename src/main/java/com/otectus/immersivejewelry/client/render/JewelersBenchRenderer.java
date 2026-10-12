@@ -2,6 +2,7 @@ package com.otectus.immersivejewelry.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.otectus.immersivejewelry.client.JewelryColors;
 import com.otectus.immersivejewelry.block.StationBlock;
 import com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity;
 import com.otectus.immersivejewelry.config.ClientConfig;
@@ -39,8 +40,10 @@ public class JewelersBenchRenderer implements BlockEntityRenderer<JewelersBenchB
             pose.translate(0.5, 14.42F / 16F, 7.75F / 16F);
             pose.mulPose(Axis.XP.rotationDegrees(90));
             pose.scale(0.42F, 0.42F, 0.42F);
-            Minecraft.getInstance().getItemRenderer().renderStatic(piece, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY, pose, buffers,
-                    bench.getLevel(), seed);
+            try (var colors = JewelryColors.cacheForRender(piece)) {
+                Minecraft.getInstance().getItemRenderer().renderStatic(piece, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY, pose, buffers,
+                        bench.getLevel(), seed);
+            }
             pose.popPose();
         }
         if (!stone.isEmpty()) {
@@ -51,8 +54,10 @@ public class JewelersBenchRenderer implements BlockEntityRenderer<JewelersBenchB
             pose.translate(0.5, 14.95F / 16F + hover, 7.75F / 16F);
             if (animate) pose.mulPose(Axis.YP.rotationDegrees(time * 2F));
             pose.scale(0.22F, 0.22F, 0.22F);
-            Minecraft.getInstance().getItemRenderer().renderStatic(stone, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY, pose, buffers,
-                    bench.getLevel(), seed + 1);
+            try (var colors = JewelryColors.cacheForRender(stone)) {
+                Minecraft.getInstance().getItemRenderer().renderStatic(stone, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY, pose, buffers,
+                        bench.getLevel(), seed + 1);
+            }
             pose.popPose();
         }
         pose.popPose();

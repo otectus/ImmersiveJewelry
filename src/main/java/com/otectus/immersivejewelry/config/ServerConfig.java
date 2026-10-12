@@ -17,6 +17,7 @@ public final class ServerConfig {
     public static final ForgeConfigSpec.IntValue CUTTING_SECONDS_PER_FACET;
     public static final ForgeConfigSpec.IntValue SETTING_SECONDS_PER_PRONG;
     public static final ForgeConfigSpec.BooleanValue ALLOW_ASSIST;
+    public static final ForgeConfigSpec.DoubleValue MIN_ASSIST_DIFFICULTY;
     public static final ForgeConfigSpec.IntValue READY_DELAY_MS;
     public static final ForgeConfigSpec.IntValue TIMING_TOLERANCE_MS;
     public static final ForgeConfigSpec.IntValue MAX_LATENCY_COMPENSATION_MS;
@@ -66,6 +67,9 @@ public final class ServerConfig {
                 .defineInRange("settingSecondsPerProng", 10, 2, 120);
         ALLOW_ASSIST = b.comment("Honour the client accessibility options for larger target zones and slower minigames.")
                 .define("allowAccessibilityAssist", true);
+        MIN_ASSIST_DIFFICULTY = b.comment("Floor on the difficulty relief other mods may grant a player at the wheel and bench",
+                        "(IJewelryAssistSource). 1 refuses all assistance; 0.5 allows the difficulty to be halved.")
+                .defineInRange("minAssistDifficulty", 0.5, 0.25, 1.0);
         READY_DELAY_MS = b.comment("Countdown before a minigame starts, in milliseconds.")
                 .defineInRange("readyDelayMs", 1200, 0, 10000);
         TIMING_TOLERANCE_MS = b.comment("Jitter tolerance applied to client-reported input times.")

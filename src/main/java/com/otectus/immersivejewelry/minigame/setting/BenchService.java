@@ -115,6 +115,15 @@ public final class BenchService {
 
     public static SettingParams params(SettingSession.Mode mode, @Nullable JewelryDesignRecipe design, List<GemData> stones, float precision,
                                        boolean larger, boolean slower, long seed) {
+        return params(mode, design, stones, precision, larger, slower, 1F, seed);
+    }
+
+    /**
+     * @param assistDifficulty the per-player difficulty relief (1 = none), already clamped by
+     *                         {@code ImmersiveJewelryAPI.assistDifficulty}; multiplies the server's setting difficulty
+     */
+    public static SettingParams params(SettingSession.Mode mode, @Nullable JewelryDesignRecipe design, List<GemData> stones, float precision,
+                                       boolean larger, boolean slower, float assistDifficulty, long seed) {
         JewelryDefinitions defs = JewelryDefinitions.server();
         float size = 0F;
         float brittle = 0F;
@@ -129,7 +138,7 @@ public final class BenchService {
         int points = design != null ? design.pointsPerStone() : 4;
         SettingParams.Inputs in = new SettingParams.Inputs(style, Math.max(1, stones.size()), points,
                 design != null ? design.tightness() : 1F, precision, size, brittle,
-                (float) ServerConfig.get(ServerConfig.SETTING_DIFFICULTY), assist && larger, assist && slower,
+                (float) ServerConfig.get(ServerConfig.SETTING_DIFFICULTY) * assistDifficulty, assist && larger, assist && slower,
                 mode == SettingSession.Mode.REMOVE, ServerConfig.get(ServerConfig.SETTING_SECONDS_PER_PRONG));
         return SettingParams.create(in, seed);
     }

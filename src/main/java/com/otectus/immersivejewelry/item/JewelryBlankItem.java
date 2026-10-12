@@ -38,7 +38,7 @@ public class JewelryBlankItem extends Item {
     @Override
     public Component getName(ItemStack stack) {
         return BlankData.get(stack)
-                .<Component>map(d -> Component.translatable(getDescriptionId() + ".named", JewelryNames.metal(JewelryDefinitions.current(), d.metal())))
+                .<Component>map(d -> JewelryNames.named(getDescriptionId() + ".named", JewelryNames.metal(JewelryDefinitions.current(), d.metal()), super.getName(stack)))
                 .orElseGet(() -> super.getName(stack));
     }
 

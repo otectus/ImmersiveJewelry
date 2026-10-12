@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/block",
-  "render_type": "minecraft:cutout",
+  "render_type": "minecraft:solid",
   "textures": {
     "particle": "immersive_jewelry:block/wheel_wood",
     "wood": "immersive_jewelry:block/wheel_wood",
@@ -87,7 +87,7 @@
       "name": "Skid iron strap",
       "from": [
         0.875,
-        0,
+        -0.0625,
         2
       ],
       "to": [
@@ -156,7 +156,7 @@
       "name": "Skid iron strap",
       "from": [
         0.875,
-        0,
+        -0.0625,
         12
       ],
       "to": [
@@ -294,7 +294,7 @@
       "name": "Skid iron strap",
       "from": [
         11.875,
-        0,
+        -0.0625,
         2
       ],
       "to": [
@@ -363,7 +363,7 @@
       "name": "Skid iron strap",
       "from": [
         11.875,
-        0,
+        -0.0625,
         12
       ],
       "to": [
@@ -474,15 +474,6 @@
             0,
             3.0,
             2
-          ],
-          "texture": "#top"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            10,
-            3.0
           ],
           "texture": "#top"
         },
@@ -623,15 +614,6 @@
             1
           ],
           "texture": "#iron"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            12,
-            1
-          ],
-          "texture": "#iron"
         }
       }
     },
@@ -692,15 +674,6 @@
             1
           ],
           "texture": "#iron"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            12,
-            1
-          ],
-          "texture": "#iron"
         }
       }
     },
@@ -717,24 +690,6 @@
         12
       ],
       "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            1,
-            3.5
-          ],
-          "texture": "#basin"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            1,
-            3.5
-          ],
-          "texture": "#basin"
-        },
         "east": {
           "uv": [
             0,
@@ -754,15 +709,6 @@
           "texture": "#basin"
         },
         "up": {
-          "uv": [
-            0,
-            0,
-            1,
-            8
-          ],
-          "texture": "#iron"
-        },
-        "down": {
           "uv": [
             0,
             0,
@@ -786,24 +732,6 @@
         12
       ],
       "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            1,
-            3.5
-          ],
-          "texture": "#basin"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            1,
-            3.5
-          ],
-          "texture": "#basin"
-        },
         "east": {
           "uv": [
             0,
@@ -823,15 +751,6 @@
           "texture": "#basin"
         },
         "up": {
-          "uv": [
-            0,
-            0,
-            1,
-            8
-          ],
-          "texture": "#iron"
-        },
-        "down": {
           "uv": [
             0,
             0,
@@ -875,7 +794,7 @@
       ],
       "to": [
         9.5,
-        13,
+        11,
         5.75
       ],
       "faces": {
@@ -914,24 +833,6 @@
             11.5
           ],
           "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            4.0,
-            3.5
-          ],
-          "texture": "#end"
-        },
-        "down": {
-          "uv": [
-            1,
-            2,
-            4.0,
-            3.5
-          ],
-          "texture": "#end"
         }
       }
     },
@@ -1013,7 +914,7 @@
       ],
       "to": [
         9.5,
-        13,
+        11,
         11.75
       ],
       "faces": {
@@ -1052,24 +953,6 @@
             11.5
           ],
           "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            4.0,
-            3.5
-          ],
-          "texture": "#end"
-        },
-        "down": {
-          "uv": [
-            1,
-            2,
-            4.0,
-            3.5
-          ],
-          "texture": "#end"
         }
       }
     },
@@ -1143,75 +1026,6 @@
       }
     },
     {
-      "name": "Steel axle",
-      "from": [
-        7.5,
-        11.5,
-        4
-      ],
-      "to": [
-        8.5,
-        12.5,
-        12
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            1.0,
-            1.0
-          ],
-          "texture": "#steel"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            1.0,
-            1.0
-          ],
-          "texture": "#steel"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            8,
-            1.0
-          ],
-          "texture": "#steel"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            8,
-            1.0
-          ],
-          "texture": "#steel"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            1.0,
-            8
-          ],
-          "texture": "#steel"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            1.0,
-            8
-          ],
-          "texture": "#steel"
-        }
-      }
-    },
-    {
       "name": "Brass bearing",
       "from": [
         7,
@@ -1221,19 +1035,10 @@
       "to": [
         9,
         13,
-        4.25
+        4.125
       ],
       "faces": {
         "north": {
-          "uv": [
-            0,
-            0,
-            2,
-            2
-          ],
-          "texture": "#brass"
-        },
-        "south": {
           "uv": [
             0,
             0,
@@ -1261,15 +1066,6 @@
           "texture": "#brass"
         },
         "up": {
-          "uv": [
-            0,
-            0,
-            2,
-            0.25
-          ],
-          "texture": "#brass"
-        },
-        "down": {
           "uv": [
             0,
             0,
@@ -1293,15 +1089,6 @@
         12.125
       ],
       "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            2,
-            2
-          ],
-          "texture": "#brass"
-        },
         "south": {
           "uv": [
             0,
@@ -1466,24 +1253,6 @@
             7.5
           ],
           "texture": "#steel"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            1,
-            1.0
-          ],
-          "texture": "#steel"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            1,
-            1.0
-          ],
-          "texture": "#steel"
         }
       }
     },
@@ -1587,24 +1356,6 @@
           ],
           "texture": "#brass"
         },
-        "east": {
-          "uv": [
-            0,
-            0,
-            1.0,
-            1.0
-          ],
-          "texture": "#brass"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            1.0,
-            1.0
-          ],
-          "texture": "#brass"
-        },
         "up": {
           "uv": [
             0,
@@ -1633,7 +1384,7 @@
         4.5
       ],
       "to": [
-        13,
+        12.5,
         16,
         5.5
       ],
@@ -1652,15 +1403,6 @@
             0,
             0,
             4,
-            1
-          ],
-          "texture": "#steel"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            1.0,
             1
           ],
           "texture": "#steel"
@@ -1702,7 +1444,7 @@
         4.75
       ],
       "to": [
-        9.5,
+        9,
         15.5,
         5.25
       ],
@@ -1721,15 +1463,6 @@
             0,
             0,
             1.5,
-            0.5
-          ],
-          "texture": "#brass"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            0.5,
             0.5
           ],
           "texture": "#brass"
@@ -1812,15 +1545,6 @@
           ],
           "texture": "#wood"
         },
-        "up": {
-          "uv": [
-            1,
-            2,
-            2.5,
-            3.5
-          ],
-          "texture": "#end"
-        },
         "down": {
           "uv": [
             1,
@@ -1878,15 +1602,6 @@
             0,
             3.5,
             2.5
-          ],
-          "texture": "#copper"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            3.5,
-            3.5
           ],
           "texture": "#copper"
         },
@@ -2002,15 +1717,6 @@
           "texture": "#copper"
         },
         "east": {
-          "uv": [
-            0,
-            0,
-            1,
-            1
-          ],
-          "texture": "#copper"
-        },
-        "west": {
           "uv": [
             0,
             0,
@@ -2168,7 +1874,6 @@
       "to": [8.625, 12.625, 4.125],
       "faces": {
         "north": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "south": {"uv": [0, 0, 1, 1], "texture": "#brass"},
         "east": {"uv": [0, 0, 0.375, 1], "texture": "#brass"},
         "west": {"uv": [0, 0, 0.375, 1], "texture": "#brass"},
         "up": {"uv": [0, 0, 1, 0.375], "texture": "#brass"},

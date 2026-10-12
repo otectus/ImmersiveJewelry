@@ -1,137 +1,38 @@
 package com.otectus.immersivejewelry.client.screen;
 
-import com.otectus.immersivejewelry.ImmersiveJewelry;
 import com.otectus.immersivejewelry.config.ClientConfig;
 import com.otectus.immersivejewelry.registry.ModSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 
-import java.util.List;
 
 /**
- * Stoneborn-inspired workshop UI: masonry surrounds, recessed warm stone, restrained gold corners.
- * Palette references: Ultima's minecraft GUI inventory, widgets, and jewelcraft jeweler_bench.
+ * The minigames' own indicators, drawn inside the dark displays of the vanilla screens ({@link VanillaGui#display}):
+ * the stone and its facets, prongs, gauge bands, markers, ratings and cue sounds. Brass marks what to work on, as on a
+ * jeweler's bench. Colours honour the client's high-contrast and colorblind options, every state also has a label or a
+ * shape, and none of this changes a scoring window. Everything else on the screens is Minecraft's own look.
  */
 public final class JewelryGui {
-    public static final ResourceLocation STONE = ImmersiveJewelry.id("textures/gui/stone.png");
-    public static final ResourceLocation SLOT = ImmersiveJewelry.id("textures/gui/slot.png");
-    public static final int SURFACE = 0xFF37322A;
-    public static final int INSET = 0xFF27241F;
-    public static final int EDGE = 0xFF151310;
-    public static final int BORDER = 0xFF4F473C;
-    public static final int EDGE_LIGHT = 0xFF675D4E;
-    public static final int ROW_HOVER = 0xFF494237;
-    public static final int ROW_SELECTED = 0xFF524735;
+    /** The brass of the target facet, the gauge bands and the pips. */
     public static final int BRASS = 0xFFBD862B;
     public static final int BRASS_DARK = 0xFF8C6420;
     public static final int BRASS_LIGHT = 0xFFE0B250;
-    public static final int TEXT = 0xFFE5DFD2;
-    public static final int TEXT_DIM = 0xFFB9B0A0;
-    public static final int TEXT_WARM = 0xFFE5C887;
+    /** The target band of a gauge, translucent over the dark track. */
+    public static final int BAND = 0x80C9A45C;
     public static final int PRESSURE = 0xFF97ADAE;
+    /** Countdowns and "once more" cues inside the dark displays. */
+    public static final int CUE = 0xFFFFD66B;
+    /** Experience gained, in a result readout. */
+    public static final int XP = 0xFF9CDB5A;
 
-    /** Tiled masonry stays at its native pixel density; only the surround is ornamented. */
-    public static void panel(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x + 2, y + 3, x + w + 2, y + h + 3, 0x80000000);
-        g.fill(x, y, x + w, y + h, EDGE);
-        g.fill(x + 1, y + 1, x + w - 1, y + h - 1, EDGE_LIGHT);
-        g.fill(x + 2, y + 2, x + w - 2, y + h - 2, BORDER);
-        g.fill(x + 4, y + 4, x + w - 4, y + h - 4, EDGE);
-        for (int py = 5; py < h - 5; py += 16) {
-            for (int px = 5; px < w - 5; px += 16) {
-                g.blit(STONE, x + px, y + py, 0, 0, Math.min(16, w - 5 - px), Math.min(16, h - 5 - py), 16, 16);
-            }
-        }
-        for (int sx : new int[]{-1, 1}) for (int sy : new int[]{-1, 1}) {
-            int cx = sx == 1 ? x + 2 : x + w - 3;
-            int cy = sy == 1 ? y + 2 : y + h - 3;
-            for (int i = 0; i < 7; i++) {
-                int c = i < 3 ? BRASS_LIGHT : BRASS_DARK;
-                g.fill(cx + sx * i, cy, cx + sx * i + 1, cy + 1, c);
-                g.fill(cx, cy + sy * i, cx + 1, cy + sy * i + 1, c);
-            }
-            g.fill(cx + sx * 2, cy + sy * 2, cx + sx * 2 + 1, cy + sy * 2 + 1, BRASS);
-        }
-    }
-
-    public static void heading(GuiGraphics g, Font font, Component title, int x, int y, int w) {
-        g.fill(x + 6, y + 6, x + w - 6, y + 27, SURFACE);
-        rule(g, x + 8, y + 26, w - 16);
-        g.drawString(font, clipped(font, title, w - 28), x + 14, y + 12, TEXT_WARM, false);
-    }
-
-    public static void dialog(GuiGraphics g, int x, int y, int w, int h) {
-        panel(g, x, y, w, h);
-        g.fill(x + 6, y + 6, x + w - 6, y + h - 6, SURFACE);
-    }
-
-    /** A recessed area. */
-    public static void well(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + h, EDGE_LIGHT);
-        g.fill(x, y, x + w - 1, y + h - 1, EDGE);
-        g.fill(x + 1, y + 1, x + w - 1, y + h - 1, INSET);
-    }
-
-    public static void row(GuiGraphics g, int x, int y, int w, int h, boolean selected, boolean hover) {
-        g.fill(x, y, x + w, y + h, selected ? ROW_SELECTED : hover ? ROW_HOVER : SURFACE);
-        if (selected) {
-            g.fill(x, y, x + 2, y + h, BRASS_LIGHT);
-            g.fill(x + 2, y, x + w, y + 1, BRASS_DARK);
-        }
-    }
-
-    public static void slot(GuiGraphics g, int x, int y) {
-        // Nine-slice the 16px source into an 18px slot: keep the one-pixel frame crisp and give items a 16px interior.
-        g.blit(SLOT, x, y, 0, 0, 1, 1, 16, 16);
-        g.blit(SLOT, x + 1, y, 16, 1, 1, 0, 14, 1, 16, 16);
-        g.blit(SLOT, x + 17, y, 15, 0, 1, 1, 16, 16);
-        g.blit(SLOT, x, y + 1, 1, 16, 0, 1, 1, 14, 16, 16);
-        g.blit(SLOT, x + 1, y + 1, 16, 16, 1, 1, 14, 14, 16, 16);
-        g.blit(SLOT, x + 17, y + 1, 1, 16, 15, 1, 1, 14, 16, 16);
-        g.blit(SLOT, x, y + 17, 0, 15, 1, 1, 16, 16);
-        g.blit(SLOT, x + 1, y + 17, 16, 1, 1, 15, 14, 1, 16, 16);
-        g.blit(SLOT, x + 17, y + 17, 15, 15, 1, 1, 16, 16);
-    }
-
-    public static void rule(GuiGraphics g, int x, int y, int width) {
-        g.fill(x, y, x + width, y + 1, EDGE);
-        g.fill(x, y + 1, x + width, y + 2, EDGE_LIGHT);
-    }
-
-    public static String clipped(Font font, Component text, int width) {
-        if (font.width(text) <= width) return text.getString();
-        return font.plainSubstrByWidth(text.getString(), Math.max(0, width - font.width("..."))) + "...";
-    }
-
-    public static int drawWrapped(GuiGraphics g, Font font, Component text, int x, int y, int width, int color, int maxLines) {
-        List<FormattedCharSequence> lines = font.split(text, width);
-        int n = Math.min(lines.size(), Math.max(0, maxLines));
-        for (int i = 0; i < n; i++) g.drawString(font, lines.get(i), x, y + i * 10, color, false);
-        return n;
-    }
-
-    /** A horizontal bar filled to {@code value} (0..1). */
-    public static void bar(GuiGraphics g, int x, int y, int w, int h, float value, int color) {
-        well(g, x - 1, y - 1, w + 2, h + 2);
-        int filled = Math.round(w * Mth.clamp(value, 0F, 1F));
-        if (filled > 0) {
-            g.fill(x, y, x + filled, y + h, color);
-            if (h > 2) g.fill(x, y, x + filled, y + 1, lighten(color, 40));
-        }
-    }
-
-    /** A time bar that warms from brass to red as it empties. */
+    /** The time left as a vanilla bar: brass while there is time, then red (orange when colorblind-safe). */
     public static void timeBar(GuiGraphics g, int x, int y, int w, int h, float remaining) {
-        bar(g, x, y, w, h, remaining, remaining > 0.25F ? BRASS_LIGHT : missColor());
-        for (int i = 1; i < 4; i++) g.fill(x + w * i / 4, y, x + w * i / 4 + 1, y + h, 0x80302A24);
+        VanillaGui.bar(g, x, y, w, h, remaining, remaining > 0.25F ? BRASS_LIGHT : missColor());
+        // Quarter marks make the remaining time readable without colour.
+        for (int i = 1; i < 4; i++) g.fill(x + w * i / 4, y, x + w * i / 4 + 1, y + h, 0x80000000);
     }
 
     public static void line(GuiGraphics g, float x0, float y0, float x1, float y1, int size, int color) {
@@ -241,30 +142,6 @@ public final class JewelryGui {
         line(g, x + 4, y, x, y + 4, 1, color);
     }
 
-    public static Button button(int x, int y, int width, int height, Component label, Button.OnPress onPress) {
-        return new StoneButton(x, y, width, height, label, onPress);
-    }
-
-    private static final class StoneButton extends Button {
-        private StoneButton(int x, int y, int width, int height, Component label, OnPress onPress) {
-            super(x, y, width, height, label, onPress, DEFAULT_NARRATION);
-        }
-
-        @Override
-        protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-            int x = getX();
-            int y = getY();
-            boolean hot = active && isHoveredOrFocused();
-            g.fill(x, y, x + getWidth(), y + getHeight(), EDGE);
-            g.fill(x + 1, y + 1, x + getWidth() - 1, y + getHeight() - 1, hot ? BRASS : BORDER);
-            g.fill(x + 2, y + 2, x + getWidth() - 2, y + getHeight() - 2, !active ? INSET : hot ? ROW_HOVER : SURFACE);
-            g.fill(x + 2, y + 2, x + getWidth() - 2, y + 3, active ? EDGE_LIGHT : BORDER);
-            Font font = Minecraft.getInstance().font;
-            g.drawCenteredString(font, clipped(font, getMessage(), getWidth() - 8), x + getWidth() / 2, y + (getHeight() - 8) / 2,
-                    active ? TEXT : 0xFF827B6E);
-        }
-    }
-
     public static int goodColor() {
         if (ClientConfig.get(ClientConfig.HIGH_CONTRAST_MINIGAMES)) return 0xFFFFFFFF;
         return ClientConfig.get(ClientConfig.COLORBLIND_SAFE_COLORS) ? 0xFF3D8BFF : 0xFF6CCB5F;
@@ -272,6 +149,17 @@ public final class JewelryGui {
 
     public static int missColor() {
         return ClientConfig.get(ClientConfig.COLORBLIND_SAFE_COLORS) ? 0xFFFF9F1C : 0xFFE05A4A;
+    }
+
+    /** {@link #goodColor} for text on the light panel, where the display colours would wash out. */
+    public static int goodText() {
+        if (ClientConfig.get(ClientConfig.HIGH_CONTRAST_MINIGAMES)) return 0xFF000000;
+        return ClientConfig.get(ClientConfig.COLORBLIND_SAFE_COLORS) ? 0xFF0B4FB0 : 0xFF1F7A1F;
+    }
+
+    /** {@link #missColor} for text on the light panel (vanilla's dark red). */
+    public static int missText() {
+        return ClientConfig.get(ClientConfig.COLORBLIND_SAFE_COLORS) ? 0xFFA34A00 : 0xFFAA0000;
     }
 
     public static int targetColor() {

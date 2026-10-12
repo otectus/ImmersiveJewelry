@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/block",
-  "render_type": "minecraft:cutout",
+  "render_type": "minecraft:solid",
   "textures": {
     "particle": "immersive_jewelry:block/bench_wood",
     "wood": "immersive_jewelry:block/bench_wood",
@@ -20,12 +20,12 @@
       "name": "Left front oak leg",
       "from": [
         1,
-        0,
+        1,
         2
       ],
       "to": [
         4,
-        12,
+        11,
         5
       ],
       "faces": {
@@ -64,24 +64,6 @@
             14
           ],
           "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
-        },
-        "down": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
         }
       }
     },
@@ -158,12 +140,12 @@
       "name": "Left back oak leg",
       "from": [
         1,
-        0,
+        1,
         12
       ],
       "to": [
         4,
-        12,
+        11,
         15
       ],
       "faces": {
@@ -202,24 +184,6 @@
             14
           ],
           "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
-        },
-        "down": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
         }
       }
     },
@@ -296,12 +260,12 @@
       "name": "Right front oak leg",
       "from": [
         12,
-        0,
+        1,
         2
       ],
       "to": [
         15,
-        12,
+        11,
         5
       ],
       "faces": {
@@ -340,24 +304,6 @@
             14
           ],
           "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
-        },
-        "down": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
         }
       }
     },
@@ -434,12 +380,12 @@
       "name": "Right back oak leg",
       "from": [
         12,
-        0,
+        1,
         12
       ],
       "to": [
         15,
-        12,
+        11,
         15
       ],
       "faces": {
@@ -478,24 +424,6 @@
             14
           ],
           "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
-        },
-        "down": {
-          "uv": [
-            1,
-            2,
-            4,
-            5
-          ],
-          "texture": "#end"
         }
       }
     },
@@ -581,24 +509,6 @@
         13
       ],
       "faces": {
-        "north": {
-          "uv": [
-            1,
-            2,
-            3.0,
-            4
-          ],
-          "texture": "#wood"
-        },
-        "south": {
-          "uv": [
-            1,
-            2,
-            3.0,
-            4
-          ],
-          "texture": "#wood"
-        },
         "east": {
           "uv": [
             1,
@@ -650,24 +560,6 @@
         13
       ],
       "faces": {
-        "north": {
-          "uv": [
-            1,
-            2,
-            3.0,
-            4
-          ],
-          "texture": "#wood"
-        },
-        "south": {
-          "uv": [
-            1,
-            2,
-            3.0,
-            4
-          ],
-          "texture": "#wood"
-        },
         "east": {
           "uv": [
             1,
@@ -709,12 +601,12 @@
     {
       "name": "Rear stretcher",
       "from": [
-        3,
+        3.5,
         3,
         12.5
       ],
       "to": [
-        13,
+        12.5,
         5,
         14.5
       ],
@@ -733,24 +625,6 @@
             0,
             0,
             10,
-            2
-          ],
-          "texture": "#top"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            2.0,
-            2
-          ],
-          "texture": "#top"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            2.0,
             2
           ],
           "texture": "#top"
@@ -778,14 +652,14 @@
     {
       "name": "Stock shelf",
       "from": [
-        3,
+        3.5,
         4,
         9
       ],
       "to": [
-        13,
+        12.5,
         5,
-        14
+        12.5
       ],
       "faces": {
         "north": {
@@ -793,33 +667,6 @@
             0,
             0,
             10,
-            1
-          ],
-          "texture": "#top"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            10,
-            1
-          ],
-          "texture": "#top"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            5,
-            1
-          ],
-          "texture": "#top"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            5,
             1
           ],
           "texture": "#top"
@@ -935,15 +782,6 @@
           ],
           "texture": "#top"
         },
-        "south": {
-          "uv": [
-            0,
-            0,
-            5,
-            3
-          ],
-          "texture": "#top"
-        },
         "east": {
           "uv": [
             0,
@@ -1004,15 +842,6 @@
           ],
           "texture": "#top"
         },
-        "south": {
-          "uv": [
-            0,
-            0,
-            5,
-            3
-          ],
-          "texture": "#top"
-        },
         "east": {
           "uv": [
             0,
@@ -1054,9 +883,9 @@
     {
       "name": "Iron corner strap",
       "from": [
-        0,
-        11,
-        1
+        -0.0625,
+        10.9375,
+        0.9375
       ],
       "to": [
         1,
@@ -1123,14 +952,14 @@
     {
       "name": "Iron corner strap",
       "from": [
-        0,
-        11,
+        -0.0625,
+        10.9375,
         15
       ],
       "to": [
         1,
         13,
-        16
+        16.0625
       ],
       "faces": {
         "north": {
@@ -1193,11 +1022,11 @@
       "name": "Iron corner strap",
       "from": [
         15,
-        11,
-        1
+        10.9375,
+        0.9375
       ],
       "to": [
-        16,
+        16.0625,
         13,
         2
       ],
@@ -1262,13 +1091,13 @@
       "name": "Iron corner strap",
       "from": [
         15,
-        11,
+        10.9375,
         15
       ],
       "to": [
-        16,
+        16.0625,
         13,
-        16
+        16.0625
       ],
       "faces": {
         "north": {
@@ -1349,15 +1178,6 @@
           ],
           "texture": "#iron"
         },
-        "south": {
-          "uv": [
-            0,
-            0,
-            4,
-            1.5
-          ],
-          "texture": "#iron"
-        },
         "east": {
           "uv": [
             0,
@@ -1406,19 +1226,10 @@
       "to": [
         9.5,
         13.5,
-        5.5
+        4.5
       ],
       "faces": {
         "north": {
-          "uv": [
-            1,
-            2,
-            4.0,
-            3.0
-          ],
-          "texture": "#pin"
-        },
-        "south": {
           "uv": [
             1,
             2,
@@ -1487,15 +1298,6 @@
           ],
           "texture": "#pin"
         },
-        "south": {
-          "uv": [
-            1,
-            2,
-            2.0,
-            3.0
-          ],
-          "texture": "#pin"
-        },
         "east": {
           "uv": [
             1,
@@ -1548,15 +1350,6 @@
       ],
       "faces": {
         "north": {
-          "uv": [
-            1,
-            2,
-            2.0,
-            3.0
-          ],
-          "texture": "#pin"
-        },
-        "south": {
           "uv": [
             1,
             2,
@@ -1837,7 +1630,7 @@
       ],
       "to": [
         5,
-        11.5,
+        11,
         2.5
       ],
       "faces": {
@@ -1860,24 +1653,6 @@
           "texture": "#leather"
         },
         "east": {
-          "uv": [
-            0,
-            0,
-            2,
-            7
-          ],
-          "texture": "#leather"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            2,
-            7
-          ],
-          "texture": "#leather"
-        },
-        "up": {
           "uv": [
             0,
             0,
@@ -1906,7 +1681,7 @@
       ],
       "to": [
         12,
-        11.5,
+        11,
         2.5
       ],
       "faces": {
@@ -1928,25 +1703,7 @@
           ],
           "texture": "#leather"
         },
-        "east": {
-          "uv": [
-            0,
-            0,
-            2,
-            7
-          ],
-          "texture": "#leather"
-        },
         "west": {
-          "uv": [
-            0,
-            0,
-            2,
-            7
-          ],
-          "texture": "#leather"
-        },
-        "up": {
           "uv": [
             0,
             0,
@@ -1976,7 +1733,7 @@
       "to": [
         13,
         11,
-        15
+        14.875
       ],
       "faces": {
         "north": {
@@ -2015,15 +1772,6 @@
           ],
           "texture": "#top"
         },
-        "up": {
-          "uv": [
-            0,
-            0,
-            10,
-            7
-          ],
-          "texture": "#top"
-        },
         "down": {
           "uv": [
             0,
@@ -2049,15 +1797,6 @@
       ],
       "faces": {
         "north": {
-          "uv": [
-            0,
-            0,
-            4.0,
-            2.0
-          ],
-          "texture": "#top"
-        },
-        "south": {
           "uv": [
             0,
             0,
@@ -2126,15 +1865,6 @@
           ],
           "texture": "#brass"
         },
-        "south": {
-          "uv": [
-            0,
-            0,
-            2.0,
-            1
-          ],
-          "texture": "#brass"
-        },
         "east": {
           "uv": [
             0,
@@ -2187,15 +1917,6 @@
       ],
       "faces": {
         "north": {
-          "uv": [
-            0,
-            0,
-            4.0,
-            2.0
-          ],
-          "texture": "#top"
-        },
-        "south": {
           "uv": [
             0,
             0,
@@ -2264,15 +1985,6 @@
           ],
           "texture": "#brass"
         },
-        "south": {
-          "uv": [
-            0,
-            0,
-            2.0,
-            1
-          ],
-          "texture": "#brass"
-        },
         "east": {
           "uv": [
             0,
@@ -2315,7 +2027,7 @@
       "name": "Olive work mat",
       "from": [
         4,
-        14.015,
+        14,
         5.5
       ],
       "to": [
@@ -2361,15 +2073,6 @@
           "texture": "#felt"
         },
         "up": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#felt"
-        },
-        "down": {
           "uv": [
             0,
             0,
@@ -2437,15 +2140,6 @@
             3.5
           ],
           "texture": "#top"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            14,
-            3.5
-          ],
-          "texture": "#top"
         }
       }
     },
@@ -2506,15 +2200,6 @@
             1
           ],
           "texture": "#top"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            14,
-            1
-          ],
-          "texture": "#top"
         }
       }
     },
@@ -2532,15 +2217,6 @@
       ],
       "faces": {
         "north": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#wood"
-        },
-        "south": {
           "uv": [
             1,
             2,
@@ -2568,15 +2244,6 @@
           "texture": "#wood"
         },
         "up": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#end"
-        },
-        "down": {
           "uv": [
             1,
             2,
@@ -2609,15 +2276,6 @@
           ],
           "texture": "#wood"
         },
-        "south": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#wood"
-        },
         "east": {
           "uv": [
             1,
@@ -2637,15 +2295,6 @@
           "texture": "#wood"
         },
         "up": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#end"
-        },
-        "down": {
           "uv": [
             1,
             2,
@@ -2678,15 +2327,6 @@
           ],
           "texture": "#gems"
         },
-        "south": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#gems"
-        },
         "east": {
           "uv": [
             0,
@@ -2697,24 +2337,6 @@
           "texture": "#gems"
         },
         "west": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "down": {
           "uv": [
             0,
             0,
@@ -2747,15 +2369,6 @@
           ],
           "texture": "#end"
         },
-        "south": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
         "east": {
           "uv": [
             4,
@@ -2775,15 +2388,6 @@
           "texture": "#end"
         },
         "up": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "down": {
           "uv": [
             4,
             4,
@@ -2816,15 +2420,6 @@
           ],
           "texture": "#gems"
         },
-        "south": {
-          "uv": [
-            4,
-            0,
-            8,
-            4
-          ],
-          "texture": "#gems"
-        },
         "east": {
           "uv": [
             4,
@@ -2835,24 +2430,6 @@
           "texture": "#gems"
         },
         "west": {
-          "uv": [
-            4,
-            0,
-            8,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "up": {
-          "uv": [
-            4,
-            0,
-            8,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "down": {
           "uv": [
             4,
             0,
@@ -2885,15 +2462,6 @@
           ],
           "texture": "#end"
         },
-        "south": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
         "east": {
           "uv": [
             4,
@@ -2913,15 +2481,6 @@
           "texture": "#end"
         },
         "up": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "down": {
           "uv": [
             4,
             4,
@@ -2954,15 +2513,6 @@
           ],
           "texture": "#gems"
         },
-        "south": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#gems"
-        },
         "east": {
           "uv": [
             8,
@@ -2973,24 +2523,6 @@
           "texture": "#gems"
         },
         "west": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "up": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "down": {
           "uv": [
             8,
             0,
@@ -3023,15 +2555,6 @@
           ],
           "texture": "#end"
         },
-        "south": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
         "east": {
           "uv": [
             4,
@@ -3051,15 +2574,6 @@
           "texture": "#end"
         },
         "up": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "down": {
           "uv": [
             4,
             4,
@@ -3127,15 +2641,6 @@
             2.5
           ],
           "texture": "#iron"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            2.5
-          ],
-          "texture": "#iron"
         }
       }
     },
@@ -3189,15 +2694,6 @@
           "texture": "#steel"
         },
         "up": {
-          "uv": [
-            0,
-            0,
-            1.5,
-            1.5
-          ],
-          "texture": "#steel"
-        },
-        "down": {
           "uv": [
             0,
             0,
@@ -3265,15 +2761,6 @@
             0.5
           ],
           "texture": "#steel"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            0.5,
-            0.5
-          ],
-          "texture": "#steel"
         }
       }
     },
@@ -3334,15 +2821,6 @@
             2.5
           ],
           "texture": "#iron"
-        },
-        "down": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            2.5
-          ],
-          "texture": "#iron"
         }
       }
     },
@@ -3350,12 +2828,12 @@
       "name": "Loupe lens",
       "from": [
         1.5,
-        14.76,
+        14.75,
         7.5
       ],
       "to": [
         3,
-        14.78,
+        14.875,
         9
       ],
       "faces": {
@@ -3403,15 +2881,6 @@
             5
           ],
           "texture": "#lens"
-        },
-        "down": {
-          "uv": [
-            2,
-            2,
-            5,
-            5
-          ],
-          "texture": "#lens"
         }
       }
     },
@@ -3421,7 +2890,6 @@
       "to": [3, 9.25, 2],
       "faces": {
         "north": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "south": {"uv": [0, 0, 1, 1], "texture": "#brass"},
         "east": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
         "west": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
         "up": {"uv": [0, 0, 1, 0.25], "texture": "#brass"},
@@ -3434,7 +2902,6 @@
       "to": [14, 9.25, 2],
       "faces": {
         "north": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "south": {"uv": [0, 0, 1, 1], "texture": "#brass"},
         "east": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
         "west": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
         "up": {"uv": [0, 0, 1, 0.25], "texture": "#brass"},
@@ -3476,8 +2943,7 @@
         "south": {"uv": [0, 0, 3.5, 0.5], "texture": "#iron"},
         "east": {"uv": [0, 0, 2, 0.5], "texture": "#iron"},
         "west": {"uv": [0, 0, 2, 0.5], "texture": "#iron"},
-        "up": {"uv": [0, 0, 3.5, 2], "texture": "#steel"},
-        "down": {"uv": [0, 0, 3.5, 2], "texture": "#iron"}
+        "up": {"uv": [0, 0, 3.5, 2], "texture": "#steel"}
       }
     },
     {
@@ -3515,8 +2981,7 @@
         "south": {"uv": [0, 0, 1, 1], "texture": "#brass"},
         "east": {"uv": [0, 0, 1, 1], "texture": "#brass"},
         "west": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "up": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "down": {"uv": [0, 0, 1, 1], "texture": "#brass"}
+        "up": {"uv": [0, 0, 1, 1], "texture": "#brass"}
       }
     },
     {
@@ -3525,11 +2990,9 @@
       "to": [5.75, 16.25, 15],
       "faces": {
         "north": {"uv": [1, 2, 1.5, 3.75], "texture": "#wood"},
-        "south": {"uv": [1, 2, 1.5, 3.75], "texture": "#wood"},
         "east": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
         "west": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
-        "up": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"},
-        "down": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"}
+        "up": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"}
       }
     },
     {
@@ -3538,11 +3001,9 @@
       "to": [8.75, 16.25, 15],
       "faces": {
         "north": {"uv": [1, 2, 1.5, 3.75], "texture": "#wood"},
-        "south": {"uv": [1, 2, 1.5, 3.75], "texture": "#wood"},
         "east": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
         "west": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
-        "up": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"},
-        "down": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"}
+        "up": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"}
       }
     }
   ]

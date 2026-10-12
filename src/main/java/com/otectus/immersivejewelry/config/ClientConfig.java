@@ -15,6 +15,9 @@ public final class ClientConfig {
     public static final ForgeConfigSpec.BooleanValue LARGE_MINIGAME_MARKERS;
     public static final ForgeConfigSpec.BooleanValue TIMING_CUE_SOUNDS;
     public static final ForgeConfigSpec.DoubleValue SOUND_CUE_VOLUME;
+    public static final ForgeConfigSpec.IntValue FEEDBACK_LABEL_MS;
+    public static final ForgeConfigSpec.BooleanValue STATION_NOTICES;
+    public static final ForgeConfigSpec.IntValue NOTICE_SECONDS;
 
     public static final ForgeConfigSpec.DoubleValue PARTICLE_DENSITY;
     public static final ForgeConfigSpec.DoubleValue GEM_SPARKLE_INTENSITY;
@@ -45,6 +48,14 @@ public final class ClientConfig {
         TIMING_CUE_SOUNDS = b.comment("A soft tone when a gauge enters its target window.")
                 .define("timingCueSounds", true);
         SOUND_CUE_VOLUME = b.defineInRange("soundCueVolume", 0.8, 0.0, 1.0);
+        FEEDBACK_LABEL_MS = b.comment("How long a cutting or setting event (\"Facet cut\", \"Prong set\", \"Chipped\") stays readable, in",
+                        "milliseconds. A newer event always replaces it at once.")
+                .defineInRange("feedbackLabelMs", 2500, 500, 10000);
+        STATION_NOTICES = b.comment("Show station messages (what a station needs, errors) above the hotbar, where they stay for",
+                        "noticeSeconds and several can show at once. Off: the vanilla action bar, which the next message replaces.")
+                .define("stationNotices", true);
+        NOTICE_SECONDS = b.comment("How long a station message stays above the hotbar.")
+                .defineInRange("noticeSeconds", 8, 2, 60);
         b.pop();
 
         b.comment("Visual effects").push("visuals");
@@ -69,6 +80,10 @@ public final class ClientConfig {
     }
 
     public static boolean get(ForgeConfigSpec.BooleanValue value) {
+        return SPEC.isLoaded() ? value.get() : value.getDefault();
+    }
+
+    public static int get(ForgeConfigSpec.IntValue value) {
         return SPEC.isLoaded() ? value.get() : value.getDefault();
     }
 

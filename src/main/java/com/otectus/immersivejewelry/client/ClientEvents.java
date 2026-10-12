@@ -1,6 +1,7 @@
 package com.otectus.immersivejewelry.client;
 
 import com.otectus.immersivejewelry.client.screen.JewelryGui;
+import com.otectus.immersivejewelry.client.screen.VanillaGui;
 import com.otectus.immersivejewelry.config.ClientConfig;
 import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.data.gem.GemDefinition;
@@ -13,6 +14,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +57,7 @@ public final class ClientEvents {
         JewelryColors.clearSamples();
     }
 
-    /** A small ring button beside the player preview that follows the recipe book's shift. */
+    /** A small vanilla button with a ring on it beside the player preview, following the recipe book's shift. */
     private static final class SlotsButton extends Button {
         private final InventoryScreen screen;
 
@@ -63,6 +65,7 @@ public final class ClientEvents {
             super(screen.getGuiLeft() + 64, screen.getGuiTop() + 8, 10, 10, Component.translatable("key.immersive_jewelry.jewelry_slots"),
                     b -> ModNetwork.CHANNEL.sendToServer(new OpenJewelrySlotsPacket()), DEFAULT_NARRATION);
             this.screen = screen;
+            setTooltip(Tooltip.create(getMessage()));
         }
 
         @Override
@@ -70,11 +73,9 @@ public final class ClientEvents {
             setX(screen.getGuiLeft() + 64);
             setY(screen.getGuiTop() + 8);
             boolean hot = isHoveredOrFocused();
-            g.fill(getX(), getY(), getX() + 10, getY() + 10, hot ? JewelryGui.BRASS_LIGHT : JewelryGui.BRASS_DARK);
-            g.fill(getX() + 1, getY() + 1, getX() + 9, getY() + 9, hot ? JewelryGui.ROW_HOVER : JewelryGui.SURFACE);
-            JewelryGui.ring(g, getX() + 5F, getY() + 5.5F, 2.6F, JewelryGui.BRASS_LIGHT);
+            VanillaGui.row(g, getX(), getY(), getWidth(), getHeight(), active, hot);
+            JewelryGui.ring(g, getX() + 5F, getY() + 5.5F, 2.6F, hot ? VanillaGui.ROW_TEXT_SELECTED : VanillaGui.ROW_TEXT);
             JewelryGui.diamond(g, getX() + 5F, getY() + 2.5F, 1.5F, 0xFFE0405A);
-            if (hot) g.renderTooltip(Minecraft.getInstance().font, getMessage(), mouseX, mouseY);
         }
     }
 

@@ -9,18 +9,25 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 /** Shared plumbing of the two stations: full-state client sync and a transient player lock for minigames. */
 public abstract class StationBlockEntity extends BlockEntity {
+    private final AABB renderBounds;
     @Nullable
     private UUID lockedBy; // transient: locks never survive a restart
 
     protected StationBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        // Tray, tank, rotating disc corners and hovering stones extend above the block; straps protrude slightly.
+        renderBounds = new AABB(pos).inflate(1D / 16D).expandTowards(0, 0.25, 0);
     }
+
+    @Override
+    public AABB getRenderBoundingBox() { return renderBounds; }
 
     public boolean isLocked() {
         return lockedBy != null;

@@ -12,6 +12,10 @@ import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.data.finish.FinishDefinition;
 import com.otectus.immersivejewelry.data.gem.GemDefinition;
 import com.otectus.immersivejewelry.registry.ModItems;
+import com.otectus.immersivejewelry.item.JewelryItem;
+import com.otectus.immersivejewelry.item.JewelryBlankItem;
+import com.otectus.immersivejewelry.item.RoughGemItem;
+import com.otectus.immersivejewelry.item.CutGemItem;
 import com.otectus.immersivejewelry.util.Inventories;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -32,6 +36,45 @@ import java.util.Map;
 public final class JewelryColors {
     private static final int FALLBACK_METAL = 0xB8BCC0;
     private static final Map<ResourceLocation, Integer> SAMPLED = new HashMap<>();
+    private static RenderColors rendering;
+
+    /** One item draw can ask for the same tint hundreds of times. Decode its NBT once for that draw only.
+     * No stack, definition, config or resource data survives between draws; nested renderers restore their caller. */
+    public static RenderColors cacheForRender(ItemStack stack) {
+        RenderColors colors = new RenderColors(stack, rendering);
+        rendering = colors;
+        return colors;
+    }
+
+    public static final class RenderColors implements AutoCloseable {
+        private final ItemStack stack;
+        private final RenderColors previous;
+        private final int[] colors;
+
+        private RenderColors(ItemStack stack, RenderColors previous) {
+            this.stack = stack;
+            this.previous = previous;
+            if (stack.getItem() instanceof JewelryItem) {
+                JewelryData data = JewelryData.get(stack).orElse(null);
+                colors = new int[5];
+                for (int i = 0; i < colors.length; i++) colors[i] = jewelry(data, i);
+            } else if (stack.getItem() instanceof JewelryBlankItem) {
+                MetalRef metal = BlankData.get(stack).map(BlankData::metal).orElse(null);
+                int color = metal == null ? FALLBACK_METAL : metalColor(JewelryDefinitions.client(), metal);
+                colors = new int[]{color, JewelryGui.mix(color, 0xFFFFFF, 0.45F)};
+            } else if (stack.getItem() instanceof RoughGemItem || stack.getItem() instanceof CutGemItem) {
+                GemData data = GemData.load(JewelryNbt.root(stack)).orElse(null);
+                colors = new int[]{stone(data, 0), stone(data, 1)};
+            } else colors = new int[0];
+        }
+
+        @Override
+        public void close() { rendering = previous; }
+    }
+
+    private static boolean cached(ItemStack stack, int layer) {
+        return rendering != null && rendering.stack == stack && layer >= 0 && layer < rendering.colors.length;
+    }
 
     public static void register(RegisterColorHandlersEvent.Item event) {
         event.register((stack, layer) -> jewelry(stack, layer), ModItems.RING.get(), ModItems.AMULET.get(), ModItems.BRACELET.get(), ModItems.CIRCLET.get());
@@ -43,7 +86,11 @@ public final class JewelryColors {
     }
 
     public static int jewelry(ItemStack stack, int layer) {
-        JewelryData data = JewelryData.get(stack).orElse(null);
+        if (cached(stack, layer)) return rendering.colors[layer];
+        return jewelry(JewelryData.get(stack).orElse(null), layer);
+    }
+
+    private static int jewelry(@Nullable JewelryData data, int layer) {
         if (data == null) return layer <= 2 ? FALLBACK_METAL : 0xFFFFFF;
         JewelryDefinitions defs = JewelryDefinitions.client();
         int metal = metalColor(defs, data.metal());
@@ -59,13 +106,18 @@ public final class JewelryColors {
     }
 
     public static int blank(ItemStack stack, int layer) {
+        if (cached(stack, layer)) return rendering.colors[layer];
         MetalRef metal = BlankData.get(stack).map(BlankData::metal).orElse(null);
         int color = metal == null ? FALLBACK_METAL : metalColor(JewelryDefinitions.client(), metal);
         return layer == 0 ? color : JewelryGui.mix(color, 0xFFFFFF, 0.45F);
     }
 
     public static int stone(ItemStack stack, int layer) {
-        GemData data = GemData.load(JewelryNbt.root(stack)).orElse(null);
+        if (cached(stack, layer)) return rendering.colors[layer];
+        return stone(GemData.load(JewelryNbt.root(stack)).orElse(null), layer);
+    }
+
+    private static int stone(@Nullable GemData data, int layer) {
         if (data == null) return 0xFFFFFF;
         JewelryDefinitions defs = JewelryDefinitions.client();
         return layer == 0 ? gemBody(defs, data) : sparkle(defs, data, data.isCut() ? data.cutQuality() : 0.25F);

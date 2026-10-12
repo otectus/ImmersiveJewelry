@@ -25,15 +25,25 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The setting minigame (spec 12): the stones seen from above, their prongs (or bezel points) around them. Hold the
  * left button (or Space) to squeeze the highlighted prong and release inside the brass band. The band follows the
  * pressure already on the opposite prong, so the stone sits level: watch the bubble. In removal mode the band is low:
- * lift gently.
+ * lift gently. On a vanilla container panel: the stone in a dark display, the pressure gauge and time bar beside it,
+ * and feedback in a dark readout.
  */
 public class SettingScreen extends MinigameScreen {
     private static final int W = 400;
-    private static final int H = 264;
+    private static final int H = 244;
+    /** The gauge column, right of the stone. */
+    private static final int GX = 202;
+    private static final int GW = W - 8 - GX;
+    /** The centre of the stone being worked. */
+    private static final int AREA_CX = 100;
+    private static final int AREA_CY = 112;
 
     private final SettingStartPacket start;
     private final SettingSimulation sim;
@@ -63,9 +73,9 @@ public class SettingScreen extends MinigameScreen {
     protected void initPanel() {
         clearWidgets();
         if (result != null) {
-            addRenderableWidget(JewelryGui.button(left + W - 110, top + H - 28, 96, 20, Component.translatable("gui.done"), b -> onClose()));
+            addRenderableWidget(VanillaGui.button(left + W - 104, top + H - 28, 96, 20, Component.translatable("gui.done"), b -> onClose()));
             if (start.mode() != SettingSession.Mode.REMOVE && result.defects().contains(SettingDefect.LOOSE)) {
-                addRenderableWidget(JewelryGui.button(left + W - 214, top + H - 28, 96, 20, Component.translatable("screen.immersive_jewelry.retighten"),
+                addRenderableWidget(VanillaGui.button(left + W - 204, top + H - 28, 96, 20, Component.translatable("screen.immersive_jewelry.retighten"),
                         b -> ModNetwork.CHANNEL.sendToServer(new BenchActionPacket(start.pos(), BenchActionPacket.Action.RETIGHTEN, null,
                                 com.otectus.immersivejewelry.config.ClientConfig.get(com.otectus.immersivejewelry.config.ClientConfig.LARGER_TARGETS),
                                 com.otectus.immersivejewelry.config.ClientConfig.get(com.otectus.immersivejewelry.config.ClientConfig.SLOWER_MINIGAMES)))));
@@ -109,7 +119,7 @@ public class SettingScreen extends MinigameScreen {
 
     private void flash(String key) {
         flash = key;
-        flashUntil = Util.getMillis() + 900;
+        flashUntil = Util.getMillis() + com.otectus.immersivejewelry.config.ClientConfig.get(com.otectus.immersivejewelry.config.ClientConfig.FEEDBACK_LABEL_MS);
     }
 
     @Override
@@ -130,22 +140,22 @@ public class SettingScreen extends MinigameScreen {
     protected void renderPanel(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         g.pose().pushPose();
         g.pose().translate(shakeOffset(false), shakeOffset(true), 0);
-        JewelryGui.panel(g, left, top, W, H);
-        JewelryGui.heading(g, font, Component.translatable("screen.immersive_jewelry.setting_title." + start.mode().name().toLowerCase(java.util.Locale.ROOT),
-                start.workpiece().getHoverName()), left, top, W);
-        JewelryGui.well(g, 200, 34, W - 212, H - 46);
+        VanillaGui.panel(g, left, top, W, H);
+        renderTitle(g, Component.translatable("screen.immersive_jewelry.setting_title." + start.mode().name().toLowerCase(java.util.Locale.ROOT),
+                start.workpiece().getHoverName()), W - 16, mouseX, mouseY);
+        VanillaGui.display(g, 8, 19, 184, H - 27);
         drawStones(g);
         drawGauges(g);
         if (counting()) {
             int n = (int) Math.ceil(countdown());
             g.pose().pushPose();
-            g.pose().translate(left + 100, top + 100, 0);
+            g.pose().translate(left + AREA_CX, top + AREA_CY - 8, 0);
             g.pose().scale(2.5F, 2.5F, 1F);
-            g.drawCenteredString(font, n > 0 ? Component.literal(String.valueOf(n)) : Component.translatable("screen.immersive_jewelry.go"), 0, 0, JewelryGui.TEXT_WARM);
+            g.drawCenteredString(font, n > 0 ? Component.literal(String.valueOf(n)) : Component.translatable("screen.immersive_jewelry.go"), 0, 0, JewelryGui.CUE);
             g.pose().popPose();
         }
         if (result != null) {
-            g.fill(6, 30, W - 6, H - 6, 0xB0151310);
+            g.fill(4, 18, W - 4, H - 4, 0xB0101010);
             drawResult(g);
         }
         g.pose().popPose();
@@ -155,10 +165,9 @@ public class SettingScreen extends MinigameScreen {
     private void drawStones(GuiGraphics g) {
         SettingParams p = start.params();
         int stones = p.stones();
-        float areaCx = left + 100;
-        float areaCy = 130;
+        float areaCx = left + AREA_CX;
+        float areaCy = top + AREA_CY;
         float stoneR = 46F;
-        JewelryGui.well(g, 12, 34, 176, H - 46);
         JewelryDefinitions defs = JewelryDefinitions.client();
         int active = sim.activePoint();
         int activeStone = p.stoneOf()[active];
@@ -178,33 +187,35 @@ public class SettingScreen extends MinigameScreen {
         }
         if (stones > 1) {
             g.drawCenteredString(font, Component.translatable("screen.immersive_jewelry.stone_index", activeStone + 1, stones),
-                    Math.round(areaCx), 43, JewelryGui.TEXT_DIM);
+                    Math.round(areaCx), 25, VanillaGui.DISPLAY_TEXT_DIM);
             drawStoneProgress(g, p, activeStone);
         }
         // Balance: a bubble level. Centred when pressures around the stone agree.
         float align = sim.alignment();
         int bx = left + 30;
-        int by = H - 26;
+        int by = H - 22;
         JewelryGui.disc(g, bx, by, 9, 0xFF1C2A24);
         JewelryGui.ring(g, bx, by, 9, 0xFF8FB8A0);
         JewelryGui.ring(g, bx, by, 3, 0x808FB8A0);
         float off = (1F - align) * 7F;
         JewelryGui.disc(g, bx + off * 0.7F, by - off * 0.7F, 2.5F, align >= 0.7F ? JewelryGui.goodColor() : JewelryGui.missColor());
-        g.drawString(font, Component.translatable("screen.immersive_jewelry.balance"), bx + 14, by - 4, JewelryGui.TEXT_DIM, false);
+        g.drawString(font, Component.translatable("screen.immersive_jewelry.balance"), bx + 14, by - 4, VanillaGui.DISPLAY_TEXT_DIM, false);
     }
 
     private void drawStoneProgress(GuiGraphics g, SettingParams p, int activeStone) {
         int stones = p.stones();
         for (int s = 0; s < stones; s++) {
-            int x = left + 100 - stones * 10 + s * 20;
-            g.fill(x, 206, x + 18, 224, s == activeStone ? JewelryGui.targetColor() : JewelryGui.BORDER);
-            g.fill(x + 1, 207, x + 17, 223, JewelryGui.INSET);
-            g.renderItem(gemStacks[Math.min(s, gemStacks.length - 1)], x + 1, 207);
+            int x = left + AREA_CX - stones * 10 + s * 20;
+            int y = top + 188;
+            // The stone being worked is framed in the target colour.
+            if (s == activeStone) g.fill(x - 1, y - 1, x + 19, y + 19, JewelryGui.targetColor());
+            VanillaGui.slot(g, x, y);
+            g.renderItem(gemStacks[Math.min(s, gemStacks.length - 1)], x + 1, y + 1);
             boolean done = true;
             for (int i = 0; i < p.points(); i++) {
                 if (p.stoneOf()[i] == s && !sim.isDone(i)) done = false;
             }
-            if (done) JewelryGui.check(g, x + 10, 217, JewelryGui.TEXT);
+            if (done) JewelryGui.check(g, x + 10, y + 11, 0xFFFFFFFF);
         }
     }
 
@@ -238,7 +249,7 @@ public class SettingScreen extends MinigameScreen {
         float size = (bezel ? 4F : 5F) * scale;
         int color;
         if (done) color = acc >= 0.6F ? 0xFFE8C878 : acc >= 0.35F ? 0xFFB8905A : JewelryGui.missColor();
-        else color = active ? JewelryGui.targetColor() : JewelryGui.TEXT_DIM;
+        else color = active ? JewelryGui.targetColor() : VanillaGui.DISPLAY_TEXT_DIM;
         // A claw: a small wedge pointing at the stone (bezel points are squares).
         if (bezel) {
             g.fill(Math.round(px - size / 2), Math.round(py - size / 2), Math.round(px + size / 2), Math.round(py + size / 2), color);
@@ -259,30 +270,31 @@ public class SettingScreen extends MinigameScreen {
         } else {
             int order = 0;
             for (int k = 0; k < start.params().order().length; k++) if (start.params().order()[k] == i) order = k + 1;
-            g.drawString(font, String.valueOf(order), ox, oy, active ? JewelryGui.TEXT_WARM : JewelryGui.TEXT_DIM, false);
+            g.drawString(font, String.valueOf(order), ox, oy, active ? JewelryGui.CUE : VanillaGui.DISPLAY_TEXT_DIM, false);
         }
     }
 
     private void drawGauges(GuiGraphics g) {
         SettingParams p = start.params();
-        int gx = 210;
-        int gw = W - 232;
-        int y = 44;
+        int gx = GX;
+        int gw = GW;
+        int y = 21;
         g.drawString(font, Component.translatable("screen.immersive_jewelry.prong_count", Math.min(sim.doneCount() + 1, p.points()), p.points()),
-                gx, y, JewelryGui.TEXT, false);
+                gx, y, VanillaGui.LABEL, false);
         y += 14;
         int point = sim.activePoint();
-        g.drawString(font, Component.translatable("screen.immersive_jewelry.squeeze"), gx, y, JewelryGui.TEXT_DIM, false);
+        g.drawString(font, Component.translatable("screen.immersive_jewelry.squeeze"), gx, y, VanillaGui.LABEL, false);
         y += 10;
         // Vertical pressure gauge with the target band.
         int gh = 92;
         int barX = gx + 4;
-        JewelryGui.well(g, barX - 1, y - 1, 18, gh + 2);
+        VanillaGui.inset(g, barX - 1, y - 1, 18, gh + 2);
+        g.fill(barX, y, barX + 16, y + gh, VanillaGui.TRACK);
         float max = 1.3F;
         float target = sim.target(point);
         float lo = (target - p.window()) / max;
         float hi = (target + p.window()) / max;
-        g.fill(barX, y + gh - Math.round(gh * hi), barX + 16, y + gh - Math.round(gh * lo), 0x80C9A45C);
+        g.fill(barX, y + gh - Math.round(gh * hi), barX + 16, y + gh - Math.round(gh * lo), JewelryGui.BAND);
         g.fill(barX, y + gh - Math.round(gh * target / max), barX + 16, y + gh - Math.round(gh * target / max) + 1, JewelryGui.BRASS_LIGHT);
         if (p.chipAbove() < max) {
             int chipY = y + gh - Math.round(gh * p.chipAbove() / max);
@@ -296,67 +308,74 @@ public class SettingScreen extends MinigameScreen {
         // Beside the gauge, in fixed slots so nothing jumps: the hint, "once more", "release", then the opposite prong.
         int tx = gx + 28;
         int tw = gw - 28;
-        JewelryGui.drawWrapped(g, font, Component.translatable(p.removal() ? "screen.immersive_jewelry.lift_hint" : "screen.immersive_jewelry.squeeze_hint"),
-                tx, y, tw, JewelryGui.TEXT_DIM, 3);
+        VanillaGui.wrapped(g, font, Component.translatable(p.removal() ? "screen.immersive_jewelry.lift_hint" : "screen.immersive_jewelry.squeeze_hint"),
+                tx, y, tw, VanillaGui.LABEL_DIM, 3);
         if (sim.presses(point) > 0 && !sim.isDone(point)) {
-            JewelryGui.drawWrapped(g, font, Component.translatable("screen.immersive_jewelry.once_more"), tx, y + 34, tw, JewelryGui.TEXT_WARM, 2);
+            VanillaGui.wrapped(g, font, Component.translatable("screen.immersive_jewelry.once_more"), tx, y + 34, tw, VanillaGui.LABEL, 2);
         }
-        if (in && sim.holding()) g.drawString(font, Component.translatable("screen.immersive_jewelry.release_now"), tx, y + 56, JewelryGui.goodColor(), false);
+        if (in && sim.holding()) g.drawString(font, Component.translatable("screen.immersive_jewelry.release_now"), tx, y + 56, JewelryGui.goodText(), false);
         int opposite = p.opposite()[point];
         if (opposite >= 0 && sim.isDone(opposite) && !p.removal()) {
-            JewelryGui.drawWrapped(g, font, Component.translatable("screen.immersive_jewelry.match_opposite"), tx, y + 68, tw, JewelryGui.TEXT_DIM, 3);
+            VanillaGui.wrapped(g, font, Component.translatable("screen.immersive_jewelry.match_opposite"), tx, y + 68, tw, VanillaGui.LABEL_DIM, 3);
         }
         y += gh + 8;
         JewelryGui.timeBar(g, gx, y, gw, 5, 1F - step / (float) maxSteps());
         y += 12;
+        // Feedback in a dark readout so the rating colours keep their contrast.
+        int readoutTop = y + 3;
+        VanillaGui.display(g, gx - 1, readoutTop, gw + 2, H - 8 - readoutTop);
         if (Util.getMillis() < flashUntil && !flash.isEmpty()) {
             int color = flash.equals("set") ? JewelryGui.goodColor() : JewelryGui.missColor();
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.flash." + flash), gx, y, color, false);
+            g.drawString(font, VanillaGui.clipped(font, Component.translatable("screen.immersive_jewelry.flash." + flash), gw - 8), gx + 4, readoutTop + 5, color, false);
         }
-        y += 12;
-        if (awaitingResult && result == null) g.drawString(font, Component.translatable("screen.immersive_jewelry.awaiting"), gx, y, JewelryGui.TEXT_DIM, false);
+        if (awaitingResult && result == null) {
+            VanillaGui.wrapped(g, font, Component.translatable("screen.immersive_jewelry.awaiting"), gx + 4, readoutTop + 17, gw - 6, VanillaGui.DISPLAY_TEXT_DIM, 2);
+        }
     }
 
+    private record Line(Component text, int color) {}
+
+    /** The verdict on a small vanilla panel: the piece in a slot, and its grades, defects and notes in a dark readout. */
     private void drawResult(GuiGraphics g) {
-        // Sized to its lines: defects and the timeout note never run into the closing hint.
         boolean numbers = start.mode() != SettingSession.Mode.REMOVE && ServerConfig.get(ServerConfig.SHOW_NUMERIC_QUALITY);
-        int content = 34 + 22 + (numbers ? 11 : 0) + result.defects().size() * 10 + (result.timedOut() ? 11 : 0)
-                + (start.mode() == SettingSession.Mode.SET ? 16 : 0) + 6;
-        int bw = W - 48;
-        int bh = Math.min(H - 8, Math.max(96, content));
-        int bx = left + 24;
-        int by = top + (H - bh) / 2;
-        g.fill(bx - 2, by - 2, bx + bw + 2, by + bh + 2, 0xE0151310);
-        JewelryGui.dialog(g, bx, by, bw, bh);
-        g.renderItem(result.result(), bx + 12, by + 12);
-        g.drawString(font, JewelryGui.clipped(font, result.result().getHoverName(), bw - 50), bx + 34, by + 12, JewelryGui.TEXT, false);
-        int y = by + 34;
+        List<Line> lines = new ArrayList<>();
         if (start.mode() == SettingSession.Mode.REMOVE) {
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.removed", CutGrade.of(result.quality()).displayName()), bx + 12, y, JewelryGui.TEXT, false);
-            y += 11;
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.removed_hint"), bx + 12, y, JewelryGui.TEXT_DIM, false);
-            y += 11;
+            lines.add(new Line(Component.translatable("screen.immersive_jewelry.removed", CutGrade.of(result.quality()).displayName()), VanillaGui.DISPLAY_TEXT));
+            lines.add(new Line(Component.translatable("screen.immersive_jewelry.removed_hint"), VanillaGui.DISPLAY_TEXT_DIM));
         } else {
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.setting_result", WorkmanshipGrade.of(result.quality()).displayName()),
-                    bx + 12, y, JewelryGui.TEXT, false);
-            y += 11;
-            g.drawString(font, Component.translatable("tooltip.immersive_jewelry.workmanship", WorkmanshipGrade.of(result.workmanship()).displayName()),
-                    bx + 12, y, JewelryGui.TEXT, false);
-            y += 11;
+            lines.add(new Line(Component.translatable("screen.immersive_jewelry.setting_result", WorkmanshipGrade.of(result.quality()).displayName()), VanillaGui.DISPLAY_TEXT));
+            lines.add(new Line(Component.translatable("tooltip.immersive_jewelry.workmanship", WorkmanshipGrade.of(result.workmanship()).displayName()), VanillaGui.DISPLAY_TEXT));
             if (numbers) {
-                g.drawString(font, Component.translatable("screen.immersive_jewelry.setting_numbers", Math.round(result.quality() * 100),
-                        Math.round(result.workmanship() * 100)), bx + 12, y, JewelryGui.TEXT_DIM, false);
-                y += 11;
+                lines.add(new Line(Component.translatable("screen.immersive_jewelry.setting_numbers", Math.round(result.quality() * 100),
+                        Math.round(result.workmanship() * 100)), VanillaGui.DISPLAY_TEXT_DIM));
             }
         }
-        for (SettingDefect d : result.defects()) {
-            g.drawString(font, Component.literal("• ").append(d.displayName()), bx + 12, y, JewelryGui.TEXT_DIM, false);
-            y += 10;
+        for (SettingDefect d : result.defects()) lines.add(new Line(Component.literal("• ").append(d.displayName()), VanillaGui.DISPLAY_TEXT_DIM));
+        if (result.timedOut()) lines.add(new Line(Component.translatable("screen.immersive_jewelry.timed_out"), VanillaGui.DISPLAY_TEXT_DIM));
+        if (start.mode() == SettingSession.Mode.SET) lines.add(new Line(Component.translatable("screen.immersive_jewelry.take_hint"), VanillaGui.DISPLAY_TEXT_DIM));
+        int bw = W - 48;
+        int bx = left + 24;
+        int displayHeight = lines.size() * 11 + 7;
+        int bh = Math.min(H - 8, 30 + displayHeight + 8);
+        int by = top + Math.max(4, (H - 30 - bh) / 2);
+        VanillaGui.panel(g, bx, by, bw, bh);
+        VanillaGui.slot(g, bx + 8, by + 7);
+        g.renderItem(result.result(), bx + 9, by + 8);
+        g.drawString(font, VanillaGui.clipped(font, result.result().getHoverName(), bw - 38), bx + 30, by + 12, VanillaGui.LABEL, false);
+        VanillaGui.display(g, bx + 8, by + 30, bw - 16, Math.min(displayHeight, bh - 38));
+        int y = by + 35;
+        int textWidth = bw - 28 - (result.xp() > 0 ? 50 : 0);
+        for (int i = 0; i < lines.size() && y + 9 <= by + bh - 8; i++) {
+            Line line = lines.get(i);
+            int width = i == 0 ? textWidth : bw - 28;
+            // Unclipped lines keep their own colours (the grades', the defects').
+            Component shown = VanillaGui.isClipped(font, line.text(), width) ? Component.literal(VanillaGui.clipped(font, line.text(), width)) : line.text();
+            g.drawString(font, shown, bx + 14, y, line.color(), false);
+            y += 11;
         }
-        if (result.timedOut()) g.drawString(font, Component.translatable("screen.immersive_jewelry.timed_out"), bx + 12, y, JewelryGui.TEXT_DIM, false);
-        if (result.xp() > 0) g.drawString(font, Component.translatable("screen.immersive_jewelry.result_xp", result.xp()), bx + bw - 60, by + 34, 0xFF9CDB5A, false);
-        if (start.mode() == SettingSession.Mode.SET) {
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.take_hint"), bx + 12, by + bh - 14, JewelryGui.TEXT_DIM, false);
+        if (result.xp() > 0) {
+            Component xp = Component.translatable("screen.immersive_jewelry.result_xp", result.xp());
+            g.drawString(font, xp, bx + bw - 14 - font.width(xp), by + 35, JewelryGui.XP, false);
         }
     }
 }

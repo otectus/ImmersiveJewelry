@@ -16,6 +16,7 @@ import com.otectus.immersivejewelry.network.packet.SettingResultPacket;
 import com.otectus.immersivejewelry.network.packet.SettingStartPacket;
 import com.otectus.immersivejewelry.network.packet.StartSettingPacket;
 import com.otectus.immersivejewelry.network.packet.StationEffectPacket;
+import com.otectus.immersivejewelry.network.packet.StationNoticePacket;
 import com.otectus.immersivejewelry.network.packet.SyncDefinitionsPacket;
 import com.otectus.immersivejewelry.network.packet.SyncProfilePacket;
 import com.otectus.immersivejewelry.network.packet.WheelActionPacket;
@@ -25,7 +26,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 /** Small, purpose-specific packets. Clients report inputs and choices only; the server owns every outcome. */
 public final class ModNetwork {
-    public static final String VERSION = "1";
+    public static final String VERSION = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(ImmersiveJewelry.id("main"),
             () -> VERSION, VERSION::equals, VERSION::equals);
 
@@ -69,6 +70,9 @@ public final class ModNetwork {
                 .encoder(CancelSessionPacket::encode).decoder(CancelSessionPacket::decode).consumerNetworkThread(CancelSessionPacket::handle).add();
         CHANNEL.messageBuilder(OpenJewelrySlotsPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(OpenJewelrySlotsPacket::encode).decoder(OpenJewelrySlotsPacket::decode).consumerNetworkThread(OpenJewelrySlotsPacket::handle).add();
+        // Server -> client (protocol 2)
+        CHANNEL.messageBuilder(StationNoticePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(StationNoticePacket::encode).decoder(StationNoticePacket::decode).consumerMainThread(StationNoticePacket::handle).add();
     }
 
     private ModNetwork() {}

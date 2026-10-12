@@ -1,5 +1,6 @@
 package com.otectus.immersivejewelry.equipment.builtin;
 
+import com.otectus.immersivejewelry.api.ImmersiveJewelryAPI;
 import com.otectus.immersivejewelry.registry.ModMenus;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +28,7 @@ public class JewelrySlotsMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(slots, i, JEWELRY_X + i * 18 + (i >= 2 ? 6 : 0), JEWELRY_Y) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
-                    return BuiltinSlots.accepts(index, stack);
+                    return BuiltinSlots.accepts(index, stack) && ImmersiveJewelryAPI.mayWear(player, stack);
                 }
 
                 @Override

@@ -10,7 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 
-/** The built-in jewelry slots (when Curios is not the equipment system). Shares the Stoneborn masonry, slot rims and text palette. */
+/**
+ * The built-in jewelry slots (when Curios is not the equipment system), as a vanilla container: the standard panel and
+ * slots, dark grey labels, and an outline of each piece in its empty slot, like the armour slots.
+ */
 public class JewelrySlotsScreen extends AbstractContainerScreen<JewelrySlotsMenu> {
 
     public JewelrySlotsScreen(JewelrySlotsMenu menu, Inventory inventory, Component title) {
@@ -22,13 +25,11 @@ public class JewelrySlotsScreen extends AbstractContainerScreen<JewelrySlotsMenu
 
     @Override
     protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
-        JewelryGui.panel(g, leftPos, topPos, imageWidth, imageHeight);
-        JewelryGui.well(g, leftPos + 6, topPos + 17, imageWidth - 12, 48);
-        g.fill(leftPos + 6, topPos + 70, leftPos + imageWidth - 6, topPos + imageHeight - 6, JewelryGui.SURFACE);
+        VanillaGui.panel(g, leftPos, topPos, imageWidth, imageHeight);
         for (Slot slot : menu.slots) {
             int x = leftPos + slot.x - 1;
             int y = topPos + slot.y - 1;
-            JewelryGui.slot(g, x, y);
+            VanillaGui.slot(g, x, y);
             if (slot.index < SlotType.TOTAL && !slot.hasItem()) {
                 ResourceLocation icon = new ResourceLocation(ImmersiveJewelry.MOD_ID,
                         "textures/gui/slot/empty_" + SlotType.forIndex(slot.index).id() + ".png");
@@ -39,8 +40,8 @@ public class JewelrySlotsScreen extends AbstractContainerScreen<JewelrySlotsMenu
 
     @Override
     protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
-        g.drawString(font, title, titleLabelX, titleLabelY, JewelryGui.TEXT_WARM, false);
-        g.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, JewelryGui.TEXT_DIM, false);
+        g.drawString(font, title, titleLabelX, titleLabelY, VanillaGui.LABEL, false);
+        g.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, VanillaGui.LABEL, false);
     }
 
     @Override

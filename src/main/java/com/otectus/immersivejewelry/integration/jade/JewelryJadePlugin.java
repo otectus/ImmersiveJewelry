@@ -61,8 +61,8 @@ public class JewelryJadePlugin implements IWailaPlugin {
             GemData cut = CutGemItem.data(stone).orElse(null);
             GemData rough = cut == null ? RoughGemItem.data(stone).orElse(null) : null;
             if (cut != null) {
-                tooltip.add(line("stone", JewelryNames.gem(defs, cut.gem()), CutGrade.of(cut.cutQuality()).displayName().copy().append(" ")
-                        .append(JewelryNames.cut(defs, cut.cut()))).withStyle(ChatFormatting.GOLD));
+                tooltip.add(line("stone", JewelryNames.gem(defs, cut.gem()), Component.translatable("tooltip.immersive_jewelry.cut",
+                        CutGrade.of(cut.cutQuality()).displayName(), JewelryNames.cut(defs, cut.cut()))).withStyle(ChatFormatting.GOLD));
             } else if (rough != null) {
                 tooltip.add(line("rough", JewelryNames.gem(defs, rough.gem()), StoneTraits.size(rough.size()), DescriptionBuilder.trim(rough.size()))
                         .withStyle(ChatFormatting.GOLD));

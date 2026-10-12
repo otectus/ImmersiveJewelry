@@ -1,7 +1,9 @@
 package com.otectus.immersivejewelry.minigame;
 
 import com.otectus.immersivejewelry.advancement.ModAdvancements;
+import com.otectus.immersivejewelry.api.ImmersiveJewelryAPI;
 import com.otectus.immersivejewelry.api.event.GemCutEvent;
+import com.otectus.immersivejewelry.api.integration.IJewelryAssistSource;
 import com.otectus.immersivejewelry.api.event.JewelryCraftedEvent;
 import com.otectus.immersivejewelry.api.event.JewelryReworkedEvent;
 import com.otectus.immersivejewelry.api.gem.GemData;
@@ -157,7 +159,8 @@ public final class SessionManager {
         long seed = RANDOM.nextLong();
         CuttingSession session = new CuttingSession(nextId(), player.getUUID(), player.level().dimension(), wheel.getBlockPos(), now,
                 now + ready, data, cut.id(), recut,
-                CuttingService.params(gem, data, cut, wheel.tier(), packet.largerTargets(), packet.slower(), seed));
+                CuttingService.params(gem, data, cut, wheel.tier(), packet.largerTargets(), packet.slower(),
+                        ImmersiveJewelryAPI.assistDifficulty(player, IJewelryAssistSource.Kind.CUTTING), seed));
         register(session);
         wheel.lock(player.getUUID());
         player.level().playSound(null, wheel.getBlockPos(), ModSounds.WHEEL_SPIN.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
@@ -219,24 +222,30 @@ public final class SessionManager {
         }
         CuttingService.Outcome outcome = CuttingService.outcome(gem, cut, session.stone, session.recut, session.sim);
         ServerLevel level = player.serverLevel();
-        if (outcome.shattered()) {
-            wheel.setStone(new ItemStack(ModItems.GEM_DUST.get(), 1 + level.random.nextInt(2)));
+        // Progression mods hear the result before the stone goes back in the wheel: they may refine a cut stone's
+        // quality or leave extra dust for a shattered one. The experience, advancements and the result packet follow.
+        GemCutEvent event = new GemCutEvent(player, session.stone, outcome.after(), session.pos);
+        MinecraftForge.EVENT_BUS.post(event);
+        GemData after = event.getAfter();
+        boolean shattered = outcome.shattered() || after == null;
+        float quality = shattered ? outcome.quality() : after.cutQuality();
+        if (shattered) {
+            wheel.setStone(new ItemStack(ModItems.GEM_DUST.get(), Math.min(64, 1 + level.random.nextInt(2) + event.getExtraDust())));
             level.playSound(null, session.pos, ModSounds.WHEEL_CHIP.get(), SoundSource.BLOCKS, 1.0F, 0.6F);
         } else {
-            wheel.setStone(CutGemItem.create(outcome.after()));
+            wheel.setStone(CutGemItem.create(after));
             level.playSound(null, session.pos, ModSounds.WHEEL_FINISH.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
-            StationEffects.send(level, session.pos, StationEffects.FINISHED, gem.color(), outcome.quality());
+            StationEffects.send(level, session.pos, StationEffects.FINISHED, gem.color(), quality);
         }
         wheel.unlock();
         if (wheel.wearLap()) Feedback.info(player, "lap_worn_out");
-        int xp = outcome.shattered() ? 0 : CuttingService.experience(outcome.quality(), gem, cut);
+        int xp = shattered ? 0 : CuttingService.experience(quality, gem, cut);
         if (xp > 0) ExperienceOrb.award(level, Vec3.atCenterOf(session.pos).add(0, 0.6, 0), xp);
-        MinecraftForge.EVENT_BUS.post(new GemCutEvent(player, session.stone, outcome.after(), session.pos));
-        if (!outcome.shattered()) {
+        if (!shattered) {
             ModAdvancements.award(player, ModAdvancements.FIRST_CUT);
-            if (CutGrade.of(outcome.quality()) == CutGrade.FLAWLESS) ModAdvancements.award(player, ModAdvancements.FLAWLESS);
+            if (CutGrade.of(quality) == CutGrade.FLAWLESS) ModAdvancements.award(player, ModAdvancements.FLAWLESS);
         }
-        send(player, new CutResultPacket(session.id, session.stone, outcome.after(), outcome.quality(), session.sim.chips(),
+        send(player, new CutResultPacket(session.id, session.stone, after, quality, session.sim.chips(),
                 session.sim.timedOut(), xp));
     }
 
@@ -284,6 +293,12 @@ public final class SessionManager {
             Feedback.fail(player, "finish_cost", Inventories.display(finish.cost(), finish.costCount()).getHoverName());
             return;
         }
+        // Progression gates decide last, once everything else is in order and before anything enters escrow.
+        Optional<Component> denied = ImmersiveJewelryAPI.craftDenial(player, design, blank, stones);
+        if (denied.isPresent()) {
+            Feedback.fail(player, denied.get());
+            return;
+        }
         cancelExisting(player);
         // Escrow: the stones first (their slots were validated), then the finish material.
         List<ItemStack> escrow = new ArrayList<>();
@@ -327,7 +342,7 @@ public final class SessionManager {
         long now = Util.getMillis();
         int ready = ServerConfig.get(ServerConfig.READY_DELAY_MS);
         SettingParams params = BenchService.params(mode, design, stones, BenchService.pliersPrecision(player.getItemInHand(hand)), larger, slower,
-                RANDOM.nextLong());
+                ImmersiveJewelryAPI.assistDifficulty(player, IJewelryAssistSource.Kind.SETTING), RANDOM.nextLong());
         SettingSession session = new SettingSession(nextId(), player.getUUID(), player.level().dimension(), bench.getBlockPos(), now, now + ready,
                 mode, hand, design != null ? design.getId() : null, stones, finish, params);
         register(session);

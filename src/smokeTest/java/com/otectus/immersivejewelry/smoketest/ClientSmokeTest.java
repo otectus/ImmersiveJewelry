@@ -129,7 +129,20 @@ public final class ClientSmokeTest {
                 if (mc.screen instanceof TitleScreen && titleTicks == 40 && !worldRequested) {
                     worldRequested = true;
                     checks.put("title_ms", Util.getMillis() - START);
-                    createWorld(mc);
+                    String language = System.getenv("IJ_SMOKE_LANGUAGE");
+                    String pack = System.getenv("IJ_SMOKE_PACK");
+                    if (pack != null) {
+                        mc.getResourcePackRepository().reload();
+                        var selected = new ArrayList<>(mc.getResourcePackRepository().getSelectedIds());
+                        selected.add("file/" + pack);
+                        mc.getResourcePackRepository().setSelected(selected);
+                    }
+                    if (language != null && !language.equals(mc.options.languageCode)) {
+                        mc.options.languageCode = language;
+                        mc.getLanguageManager().setSelected(language);
+                        mc.reloadResourcePacks().thenRun(() -> mc.execute(() -> createWorld(mc)));
+                    } else if (pack != null) mc.reloadResourcePacks().thenRun(() -> mc.execute(() -> createWorld(mc)));
+                    else createWorld(mc);
                 }
                 return;
             }
@@ -146,6 +159,22 @@ public final class ClientSmokeTest {
             }
             worldTicks++;
             if (worldTicks < 40) return;
+            if (System.getenv("IJ_STATION_VISUALS_ONLY") != null) {
+                if (WorkstationVisualChecks.tick(mc, checks)) finish(mc, allPassed(), "workstation visual checks only");
+                return;
+            }
+            if (WorkstationBenchmark.enabled()) {
+                WorkstationBenchmark.tick(mc);
+                return;
+            }
+            if (StoreScreenshots.enabled()) {
+                StoreScreenshots.tick(mc);
+                return;
+            }
+            if (worldTicks >= 830 && System.getenv("IJ_STATION_VISUALS") != null) {
+                if (WorkstationVisualChecks.tick(mc, checks)) finish(mc, allPassed(), "complete with workstation visual checks");
+                return;
+            }
             step(mc, worldTicks);
         } catch (Exception e) {
             ImmersiveJewelry.LOGGER.error("SMOKETEST failed at world tick {}", worldTicks, e);
@@ -193,7 +222,13 @@ public final class ClientSmokeTest {
                 });
             }
             case 174 -> mc.getToasts().clear();
-            case 176 -> shot(mc, "smoketest_cut_select");
+            case 176 -> {
+                checks.put("cut_select_buttons_fit", mc.screen != null && mc.screen.children().stream()
+                        .filter(c -> c instanceof net.minecraft.client.gui.components.Button)
+                        .map(c -> (net.minecraft.client.gui.components.Button) c)
+                        .allMatch(b -> mc.font.width(b.getMessage()) <= b.getWidth() - 8));
+                shot(mc, "smoketest_cut_select");
+            }
             case 178 -> {
                 cutBot = null;
                 MinigameScreen.scriptedInput = index -> {
@@ -493,6 +528,21 @@ public final class ClientSmokeTest {
         checks.put("client_traits_ok", defs.traits().size() >= 10);
         checks.put("client_designs_ok", mc.level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.JEWELRY_DESIGN.get()).size() >= 10);
         checks.put("server_defs_match_client", JewelryDefinitions.server().gems().size() == defs.gems().size());
+        checks.put("language", mc.options.languageCode);
+        WorkstationVisualChecks.checkTints(checks);
+        for (String page : List.of("welcome", "stones", "wheel", "cutting", "cuts", "blanks", "bench", "setting",
+                "finishes", "wearing", "effects", "care", "designs", "jeweler")) {
+            // HandbookScreen pages are vanilla book pages: 114 px lines, 14 to a page, 11 under a chapter's heading.
+            int lines = mc.font.split(Component.translatable("handbook.immersive_jewelry." + page + ".text"), 114).size();
+            checks.put("handbook_" + page + "_lines", lines);
+            checks.put("handbook_" + page + "_sheets", lines <= 11 ? 1 : 1 + (lines - 11 + 13) / 14);
+        }
+        if (mc.options.languageCode.equals("ru_ru")) {
+            for (String finish : List.of("polished", "burnished", "antique")) {
+                int lines = mc.font.split(Component.translatable("finish.immersive_jewelry." + finish + ".description"), 120).size();
+                checks.put("russian_finish_" + finish + "_fits", lines <= 5);
+            }
+        }
     }
 
     private static void stageWorld(Minecraft mc) {
@@ -616,6 +666,7 @@ public final class ClientSmokeTest {
         result.put("checks", checks);
         try {
             Files.createDirectories(Path.of(OUTPUT));
+            CraftingProfile.write();
             Files.writeString(Path.of(OUTPUT, "smoketest-result.json"), new GsonBuilder().setPrettyPrinting().create().toJson(result), StandardCharsets.UTF_8);
         } catch (IOException e) {
             ImmersiveJewelry.LOGGER.error("SMOKETEST could not write result", e);

@@ -44,7 +44,7 @@ public final class DescriptionBuilder implements EffectDescription {
 
     @Override
     public Component seconds(float ticks) {
-        return value(trim(ticks / 20F) + "s");
+        return Component.translatable("tooltip.immersive_jewelry.seconds", trim(ticks / 20F)).withStyle(ChatFormatting.WHITE);
     }
 
     @Override

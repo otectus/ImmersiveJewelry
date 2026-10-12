@@ -2,6 +2,7 @@ package com.otectus.immersivejewelry.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.otectus.immersivejewelry.client.JewelryColors;
 import com.otectus.immersivejewelry.ImmersiveJewelry;
 import com.otectus.immersivejewelry.block.StationBlock;
 import com.otectus.immersivejewelry.blockentity.LapidaryWheelBlockEntity;
@@ -16,6 +17,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
@@ -30,6 +32,7 @@ public class LapidaryWheelRenderer implements BlockEntityRenderer<LapidaryWheelB
     private static final float AXLE_X = 8F / 16F;
     private static final float AXLE_Y = 12F / 16F;
     private static final float AXLE_Z = 8F / 16F;
+    private final RandomSource renderRandom = RandomSource.create();
 
     public LapidaryWheelRenderer(BlockEntityRendererProvider.Context context) {}
 
@@ -43,16 +46,21 @@ public class LapidaryWheelRenderer implements BlockEntityRenderer<LapidaryWheelB
         pose.translate(-0.5, 0, -0.5);
 
         boolean animate = ClientConfig.get(ClientConfig.WORKSTATION_ANIMATIONS);
-        float angle = animate ? Mth.lerp(partialTick, wheel.prevAngle, wheel.angle) : 0F;
+        // The tick angle wraps at 2pi. Interpolating the wrapped endpoints makes the disc snap backwards.
+        float angle = animate ? wheel.renderAngle(partialTick) : 0F;
         BakedModel disc = Minecraft.getInstance().getModelManager().getModel(DISC);
         int tint = wheel.tier().color;
         pose.pushPose();
         pose.translate(AXLE_X, AXLE_Y, AXLE_Z);
         pose.mulPose(Axis.ZP.rotation(angle));
         pose.translate(-AXLE_X, -AXLE_Y, -AXLE_Z);
-        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(RenderType.cutout()), null, disc,
-                ((tint >> 16) & 255) / 255F, ((tint >> 8) & 255) / 255F, (tint & 255) / 255F, light, OverlayTexture.NO_OVERLAY,
-                ModelData.EMPTY, RenderType.cutout());
+        // Honour resource-pack render_type overrides (the shipped textures are opaque and use solid).
+        renderRandom.setSeed(42L);
+        for (RenderType layer : disc.getRenderTypes(wheel.getBlockState(), renderRandom, ModelData.EMPTY)) {
+            Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(layer), wheel.getBlockState(), disc,
+                    ((tint >> 16) & 255) / 255F, ((tint >> 8) & 255) / 255F, (tint & 255) / 255F, light, OverlayTexture.NO_OVERLAY,
+                    ModelData.EMPTY, layer);
+        }
         pose.popPose();
 
         ItemStack stone = wheel.stone();
@@ -63,8 +71,10 @@ public class LapidaryWheelRenderer implements BlockEntityRenderer<LapidaryWheelB
             pose.translate(0.5 + tremble, 15.1F / 16F, 6.15F / 16F);
             pose.mulPose(Axis.XP.rotationDegrees(15));
             pose.scale(0.3F, 0.3F, 0.3F);
-            Minecraft.getInstance().getItemRenderer().renderStatic(stone, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY, pose, buffers,
-                    wheel.getLevel(), (int) wheel.getBlockPos().asLong());
+            try (var colors = JewelryColors.cacheForRender(stone)) {
+                Minecraft.getInstance().getItemRenderer().renderStatic(stone, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY, pose, buffers,
+                        wheel.getLevel(), (int) wheel.getBlockPos().asLong());
+            }
             pose.popPose();
         }
         pose.popPose();

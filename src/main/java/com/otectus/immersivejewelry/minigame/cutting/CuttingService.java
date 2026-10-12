@@ -46,10 +46,19 @@ public final class CuttingService {
     }
 
     public static CutParams params(GemDefinition gem, GemData stone, CutDefinition cut, LapItem.Tier tier, boolean larger, boolean slower, long seed) {
+        return params(gem, stone, cut, tier, larger, slower, 1F, seed);
+    }
+
+    /**
+     * @param assistDifficulty the per-player difficulty relief (1 = none), already clamped by
+     *                         {@code ImmersiveJewelryAPI.assistDifficulty}; multiplies the server's cutting difficulty
+     */
+    public static CutParams params(GemDefinition gem, GemData stone, CutDefinition cut, LapItem.Tier tier, boolean larger, boolean slower,
+                                   float assistDifficulty, long seed) {
         boolean assist = ServerConfig.get(ServerConfig.ALLOW_ASSIST);
         CutParams.Inputs in = new CutParams.Inputs(cut.facets(), cut.pattern(), cut.difficulty(), gem.cuttingDifficulty(), gem.hardness(),
                 gem.brittleness(), stone.inclusions(), stone.size(), tier.precision, tier.stability, tier.speed, tier.cooling,
-                (float) ServerConfig.get(ServerConfig.CUTTING_DIFFICULTY), assist && larger, assist && slower,
+                (float) ServerConfig.get(ServerConfig.CUTTING_DIFFICULTY) * assistDifficulty, assist && larger, assist && slower,
                 ServerConfig.get(ServerConfig.CUTTING_SECONDS_PER_FACET));
         return CutParams.create(in, seed);
     }

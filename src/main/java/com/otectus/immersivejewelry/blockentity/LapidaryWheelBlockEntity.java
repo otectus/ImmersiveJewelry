@@ -27,6 +27,9 @@ public class LapidaryWheelBlockEntity extends StationBlockEntity {
     }
 
     public ItemStack stone() { return stone; }
+
+    /** Interpolate the tick's forward displacement before reducing modulo 2pi. */
+    public float renderAngle(float partialTick) { return prevAngle + speed * partialTick; }
     public ItemStack lap() { return lap; }
     public boolean hasStone() { return !stone.isEmpty(); }
 

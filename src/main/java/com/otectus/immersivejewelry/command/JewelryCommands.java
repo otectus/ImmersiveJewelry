@@ -143,33 +143,44 @@ public final class JewelryCommands {
     private static int inspect(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
         ServerPlayer player = c.getSource().getPlayerOrException();
         ItemStack held = player.getMainHandItem();
-        List<String> lines = new ArrayList<>();
+        List<Component> lines = new ArrayList<>();
         JewelryData.get(held).ifPresent(d -> {
             ResolvedJewelry r = JewelryResolver.resolve(d, JewelryDefinitions.server());
-            lines.add("form=" + d.form() + " metal=" + d.metal().id() + " design=" + d.design() + " finish=" + d.finish());
-            lines.add(String.format(Locale.ROOT, "smithing=%.3f cut=%.3f setting=%.3f workmanship=%.3f integrity=%.3f reworks=%d",
+            lines.add(debug("piece", d.form(), d.metal().id(), d.design(), d.finish()));
+            lines.add(debug("quality",
                     d.smithingQuality(), d.cutQuality(), d.settingQuality(), d.workmanship(), d.integrity(), d.reworks()));
-            lines.add(String.format(Locale.ROOT, "power=%.3f stability=%.3f responsiveness=%.3f inert=%s defects=%s",
+            lines.add(debug("power",
                     r.basePower(), r.stability(), r.responsiveness(), r.inert(), d.defects()));
-            for (GemData g : d.gems()) lines.add("  stone " + describe(g));
+            for (GemData g : d.gems()) lines.add(describe(g));
             for (ResolvedJewelry.Expression e : r.expressions()) {
-                lines.add(String.format(Locale.ROOT, "  effect %s (%s) power=%.3f%s", e.definition().type(), e.definition().category().id(),
-                        e.power(), e.fromMetal() ? " [metal]" : ""));
+                lines.add(debug("effect", e.definition().type(), e.definition().category().id(),
+                        e.power(), e.fromMetal() ? Component.translatable("command.immersive_jewelry.debug.from_metal") : Component.empty()));
             }
         });
         BlankData.get(held).filter(b -> JewelryData.get(held).isEmpty()).ifPresent(b ->
-                lines.add(String.format(Locale.ROOT, "blank metal=%s smithing=%.3f integrity=%.3f reworks=%d fallback=%s", b.metal().id(),
+                lines.add(debug("blank", b.metal().id(),
                         b.smithingQuality(), b.integrity(), b.reworks(), b.fallback())));
         if (lines.isEmpty()) {
-            RoughGemItem.data(held).or(() -> CutGemItem.data(held)).ifPresent(g -> lines.add("stone " + describe(g)));
+            RoughGemItem.data(held).or(() -> CutGemItem.data(held)).ifPresent(g -> lines.add(describe(g)));
         }
-        if (lines.isEmpty()) return fail(c, "not_jewelry", held.getHoverName().getString());
-        for (String line : lines) c.getSource().sendSuccess(() -> Component.literal(line), false);
+        if (lines.isEmpty()) return fail(c, "not_jewelry", held.getHoverName());
+        for (Component line : lines) c.getSource().sendSuccess(() -> line, false);
         return 1;
     }
 
-    private static String describe(GemData g) {
-        return String.format(Locale.ROOT, "%s size=%.2f/%.2f natural=%.2f inclusions=%.2f cut=%s q=%.3f damage=%s cap=%.2f", g.gem(), g.size(),
+    /** Keep diagnostic ids intact, but let the receiving client translate the surrounding labels. */
+    private static Component debug(String key, Object... values) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] instanceof Float || values[i] instanceof Double) values[i] = String.format(Locale.ROOT, "%.3f", values[i]);
+            else if (values[i] instanceof Boolean b) values[i] = Component.translatable(b ? "gui.yes" : "gui.no");
+            else if (values[i] == null) values[i] = Component.translatable("command.immersive_jewelry.debug.none");
+            else if (!(values[i] instanceof Component)) values[i] = values[i].toString();
+        }
+        return Component.translatable("command.immersive_jewelry.debug." + key, values);
+    }
+
+    private static Component describe(GemData g) {
+        return debug("stone", g.gem(), g.size(),
                 g.originalSize(), g.naturalQuality(), g.inclusions(), g.cut(), g.cutQuality(), g.damage().id(), g.qualityCap());
     }
 
@@ -177,7 +188,7 @@ public final class JewelryCommands {
         ServerPlayer player = c.getSource().getPlayerOrException();
         ItemStack held = player.getMainHandItem();
         JewelryData d = JewelryData.get(held).orElse(null);
-        if (d == null) return fail(c, "not_jewelry", held.getHoverName().getString());
+        if (d == null) return fail(c, "not_jewelry", held.getHoverName());
         JewelryData next = switch (stage) {
             case "smithing" -> new JewelryData(d.form(), d.metal(), d.gems(), d.design(), d.finish(), value, d.settingQuality(),
                     Workmanship.compute(value, d.cutQuality(), d.settingQuality()), d.integrity(), d.reworks(), d.defects(), d.maker(),
@@ -202,7 +213,7 @@ public final class JewelryCommands {
         ServerPlayer player = c.getSource().getPlayerOrException();
         ItemStack held = player.getMainHandItem();
         GemDefinition gem = JewelryDefinitions.server().gemForSource(held);
-        if (gem == null) return fail(c, "not_gem_source", held.getHoverName().getString());
+        if (gem == null) return fail(c, "not_gem_source", held.getHoverName());
         held.shrink(1);
         ItemStack stone = RoughGemItem.create(CuttingService.appraise(gem, player.getRandom()));
         if (!player.getInventory().add(stone)) player.drop(stone, false);
@@ -211,19 +222,19 @@ public final class JewelryCommands {
 
     private static int listGems(CommandContext<CommandSourceStack> c) {
         for (GemDefinition g : JewelryDefinitions.server().gems()) {
-            String line = String.format(Locale.ROOT, "%s trait=%s hardness=%.1f brittleness=%.2f rarity=%s cuts=%s%s", g.id(), g.trait(), g.hardness(),
-                    g.brittleness(), g.rarity().name().toLowerCase(Locale.ROOT), g.supportedCuts().isEmpty() ? "all" : g.supportedCuts(),
-                    g.auto() ? " (auto)" : "");
-            c.getSource().sendSuccess(() -> Component.literal(line), false);
+            Component line = debug("gem", g.id(), g.trait(), g.hardness(),
+                    g.brittleness(), Component.translatable("command.immersive_jewelry.rarity." + g.rarity().name().toLowerCase(Locale.ROOT)), g.supportedCuts().isEmpty() ? Component.translatable("command.immersive_jewelry.debug.all") : g.supportedCuts(),
+                    g.auto() ? Component.translatable("command.immersive_jewelry.debug.auto") : Component.empty());
+            c.getSource().sendSuccess(() -> line, false);
         }
         return JewelryDefinitions.server().gems().size();
     }
 
     private static int listCuts(CommandContext<CommandSourceStack> c) {
         for (CutDefinition cut : JewelryDefinitions.server().cuts()) {
-            String line = String.format(Locale.ROOT, "%s facets=%d pattern=%s difficulty=%.2f modifier=%.2f retention=%.2f stability=%.2f", cut.id(),
-                    cut.facets(), cut.pattern().name().toLowerCase(Locale.ROOT), cut.difficulty(), cut.qualityModifier(), cut.sizeRetention(), cut.stability());
-            c.getSource().sendSuccess(() -> Component.literal(line), false);
+            Component line = debug("cut", cut.id(),
+                    cut.facets(), Component.translatable("command.immersive_jewelry.pattern." + cut.pattern().name().toLowerCase(Locale.ROOT)), cut.difficulty(), cut.qualityModifier(), cut.sizeRetention(), cut.stability());
+            c.getSource().sendSuccess(() -> line, false);
         }
         return JewelryDefinitions.server().cuts().size();
     }
@@ -242,9 +253,9 @@ public final class JewelryCommands {
         Collection<JewelrySession> all = SessionManager.all();
         c.getSource().sendSuccess(() -> Component.translatable("command.immersive_jewelry.sessions", all.size()), false);
         for (JewelrySession s : all) {
-            String line = String.format(Locale.ROOT, "  #%d %s at %s step %d/%d", s.id, s.getClass().getSimpleName(), s.pos.toShortString(),
+            Component line = debug("session", s.id, s.getClass().getSimpleName(), s.pos.toShortString(),
                     s.nextStep(), s.maxSteps());
-            c.getSource().sendSuccess(() -> Component.literal(line), false);
+            c.getSource().sendSuccess(() -> line, false);
         }
         return all.size();
     }
@@ -255,7 +266,7 @@ public final class JewelryCommands {
         var worn = JewelryEquipment.worn(target);
         c.getSource().sendSuccess(() -> Component.translatable("command.immersive_jewelry.worn", target.getDisplayName(), worn.size(),
                 JewelryWearers.activePieces(target)), false);
-        worn.forEach((slot, stack) -> c.getSource().sendSuccess(() -> Component.literal("  " + slot + ": ").append(stack.getHoverName()), false));
+        worn.forEach((slot, stack) -> c.getSource().sendSuccess(() -> debug("slot", slot, stack.getHoverName()), false));
         return worn.size();
     }
 
@@ -274,7 +285,7 @@ public final class JewelryCommands {
     }
 
     private static int fail(CommandContext<CommandSourceStack> c, String key, Object arg) {
-        c.getSource().sendFailure(Component.translatable("command.immersive_jewelry." + key, String.valueOf(arg)));
+        c.getSource().sendFailure(Component.translatable("command.immersive_jewelry." + key, arg instanceof Component ? arg : String.valueOf(arg)));
         return 0;
     }
 

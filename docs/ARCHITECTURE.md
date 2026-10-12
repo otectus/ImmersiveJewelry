@@ -119,6 +119,14 @@ backwards), packets carry sequence numbers, and each session completes at most o
   the `immersive_jewelry` compound changes.
 - `max<Form>Slots` (server config) caps how many pieces of a form are active. Curios slot counts themselves are data
   (`data/immersive_jewelry/curios/slots`).
+- Progression hooks (1.1.0), all through `ImmersiveJewelryAPI` (or IMC `craft_gate`, `wear_gate`, `assist_source`):
+  `IJewelryCraftGate` refuses a setting with a reason at `startSetting`, after the design, stones and finish were
+  validated and before anything enters escrow; `IJewelryWearGate` (asked on both sides) makes a refused worn piece
+  inert like a broken one in `WearerState.refresh` and keeps it out of the built-in slots; `IJewelryAssistSource`
+  multiplies the server's cutting and setting difficulty per player, clamped to `minigames.minAssistDifficulty..1.0`,
+  and travels in the start packets the client already simulates from. `GemCutEvent` is posted before the stone returns
+  to the wheel and lets listeners refine a cut stone's quality (`setCutQuality`) or add dust to a shattered one
+  (`addExtraDust`); experience, advancements and the result packet follow the final values.
 
 ## Durability (spec 40-42)
 
@@ -140,9 +148,12 @@ Villager-made jewelry is capped below Masterwork (`villagerMaxWorkmanship`).
   an item property. There are no per-combination textures.
 - Textures are generated from the editable pixel-art source `art/jewelry_art.py`, and sounds from `art/jewelry_audio.py`
   (synthesised, deterministic). Both are exported by `tools/`.
-- Screens use a Stoneborn-style masonry surround, warm stone insets and restrained gold trim. Shared GUI textures
-  come from `art/jewelry_art.py`; `JewelryScreen` fits workstation and handbook layouts to the viewport and applies
-  the same transform to pointer input. Equipment slots and JEI cards share the palette and slot art.
+- Screens use Minecraft's own look, as Immersive Smithing's do: `VanillaGui` draws the vanilla container panel,
+  slots, buttons, creative scroller and book page from Minecraft's textures, so resource packs restyle them. The
+  minigames and tooltip-coloured readouts sit in dark displays; `JewelryGui` holds the minigame indicators (brass
+  marks the work), colours and cue sounds. The handbook is a vanilla book. `JewelryScreen` fits workstation and
+  handbook layouts to the viewport and applies the same transform to pointer input. The equipment slots screen is a
+  vanilla container and JEI uses its own slots and arrows. The only mod GUI textures are the empty-slot outlines.
   Accessibility options: larger targets and slower minigames (server-validated assist flags), colour-blind palette,
   high contrast, reduced motion, cue sounds and screen-shake strength. Success is always shown by shape, text and
   sound as well as colour.

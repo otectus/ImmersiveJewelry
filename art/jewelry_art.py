@@ -327,43 +327,14 @@ def tool_materials():
 
 # ================================================================================================ GUI, particles
 
-def gui_stone():
-    """Low-contrast slate masonry; textured edges stay clear of the solid text insets."""
-    im, _ = canvas(); d = ImageDraw.Draw(im)
-    d.rectangle((0, 0, 15, 15), fill='#202126')
-    for row in range(2):
-        y = row * 8
-        for col in range(-1, 2):
-            x = col * 16 + (8 if row % 2 else 0)
-            d.rectangle((x + 1, y + 1, x + 15, y + 6), fill='#36383c')
-            d.line((x + 2, y + 1, x + 14, y + 1), fill='#484a4d')
-            d.line((x + 1, y + 2, x + 1, y + 5), fill='#404247')
-            d.line((x + 2, y + 6, x + 14, y + 6), fill='#292c30')
-            d.line((x + 3, y + 3, x + 6, y + 3), fill='#3e4145')
-            d.line((x + 9, y + 4, x + 13, y + 4), fill='#313439')
-            d.point((x + 12, y + 2), fill='#414449')
-    return im
-
-
-def gui_slot():
-    """16px source, nine-sliced into an 18px slot so its 1px borders remain crisp."""
-    im, _ = canvas(); d = ImageDraw.Draw(im)
-    d.rectangle((0, 0, 15, 15), fill='#76674f')
-    d.line((0, 0, 15, 0), fill='#19171b'); d.line((0, 0, 0, 15), fill='#19171b')
-    d.rectangle((1, 1, 14, 14), fill='#2c2b30')
-    d.line((1, 1, 14, 1), fill='#242328'); d.line((1, 1, 1, 14), fill='#242328')
-    d.line((2, 14, 14, 14), fill='#424044'); d.line((14, 2, 14, 14), fill='#424044')
-    return im
-
-
 def slot_icon(kind):
-    # Follow the new jewelry silhouettes, using only their contours for an unobtrusive hint.
+    """An empty-slot hint drawn like vanilla's armour slots: the piece's contour in their flat #555555 grey."""
     form = {'necklace': 'amulet', 'head': 'circlet'}.get(kind, kind)
     pixels = frame_pixels(form)
     im, p = canvas()
     for x, y in pixels:
         edge = any((x + dx, y + dy) not in pixels for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-        if edge: p[x, y] = (224, 232, 228, 75)
+        if edge: p[x, y] = (85, 85, 85, 255)
     return im
 
 
@@ -489,8 +460,6 @@ def logo():
 
 def textures():
     out = {}
-    out['gui/stone.png'] = gui_stone()
-    out['gui/slot.png'] = gui_slot()
     for form in FRAMES:
         base, recess, high = frame_layers(form)
         out[f'item/{form}/frame.png'] = base

@@ -240,6 +240,11 @@ Next is playtesting minigame feel and balance with players, and a pack test with
 
 ## Decisions
 
+- 1.1.0 progression hooks are consulted at one authoritative point each: `IJewelryCraftGate` in
+  `SessionManager.startSetting` before escrow, `IJewelryWearGate` in `WearerState.refresh` and `JewelrySlotsMenu.mayPlace`
+  (both sides, so the gate takes a `Player`), `IJewelryAssistSource` in the two `params(...)` builders (no protocol
+  change: the start packets already carry the parameters). `GemCutEvent` moved before `wheel.setStone` and became
+  settable (`setCutQuality`, `addExtraDust`); nothing in this repo or Immersive Apotheosis listened to it before.
 - Deviations from the spec, with reasons, are in `docs/ARCHITECTURE.md` (Deviations summary). Do not re-litigate them.
 - Minigames are deterministic lockstep: fixed 20 ms steps (`StepClock`), simulations in `StrictMath` shared by both
   sides. Clients send only per-step inputs; the server replays them and grades. `SessionTiming` refuses steps that

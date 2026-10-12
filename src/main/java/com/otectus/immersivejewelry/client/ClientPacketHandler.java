@@ -17,6 +17,7 @@ import com.otectus.immersivejewelry.network.packet.OpenCutSelectPacket;
 import com.otectus.immersivejewelry.network.packet.SettingResultPacket;
 import com.otectus.immersivejewelry.network.packet.SettingStartPacket;
 import com.otectus.immersivejewelry.network.packet.StationEffectPacket;
+import com.otectus.immersivejewelry.network.packet.StationNoticePacket;
 import com.otectus.immersivejewelry.network.packet.SyncDefinitionsPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -78,7 +79,11 @@ public final class ClientPacketHandler {
     public static void closeSession(CloseSessionPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof MinigameScreen screen && screen.sessionId() == packet.sessionId()) screen.closeByServer();
-        if (mc.player != null && !packet.reason().getString().isEmpty()) mc.player.displayClientMessage(packet.reason(), true);
+        if (mc.player != null && !packet.reason().getString().isEmpty()) StationNotices.show(packet.reason(), true);
+    }
+
+    public static void stationNotice(StationNoticePacket packet) {
+        StationNotices.show(packet.message(), packet.failure());
     }
 
     public static void stationEffect(StationEffectPacket packet) {

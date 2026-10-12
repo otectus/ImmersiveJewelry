@@ -21,6 +21,8 @@ import jewelry_art  # noqa: E402
 RESOURCES = ROOT / 'src/main/resources'
 TEXTURES = RESOURCES / 'assets/immersive_jewelry/textures'
 DATA = RESOURCES / 'data'
+# Textures of the retired Stoneborn GUI. The screens draw Minecraft's own GUI textures now; these must never come back.
+RETIRED = ['gui/stone.png', 'gui/slot.png']
 
 
 def tint(layer, rgb):
@@ -236,6 +238,8 @@ def main():
         for path, im in targets.items():
             path.parent.mkdir(parents=True, exist_ok=True)
             im.save(path)
+        for name in RETIRED:
+            (TEXTURES / name).unlink(missing_ok=True)
         print(f'wrote {len(targets)} textures')
         return 0
 
@@ -247,9 +251,13 @@ def main():
         on_disk = Image.open(path).convert('RGBA')
         if on_disk.size != im.size or on_disk.tobytes() != im.tobytes():
             differing.append(f'differs {path.relative_to(RESOURCES)}')
+    up_to_date = len(targets) - len(differing)
+    for name in RETIRED:
+        if (TEXTURES / name).exists():
+            differing.append(f'retired {(TEXTURES / name).relative_to(RESOURCES)} (delete it)')
     for line in differing:
         print(line)
-    print(f'{len(targets) - len(differing)}/{len(targets)} textures up to date')
+    print(f'{up_to_date}/{len(targets)} textures up to date')
     return 1 if differing else 0
 
 

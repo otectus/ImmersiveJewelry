@@ -48,9 +48,11 @@ public final class ClientSetup {
     public static void init(IEventBus modBus) {
         modBus.addListener(ClientSetup::onClientSetup);
         modBus.addListener(ClientSetup::onRegisterRenderers);
+        modBus.addListener(StationNotices::register);
         modBus.addListener(JewelryColors::register);
         modBus.addListener(ClientSetup::onParticles);
         modBus.addListener(ClientSetup::onRegisterModels);
+        modBus.addListener(ClientSetup::onModelsReloaded);
         modBus.addListener(ClientSetup::onKeys);
         MinecraftForge.EVENT_BUS.register(ClientEvents.class);
     }
@@ -104,6 +106,10 @@ public final class ClientSetup {
 
     private static void onRegisterModels(ModelEvent.RegisterAdditional event) {
         event.register(LapidaryWheelRenderer.DISC);
+    }
+
+    private static void onModelsReloaded(ModelEvent.BakingCompleted event) {
+        JewelryColors.clearSamples();
     }
 
     private static void onKeys(RegisterKeyMappingsEvent event) {

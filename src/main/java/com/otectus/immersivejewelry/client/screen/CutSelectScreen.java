@@ -21,18 +21,27 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Choose a cut for the stone on the wheel: each cut's difficulty, the size it leaves, and how strongly it expresses the gem. */
+/**
+ * Choose a cut for the stone on the wheel: each cut's difficulty, the size it leaves, and how strongly it expresses the
+ * gem. A vanilla container panel: the stone in a dark readout (its traits keep their tooltip colours), the cuts as
+ * vanilla button rows with the creative scroller, and the chosen cut's numbers below.
+ */
 public class CutSelectScreen extends JewelryScreen {
     private static final int W = 360;
-    private static final int H = 252;
+    private static final int H = 224;
     private static final int ROW = 28;
     /** Rows that fit above the details; more cuts (from datapacks) scroll. */
     private static final int VISIBLE = 4;
+    private static final int LIST_X = 152;
+    private static final int LIST_Y = 20;
+    private static final int LIST_W = 196;
+    private static final int LIST_H = VISIBLE * ROW - 2 + 2;
 
     private final OpenCutSelectPacket packet;
     private final ItemStack stoneStack;
     private int selected;
     private int scroll;
+    private boolean draggingScroller;
     private final List<Button> toggles = new ArrayList<>();
 
     public CutSelectScreen(OpenCutSelectPacket packet) {
@@ -48,15 +57,20 @@ public class CutSelectScreen extends JewelryScreen {
 
     @Override
     protected void initPanel() {
-        Button begin = addRenderableWidget(JewelryGui.button(226, H - 28, 122, 20, Component.translatable("screen.immersive_jewelry.begin_cut"), b -> begin()));
+        Component take = Component.translatable("screen.immersive_jewelry.take_stone");
+        int takeWidth = Math.max(84, font.width(take) + 14);
+        int largerWidth = Math.max(56, font.width(Component.translatable("screen.immersive_jewelry.assist_larger").append(" ✓")) + 14);
+        int slowerWidth = Math.max(56, font.width(Component.translatable("screen.immersive_jewelry.assist_slower").append(" ✓")) + 14);
+        int beginX = 8 + takeWidth + largerWidth + slowerWidth + 12;
+        Button begin = addRenderableWidget(VanillaGui.button(beginX, H - 28, W - 8 - beginX, 20, Component.translatable("screen.immersive_jewelry.begin_cut"), b -> begin()));
         begin.active = !packet.options().isEmpty();
-        addRenderableWidget(JewelryGui.button(12, H - 28, 84, 20, Component.translatable("screen.immersive_jewelry.take_stone"), b -> {
+        addRenderableWidget(VanillaGui.button(8, H - 28, takeWidth, 20, take, b -> {
             ModNetwork.CHANNEL.sendToServer(new WheelActionPacket(packet.pos()));
             onClose();
         }));
         toggles.clear();
-        toggles.add(addRenderableWidget(JewelryGui.button(102, H - 28, 56, 20, assistLabel(true), b -> toggle(true))));
-        toggles.add(addRenderableWidget(JewelryGui.button(164, H - 28, 56, 20, assistLabel(false), b -> toggle(false))));
+        toggles.add(addRenderableWidget(VanillaGui.button(12 + takeWidth, H - 28, largerWidth, 20, assistLabel(true), b -> toggle(true))));
+        toggles.add(addRenderableWidget(VanillaGui.button(16 + takeWidth + largerWidth, H - 28, slowerWidth, 20, assistLabel(false), b -> toggle(false))));
     }
 
     private Component assistLabel(boolean larger) {
@@ -78,58 +92,76 @@ public class CutSelectScreen extends JewelryScreen {
                 ClientConfig.get(ClientConfig.LARGER_TARGETS), ClientConfig.get(ClientConfig.SLOWER_MINIGAMES)));
     }
 
+    private int maxScroll() {
+        return Math.max(0, packet.options().size() - VISIBLE);
+    }
+
+    /** Row width: the full list, less the scroller's column when the cuts scroll. */
+    private int rowWidth() {
+        return maxScroll() > 0 ? LIST_W - VanillaGui.SCROLLBAR_WIDTH - 1 : LIST_W;
+    }
+
+    private int scrollbarX() {
+        return LIST_X + rowWidth() + 2;
+    }
+
     @Override
     protected void renderPanel(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        JewelryGui.panel(g, left, top, W, H);
-        JewelryGui.heading(g, font, title, left, top, W);
+        VanillaGui.panel(g, left, top, W, H);
+        renderTitle(g, title, W - 16, mouseX, mouseY);
         JewelryDefinitions defs = JewelryDefinitions.client();
         GemData stone = packet.stone();
-        JewelryGui.well(g, 12, 34, 132, 118);
-        JewelryGui.slot(g, 19, 43);
-        g.renderItem(stoneStack, 20, 44);
-        JewelryGui.drawWrapped(g, font, stoneStack.getHoverName(), 44, 44, 94, JewelryGui.TEXT, 2);
-        g.drawString(font, StoneTraits.size(stone.size()).append(" · " + DescriptionBuilder.trim(stone.size()) + " ct"), 20, 72, JewelryGui.TEXT_DIM, false);
-        g.drawString(font, JewelryGui.clipped(font, StoneTraits.clarity(stone.inclusions()), 116), 20, 86, JewelryGui.TEXT_DIM, false);
-        g.drawString(font, JewelryGui.clipped(font, Component.translatable("tooltip.immersive_jewelry.luster", StoneTraits.luster(stone.naturalQuality())), 116), 20, 100, JewelryGui.TEXT_DIM, false);
-        JewelryGui.rule(g, 20, 115, 116);
-        JewelryGui.drawWrapped(g, font, Component.translatable("screen.immersive_jewelry.lap." + packet.tier().name().toLowerCase(java.util.Locale.ROOT)),
-                20, 124, 116, JewelryGui.TEXT_WARM, 2);
 
-        int listX = 152, listY = 36;
-        JewelryGui.well(g, listX - 1, 34, 198, 118);
+        // The stone: a dark readout, so its clarity and luster keep their tooltip colours.
+        VanillaGui.display(g, 8, 19, 136, LIST_H);
+        VanillaGui.slot(g, 14, 25);
+        g.renderItem(stoneStack, 15, 26);
+        VanillaGui.wrapped(g, font, stoneStack.getHoverName(), 37, 26, 102, VanillaGui.DISPLAY_TEXT, 2);
+        g.drawString(font, VanillaGui.clipped(font, Component.translatable("screen.immersive_jewelry.stone_size", StoneTraits.size(stone.size()),
+                DescriptionBuilder.trim(stone.size())), 124), 14, 50, VanillaGui.DISPLAY_TEXT_DIM, false);
+        g.drawString(font, VanillaGui.clipped(font, StoneTraits.clarity(stone.inclusions()), 124), 14, 62, VanillaGui.DISPLAY_TEXT_DIM, false);
+        g.drawString(font, VanillaGui.clipped(font, Component.translatable("tooltip.immersive_jewelry.luster", StoneTraits.luster(stone.naturalQuality())), 124), 14, 74, VanillaGui.DISPLAY_TEXT_DIM, false);
+        g.fill(14, 88, 138, 89, 0xFF4A4A4A);
+        VanillaGui.wrapped(g, font, Component.translatable("screen.immersive_jewelry.lap." + packet.tier().name().toLowerCase(java.util.Locale.ROOT)),
+                14, 95, 124, VanillaGui.DISPLAY_TEXT, 3);
+        if (mouseX >= 14 && mouseX < 32 && mouseY >= 25 && mouseY < 43) tooltip(stoneStack);
+
+        // The cuts, as vanilla button rows.
+        int rw = rowWidth();
+        VanillaGui.inset(g, LIST_X - 1, LIST_Y - 1, rw + 2, LIST_H);
         for (int i = scroll; i < Math.min(packet.options().size(), scroll + VISIBLE); i++) {
             OpenCutSelectPacket.Option o = packet.options().get(i);
-            int y = listY + (i - scroll) * ROW;
-            boolean hover = mouseX >= listX && mouseX < listX + 196 && mouseY >= y && mouseY < y + ROW - 2;
-            JewelryGui.row(g, listX, y, 196, ROW - 2, i == selected, hover);
-            g.drawString(font, JewelryGui.clipped(font, JewelryNames.cut(defs, o.cut()), 142), listX + 8, y + 4, JewelryGui.TEXT, false);
-            g.drawString(font, JewelryGui.clipped(font, Component.translatable("screen.immersive_jewelry.cut_row", o.facets(), DescriptionBuilder.trim(o.size())), 180),
-                    listX + 8, y + 15, JewelryGui.TEXT_DIM, false);
+            int y = LIST_Y + (i - scroll) * ROW;
+            boolean hover = mouseX >= LIST_X && mouseX < LIST_X + rw && mouseY >= y && mouseY < y + ROW - 2;
+            boolean current = i == selected;
+            VanillaGui.row(g, LIST_X, y, rw, ROW - 2, true, hover || current);
+            // The chosen cut is marked with a sign as well as the highlight.
+            String marker = current ? "» " : "";
+            Component name = JewelryNames.cut(defs, o.cut());
+            g.drawString(font, marker + VanillaGui.clipped(font, name, rw - 54 - font.width(marker)), LIST_X + 6, y + 4,
+                    current ? VanillaGui.ROW_TEXT_SELECTED : VanillaGui.ROW_TEXT, true);
+            g.drawString(font, VanillaGui.clipped(font, Component.translatable("screen.immersive_jewelry.cut_row", o.facets(), DescriptionBuilder.trim(o.size())), rw - 12),
+                    LIST_X + 6, y + 15, VanillaGui.ROW_TEXT_DIM, true);
             int pips = Math.max(1, Math.round(o.difficulty() * 5));
             for (int n = 0; n < 5; n++) {
-                int px = listX + 155 + n * 7;
+                int px = LIST_X + rw - 41 + n * 7;
                 if (n < pips) JewelryGui.diamond(g, px + 2, y + 7, 2, JewelryGui.BRASS_LIGHT);
-                else JewelryGui.ring(g, px + 2, y + 7, 2, JewelryGui.EDGE_LIGHT);
+                else JewelryGui.ring(g, px + 2, y + 7, 2, 0xFF2A2A2A);
             }
         }
-        if (packet.options().size() > VISIBLE) {
-            int track = VISIBLE * ROW - 2;
-            int thumb = Math.max(8, track * VISIBLE / packet.options().size());
-            int ty = listY + (track - thumb) * scroll / (packet.options().size() - VISIBLE);
-            g.fill(346, listY, 348, listY + track, JewelryGui.EDGE);
-            g.fill(346, ty, 348, ty + thumb, JewelryGui.BRASS);
-        }
-        JewelryGui.well(g, 12, 160, W - 24, 56);
+        if (maxScroll() > 0) VanillaGui.scrollbar(g, scrollbarX(), LIST_Y - 1, LIST_H, scroll / (float) maxScroll(), true);
+
+        // The chosen cut's numbers and description.
+        VanillaGui.rule(g, 8, 138, W - 16);
         if (!packet.options().isEmpty()) {
             OpenCutSelectPacket.Option o = packet.options().get(selected);
             CutDefinition cut = defs.cut(o.cut());
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.cut_potency", pct(o.potency())), 20, 168, JewelryGui.TEXT, false);
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.cut_stability", pct(o.stability())), 128, 168, JewelryGui.TEXT, false);
-            g.drawString(font, Component.translatable("screen.immersive_jewelry.cut_retained", DescriptionBuilder.trim(stone.size()), DescriptionBuilder.trim(o.size())), 240, 168, JewelryGui.TEXT, false);
-            if (cut != null) JewelryGui.drawWrapped(g, font, cut.description(), 20, 183, W - 40, JewelryGui.TEXT_DIM, 3);
+            g.drawString(font, Component.translatable("screen.immersive_jewelry.cut_potency", pct(o.potency())), 8, 146, VanillaGui.LABEL, false);
+            g.drawString(font, Component.translatable("screen.immersive_jewelry.cut_stability", pct(o.stability())), 116, 146, VanillaGui.LABEL, false);
+            g.drawString(font, Component.translatable("screen.immersive_jewelry.cut_retained", DescriptionBuilder.trim(stone.size()), DescriptionBuilder.trim(o.size())), 228, 146, VanillaGui.LABEL, false);
+            if (cut != null) VanillaGui.wrapped(g, font, cut.description(), 8, 159, W - 16, VanillaGui.LABEL_DIM, 3);
         }
         super.renderPanel(g, mouseX, mouseY, partialTick);
-        if (mouseX >= 19 && mouseX < 37 && mouseY >= 43 && mouseY < 61) g.renderTooltip(font, stoneStack, mouseX, mouseY);
     }
 
     private static String pct(float modifier) {
@@ -139,11 +171,15 @@ public class CutSelectScreen extends JewelryScreen {
 
     @Override
     protected boolean panelClicked(double mouseX, double mouseY, int button) {
-        int listX = 152;
-        int listY = 36;
+        if (button == 0 && maxScroll() > 0 && VanillaGui.onScrollbar(mouseX, mouseY, scrollbarX(), LIST_Y - 1, LIST_H)) {
+            draggingScroller = true;
+            scroll = VanillaGui.scrollAt(mouseY, LIST_Y - 1, LIST_H, maxScroll());
+            return true;
+        }
+        int rw = rowWidth();
         for (int i = scroll; i < Math.min(packet.options().size(), scroll + VISIBLE); i++) {
-            int y = listY + (i - scroll) * ROW;
-            if (mouseX >= listX && mouseX < listX + 196 && mouseY >= y && mouseY < y + ROW - 2) {
+            int y = LIST_Y + (i - scroll) * ROW;
+            if (mouseX >= LIST_X && mouseX < LIST_X + rw && mouseY >= y && mouseY < y + ROW - 2) {
                 if (button != 0) return false;
                 selected = i;
                 return true;
@@ -153,9 +189,23 @@ public class CutSelectScreen extends JewelryScreen {
     }
 
     @Override
+    protected boolean panelDragged(double mouseX, double mouseY, int button, double dx, double dy) {
+        if (draggingScroller) {
+            scroll = VanillaGui.scrollAt(mouseY, LIST_Y - 1, LIST_H, maxScroll());
+            return true;
+        }
+        return super.panelDragged(mouseX, mouseY, button, dx, dy);
+    }
+
+    @Override
+    protected boolean panelReleased(double mouseX, double mouseY, int button) {
+        draggingScroller = false;
+        return super.panelReleased(mouseX, mouseY, button);
+    }
+
+    @Override
     protected boolean panelScrolled(double mouseX, double mouseY, double delta) {
-        int max = Math.max(0, packet.options().size() - VISIBLE);
-        scroll = Math.max(0, Math.min(max, scroll - (int) Math.signum(delta)));
+        scroll = Math.max(0, Math.min(maxScroll(), scroll - (int) Math.signum(delta)));
         return true;
     }
 

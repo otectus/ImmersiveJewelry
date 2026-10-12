@@ -3,7 +3,7 @@ package com.otectus.immersivejewelry.client.compat.jei;
 import com.otectus.immersivejewelry.ImmersiveJewelry;
 import com.otectus.immersivejewelry.api.gem.GemData;
 import com.otectus.immersivejewelry.api.jewelry.MetalRef;
-import com.otectus.immersivejewelry.client.screen.JewelryGui;
+import com.otectus.immersivejewelry.client.screen.VanillaGui;
 import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.data.cut.CutDefinition;
 import com.otectus.immersivejewelry.data.finish.FinishDefinition;
@@ -61,8 +61,8 @@ public class DesignCategory extends JeiCategory<JewelryDesignRecipe> {
                 results.add(JewelryFactory.jewelry(design.form(), ref, set, design.getId(), ImmersiveJewelry.id("polished"), 0.75F, 0.8F, null));
             }
         }
-        builder.addSlot(RecipeIngredientRole.INPUT, 1 + 6, 1 + 6).addItemStacks(blanks).setBackground(slot, -1, -1);
-        builder.addSlot(RecipeIngredientRole.INPUT, 21 + 6, 1 + 6).addItemStacks(stones).setBackground(slot, -1, -1)
+        builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addItemStacks(blanks).setBackground(slot, -1, -1);
+        builder.addSlot(RecipeIngredientRole.INPUT, 21, 1).addItemStacks(stones).setBackground(slot, -1, -1)
                 .addTooltipCallback((v, t) -> t.add(Component.translatable("jei.immersive_jewelry.stones_needed", design.stones()).withStyle(ChatFormatting.GRAY)));
         List<ItemStack> costs = new ArrayList<>();
         for (FinishDefinition f : defs.finishes()) {
@@ -70,28 +70,25 @@ public class DesignCategory extends JeiCategory<JewelryDesignRecipe> {
             ItemStack cost = Inventories.display(f.cost(), f.costCount());
             if (!cost.isEmpty()) costs.add(cost);
         }
-        if (!costs.isEmpty()) builder.addSlot(RecipeIngredientRole.INPUT, 41 + 6, 1 + 6).addItemStacks(costs).setBackground(slot, -1, -1);
-        builder.addSlot(RecipeIngredientRole.CATALYST, 1 + 6, 23 + 6).addItemStack(new ItemStack(ModItems.JEWELERS_PLIERS.get())).setBackground(slot, -1, -1);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 130 + 6, 1 + 6).addItemStacks(results.isEmpty() ? List.of(design.getResultItem(null)) : results)
+        if (!costs.isEmpty()) builder.addSlot(RecipeIngredientRole.INPUT, 41, 1).addItemStacks(costs).setBackground(slot, -1, -1);
+        builder.addSlot(RecipeIngredientRole.CATALYST, 1, 23).addItemStack(new ItemStack(ModItems.JEWELERS_PLIERS.get())).setBackground(slot, -1, -1);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 130, 1).addItemStacks(results.isEmpty() ? List.of(design.getResultItem(null)) : results)
                 .setBackground(slot, -1, -1);
     }
 
     @Override
     public void draw(JewelryDesignRecipe design, IRecipeSlotsView slots, GuiGraphics g, double mouseX, double mouseY) {
-        g.pose().pushPose();
-        g.pose().translate(6, 6, 0);
         arrow.draw(g, 90, 1);
         var font = Minecraft.getInstance().font;
         // Text stays clear of the bookmark button JEI puts at the bottom right.
-        g.drawString(font, JewelryGui.clipped(font, design.name(), 120), 24, 24, JewelryGui.TEXT, false);
+        g.drawString(font, VanillaGui.clipped(font, design.name(), 120), 24, 24, VanillaGui.LABEL, false);
         int y = 34;
         for (var line : font.split(Component.translatable("jei.immersive_jewelry.design_setting", design.stones(),
                 Component.translatable("setting_style.immersive_jewelry." + design.style().id()), design.pointsPerStone()), 112)) {
             if (y > 43) break;
-            g.drawString(font, line, 24, y, JewelryGui.TEXT_DIM, false);
+            g.drawString(font, line, 24, y, VanillaGui.LABEL_DIM, false);
             y += 9;
         }
-        if (design.sketch()) g.drawString(font, JewelryGui.clipped(font, Component.translatable("jei.immersive_jewelry.design_sketch"), 112), 24, 53, JewelryGui.TEXT_WARM, false);
-        g.pose().popPose();
+        if (design.sketch()) g.drawString(font, VanillaGui.clipped(font, Component.translatable("jei.immersive_jewelry.design_sketch"), 112), 24, 53, VanillaGui.LABEL, false);
     }
 }

@@ -32,6 +32,8 @@ public abstract class MinigameScreen extends JewelryScreen {
     protected boolean pressed;
     private boolean mouseDown;
     private boolean keyDown;
+    /** A press that began since the last simulated step: a tap shorter than a frame still presses for one step. */
+    private boolean pressLatched;
     protected float shake;
 
     /**
@@ -78,7 +80,8 @@ public abstract class MinigameScreen extends JewelryScreen {
         long target = Math.min(maxSteps(), (Util.getMillis() - startMs) / StepClock.STEP_MS);
         int budget = 25;
         while (step < target && budget-- > 0 && !localComplete) {
-            pressed = mouseDown || keyDown;
+            pressed = mouseDown || keyDown || pressLatched;
+            pressLatched = false;
             if (simulate(step, pressed)) localComplete = true;
             step++;
             if (step - unsentFrom >= BATCH) flush();
@@ -117,6 +120,7 @@ public abstract class MinigameScreen extends JewelryScreen {
         if (super.panelClicked(mouseX, mouseY, button)) return true;
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && !finished) {
             mouseDown = true;
+            pressLatched = true;
             return true;
         }
         return false;
@@ -132,6 +136,7 @@ public abstract class MinigameScreen extends JewelryScreen {
     public boolean keyPressed(int key, int scan, int modifiers) {
         if (key == GLFW.GLFW_KEY_SPACE && !finished) {
             keyDown = true;
+            pressLatched = true;
             return true;
         }
         return super.keyPressed(key, scan, modifiers);

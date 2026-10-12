@@ -44,9 +44,9 @@ public class JewelryItem extends Item {
         if (data == null) return super.getName(stack);
         JewelryDefinitions defs = JewelryDefinitions.current();
         if (data.principal() != null) {
-            return Component.translatable(getDescriptionId() + ".named", JewelryNames.gem(defs, data.principal().gem()));
+            return JewelryNames.named(getDescriptionId() + ".named", JewelryNames.gem(defs, data.principal().gem()), super.getName(stack));
         }
-        return Component.translatable(getDescriptionId() + ".plain", JewelryNames.metal(defs, data.metal()));
+        return JewelryNames.named(getDescriptionId() + ".plain", JewelryNames.metal(defs, data.metal()), super.getName(stack));
     }
 
     @Override

@@ -81,6 +81,8 @@ final class WearerState {
         for (Map.Entry<String, ItemStack> e : worn.entrySet()) {
             JewelryData data = JewelryData.get(e.getValue()).orElse(null);
             if (data == null) continue;
+            // A piece a wear gate refuses stays worn and inert, like a broken one, and does not use up a form slot.
+            if (!ImmersiveJewelryAPI.mayWear(player, e.getValue(), data)) continue;
             int count = counts.merge(data.form(), 1, Integer::sum);
             if (count > maxActive(data.form())) continue;
             ResolvedJewelry resolved = JewelryResolver.resolve(data, defs);

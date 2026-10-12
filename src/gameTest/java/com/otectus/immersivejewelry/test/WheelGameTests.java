@@ -38,6 +38,28 @@ public final class WheelGameTests {
         return (LapidaryWheelBlockEntity) h.getLevel().getBlockEntity(h.absolutePos(STATION));
     }
 
+    @GameTest(template = "empty")
+    public static void animationStaysForwardAcrossWrapAndCoastsToRest(GameTestHelper h) {
+        LapidaryWheelBlockEntity wheel = wheel(h);
+        wheel.angle = (float) (Math.PI * 2) - .1F;
+        wheel.speed = .55F;
+        wheel.lock(java.util.UUID.randomUUID());
+        LapidaryWheelBlockEntity.clientTick(h.getLevel(), wheel.getBlockPos(), wheel.getBlockState(), wheel);
+        h.assertTrue(wheel.angle < wheel.prevAngle, "fixture crosses the modulo boundary");
+        float last = wheel.renderAngle(0);
+        for (int i = 1; i <= 10; i++) {
+            float next = wheel.renderAngle(i / 10F);
+            h.assertTrue(next > last && next - last < .06F, "interpolated motion stays forward and smooth");
+            last = next;
+        }
+        h.assertTrue(Math.abs(last - (float) (Math.PI * 2) - wheel.angle) < 1e-5F, "endpoint agrees modulo one revolution");
+        wheel.unlock();
+        for (int i = 0; i < 200; i++) LapidaryWheelBlockEntity.clientTick(h.getLevel(), wheel.getBlockPos(), wheel.getBlockState(), wheel);
+        h.assertTrue(wheel.speed < .002F, "idle wheel coasts down");
+        h.assertTrue(wheel.getRenderBoundingBox().maxY >= wheel.getBlockPos().getY() + 19D / 16D, "rotating corners stay inside render bounds");
+        h.succeed();
+    }
+
     /** Mounts a diamond and starts a round cut; returns the session. */
     private static CuttingSession startCut(GameTestHelper h, FakePlayer player, LapidaryWheelBlockEntity wheel, String cut) {
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.DIAMOND));
