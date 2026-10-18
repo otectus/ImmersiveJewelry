@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2 - Translations
+
+- Added Spanish, Brazilian Portuguese, Russian, and Simplified Chinese translations.
+
 ## 1.1.1 - Vanilla screens
 
 Every screen now uses Minecraft's own look, as Immersive Smithing's do. Gameplay, items, data and the network protocol
