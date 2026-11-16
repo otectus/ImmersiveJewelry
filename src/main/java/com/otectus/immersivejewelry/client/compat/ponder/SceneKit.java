@@ -229,6 +229,10 @@ final class SceneKit {
         return at(bench, 3.0F, 14.4F, 1.9F);
     }
 
+    Vec3 drawer() {
+        return at(bench, 7.5F, 14.4F, 2.0F);
+    }
+
     Vec3 folio() {
         return at(bench, 13.9F, 14.4F, 7.2F);
     }
@@ -487,6 +491,27 @@ final class SceneKit {
     void supplyItem(int i, ItemStack stack) {
         ItemStack copy = stack.copy();
         atBench(b -> b.setSupply(i, copy));
+    }
+
+    /** The demonstration bench's staging drawer opens or shuts (its own level's bench only). */
+    void drawerOpen(boolean open) {
+        atBench(b -> b.setDrawerOpen(open));
+    }
+
+    void stageItem(int i, ItemStack stack) {
+        ItemStack copy = stack.copy();
+        atBench(b -> b.setStaged(i, copy));
+    }
+
+    /** A staged stone goes on into the first free tray cell, as the drawer's "to the work area" moves it. */
+    void stagedToTray(int i) {
+        atBench(b -> {
+            ItemStack stone = b.staged(i);
+            int cell = b.firstEmptyTray();
+            if (stone.isEmpty() || cell < 0) return;
+            b.setTray(cell, stone.copyWithCount(1));
+            b.setStaged(i, stone.copyWithCount(stone.getCount() - 1));
+        });
     }
 
     /**

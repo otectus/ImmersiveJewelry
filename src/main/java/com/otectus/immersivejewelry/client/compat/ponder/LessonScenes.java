@@ -50,6 +50,7 @@ final class LessonScenes {
             case SEAT_AND_PRONGS -> SceneKit.board(lesson, SceneKit.Layout.BENCH, LessonScenes::prongs);
             case BEZEL_SETTING -> SceneKit.board(lesson, SceneKit.Layout.BENCH, LessonScenes::bezel);
             case THREE_STONES -> SceneKit.board(lesson, SceneKit.Layout.BENCH, LessonScenes::threeStones);
+            case STAGING_AND_SUPPLIES -> SceneKit.board(lesson, SceneKit.Layout.BENCH, LessonScenes::staging);
             case POLISHED_FINISH -> SceneKit.board(lesson, SceneKit.Layout.BENCH, k -> finish(k, "polished", new ItemStack(ModItems.POLISHING_COMPOUND.get(), 3)));
             case BURNISHED_FINISH -> SceneKit.board(lesson, SceneKit.Layout.BENCH, k -> finish(k, "burnished", ItemStack.EMPTY));
             case ANTIQUE_FINISH -> SceneKit.board(lesson, SceneKit.Layout.BENCH, k -> finish(k, "antique", new ItemStack(Items.GUNPOWDER, 2)));
@@ -293,6 +294,33 @@ final class LessonScenes {
         k.say(2, k.folio(), 90);
         for (int i = 0; i < 3; i++) k.trayItem(i, SceneKit.stack(cut("diamond", "round", 0.7F + i * 0.06F)));
         k.say(3, k.tray());
+    }
+
+    /**
+     * The staging drawer and the supply jars: real stacks put by hand, a shut drawer that hides and takes nothing, the jars'
+     * counts, and preparing exactly the stones a design still needs. Its own demonstration bench only.
+     */
+    private static void staging(SceneKit k) {
+        k.jeweler(k.bench);
+        k.pose(JewelerClip.BENCH_READY);
+        k.clampItem(SceneKit.blank(ModItems.RING_BLANK.get()));
+        k.mark(k.drawer(), 0.2, PonderPalette.WHITE, 70);
+        k.say(0, k.drawer());
+        k.click(k.drawer(), 30, null);
+        k.drawerOpen(true);
+        k.stageItem(0, SceneKit.stack(cut("ruby", "round", 0.82F)));
+        k.stageItem(1, SceneKit.stack(cut("ruby", "round", 0.74F)));
+        k.stageItem(2, new ItemStack(ModItems.POLISHING_COMPOUND.get(), 4));
+        k.say(1, k.drawer());
+        k.supplyItem(0, new ItemStack(ModItems.POLISHING_COMPOUND.get(), 3));
+        k.mark(k.supplies(), 0.2, PonderPalette.GREEN, 70);
+        k.say(2, k.supplies());
+        k.click(k.folio(), 30, null);
+        k.stagedToTray(0);
+        k.say(3, k.tray());
+        k.drawerOpen(false);
+        k.warn(4, k.drawer());
+        k.note(5);
     }
 
     private static void prongs(SceneKit k) {

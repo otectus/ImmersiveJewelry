@@ -121,6 +121,8 @@ OUTLINE = {
     'designs/folio': ('designs', 'immersive_jewelry:jewelers_bench', 0, None, [T(0), T(1), T(2), W('folio_and_sketch', 3)]),
     'designs/sketches': ('designs', 'immersive_jewelry:design_sketch', 1, 'handbook.immersive_jewelry.designs.title',
                          [M('designs'), T(0), C('policy_card', topic='designs')]),
+    'designs/preparation': ('designs', 'immersive_jewelry:polishing_compound', 3, None,
+                            [T(0), T(1), T(2), T(3), W('staging_and_supplies', 4)]),
     'designs/atlas': ('designs', 'immersive_jewelry:amulet', 2, None,
                       [T(0)] + [C('design_card', design='immersive_jewelry:designs/' + d) for d in DESIGNS]
                       + [C('design_card', design='others')]),

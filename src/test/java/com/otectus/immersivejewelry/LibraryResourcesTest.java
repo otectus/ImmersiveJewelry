@@ -215,14 +215,53 @@ class LibraryResourcesTest {
         }
     }
 
+    /**
+     * Ponder and playerAnimator are optional, so their classes may be missing at run time: Ponder is named only inside
+     * {@code client/compat/ponder}, playerAnimator only by {@code JewelerPoses} and {@code JewelerLayer}, and every way into them
+     * from elsewhere asks {@code OptionalLibraries} first.
+     */
+    @Test
+    void theOptionalLibrariesAreReachedOnlyBehindTheirGates() throws IOException {
+        Path root = Path.of("src/main/java/com/otectus/immersivejewelry");
+        try (var files = Files.walk(root)) {
+            for (Path path : files.filter(p -> p.toString().endsWith(".java")).toList()) {
+                String rel = root.relativize(path).toString().replace('\\', '/');
+                String text = Files.readString(path, StandardCharsets.UTF_8);
+                if (!rel.startsWith("client/compat/ponder/")) {
+                    assertFalse(text.contains("net.createmod"), rel + " names Ponder outside client/compat/ponder");
+                    // The package's one entry point is called from ClientSetup, behind the gate checked below.
+                    if (!rel.equals("client/ClientSetup.java")) assertFalse(text.contains("compat.ponder."), rel + " reaches client/compat/ponder");
+                }
+                if (!rel.equals("client/presentation/anim/JewelerPoses.java") && !rel.equals("client/presentation/anim/JewelerLayer.java")) {
+                    assertFalse(text.contains("dev.kosmx"), rel + " names playerAnimator outside JewelerPoses/JewelerLayer");
+                }
+            }
+        }
+        String setup = source("client/ClientSetup.java");
+        assertTrue(Pattern.compile("OptionalLibraries\\.ponder\\(\\)\\)\\s*\\{\\s*event\\.enqueueWork\\(com\\.otectus\\.immersivejewelry\\.client\\.compat\\.ponder\\.JewelryPonder::init\\)")
+                .matcher(setup).find(), "JewelryPonder.init only with Ponder");
+        for (String file : List.of("client/presentation/Presentation.java", "client/compat/ponder/JewelerActor.java")) {
+            String text = source(file);
+            for (var line : text.lines().filter(l -> l.contains("JewelerPoses.") || l.contains("JewelerPoses::")).toList()) {
+                if (line.trim().startsWith("*") || line.trim().startsWith("import")) continue;
+                // The gate is on the line itself or among the three before it (an early return in the same method).
+                List<String> before = text.substring(0, text.indexOf(line)).lines().toList();
+                boolean guarded = line.contains("OptionalLibraries.bodyPoses()") || before.subList(Math.max(0, before.size() - 3), before.size())
+                        .stream().anyMatch(l -> l.contains("OptionalLibraries.bodyPoses()"));
+                assertTrue(guarded, file + ": playerAnimator reached without its gate: " + line.trim());
+            }
+        }
+    }
+
     @Test
     void theLibrariesAreDeclaredWithTheirSides() throws IOException {
         String toml = Files.readString(Path.of("src/main/resources/META-INF/mods.toml"), StandardCharsets.UTF_8);
         for (String both : List.of("patchouli", "geckolib", "diegesis")) {
             assertTrue(Pattern.compile("modId=\"" + both + "\"\\s+mandatory=true[\\s\\S]*?side=\"BOTH\"").matcher(toml).find(), both);
         }
+        // Optional since 1.3.0: the game runs without them (OptionalLibraries), and with them only the tested ranges.
         for (String client : List.of("ponder", "flywheel", "playeranimator")) {
-            assertTrue(Pattern.compile("modId=\"" + client + "\"\\s+mandatory=true[\\s\\S]*?side=\"CLIENT\"").matcher(toml).find(), client);
+            assertTrue(Pattern.compile("modId=\"" + client + "\"\\s+mandatory=false[\\s\\S]*?side=\"CLIENT\"").matcher(toml).find(), client);
         }
         // Common code never reaches the client-only libraries.
         try (var files = Files.walk(Path.of("src/main/java/com/otectus/immersivejewelry"))) {

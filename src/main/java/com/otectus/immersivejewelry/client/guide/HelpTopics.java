@@ -34,7 +34,7 @@ public final class HelpTopics {
             "stones/sources", "stones/appraisal", "stones/gems",
             "wheel/wheel", "wheel/cutting", "wheel/cuts", "wheel/recutting",
             "metal/blanks", "metal/forms", "metal/metals",
-            "designs/folio", "designs/sketches", "designs/atlas",
+            "designs/folio", "designs/sketches", "designs/atlas", "designs/preparation",
             "setting/bench", "setting/prongs", "setting/bezels", "setting/multi_stone", "setting/defects",
             "finishing/finishes", "finishing/refinishing",
             "wearing/slots", "wearing/effects", "wearing/gates",

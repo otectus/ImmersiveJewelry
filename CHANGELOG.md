@@ -1,5 +1,83 @@
 # Changelog
 
+## 1.3.0 - Diegesis beta 11: a staging drawer, supply jars, a searchable folio and a working side
+
+The bench gains a staging drawer for loose stacks and supply jars that work like any container slot, the folio can be
+searched and prepares exactly the stones a design still needs, either side of a station can be the working side, and a
+steady work lamp lights the bench. Every cut, setting, finish, rework and portable piece works as before, and worlds carry
+over unchanged.
+
+### Upgrading from 1.2.2
+
+- **Diegesis 1.0.0-beta.11 or newer** (tested: CurseForge file 9643618) is required on clients and servers; beta 10 is refused
+  at start-up (the scenes use beta 11 fields). Newer Diegesis releases are accepted (see *Diegesis updates* below).
+- **Ponder, Flywheel and playerAnimator are now optional** (they were required on clients in 1.2.2). Without Ponder (and the
+  Flywheel it needs) the handbook's Watch buttons are greyed out with a tooltip saying why, and the help key opens the step's
+  handbook page instead of its lesson. Without playerAnimator nobody's body is posed at the stations, and a demonstration's
+  jeweler stands still. Nothing else changes: work, items, the rigs, the handbook and worn jewelry need neither. When they are
+  installed, the same tested versions are required as before. Patchouli and GeckoLib are still required.
+- **Network protocol 5.** Client and server must both run 1.3.0: discrete commands carry a sequence number and four bench
+  commands were added.
+- **Saves:** benches keep save format 2 and gain three optional entries: `Staging` (the drawer's four stacks), `DrawerOpen`
+  and `Station` (where staged stacks stand). A 1.2.x bench loads with an empty, shut drawer; nothing is copied into it.
+  Wheels, stones with work in them, Unfinished pieces and 1.1 or Jewelcraft data load exactly as before.
+- **Client config** (`[workstation]`): `workingSide` (RIGHT, LEFT), `looseItemMotion` (AUTO, NATURAL, CALM), `workLamp`.
+- **Key:** *Staging drawer (list)* (N), in the workstation category.
+
+### The bench's storage
+
+- **Supply jars** are real container slots now: click, split, shift-click, double-click, the mouse wheel (one in, one back)
+  and middle-drag work on them as anywhere, and their counts stand facing you. A finish still takes its material at its
+  first stroke; until then you can take it back.
+- **The staging drawer** in front of the vise keeps four loose stacks of the bench's own things (stones, frames, pieces,
+  pliers, supplies). Pull it open by its brass handle or the drawer list; stacks stay where your hand leaves them and settle
+  gently (no throwing, nothing pushed out, walls on every side). Shut, it hides them and takes nothing. Nothing is ever used
+  from the drawer by itself.
+- **The drawer's list** (N, or right-click the handle) shows its four stacks by number and moves each to the bench or back to
+  your inventory, open or shut, by keys or clicks. Sneak-using the bench also takes a staged stack back.
+- Shift-clicking a stack the bench has no place for puts it into the open drawer when there is room, and says so when
+  there is not.
+
+### The folio
+
+- A search field (click it, or press / or Ctrl+F) finds designs by name, form, gem, cut, finish or id, in your language.
+  While it has the keyboard every key is text: no station, help or drop key acts, and the first Escape only leaves the field.
+- Filters: known sketches, designs for the clamped frame, designs whose stones you have; favourites as before. The chosen
+  design is kept by id, so a filter or a reload never quietly chooses another one.
+- **Prepare stones** replaces staging: it shows the stones that fit (gem, cut, quality, damage, where they are) and the
+  finishing material with when it is used; keep the best cuts or choose the gem and the stones you prefer. The bench moves
+  exactly the stones still needed into the tray, one request, and says what moved and what is missing.
+
+### Views and comfort
+
+- Both stations' shots now look from the front right; the `workingSide` option LEFT mirrors them. The pointer follows the
+  real camera from either side.
+- `looseItemMotion` CALM (and reduced motion, by default) lets staged stacks stand exactly where they are put.
+- A steady brass work lamp lights the bench close-up (a scene light: it does not light the world). `workLamp` turns it off.
+- Changed display options apply the next time you open a station (you are told); the working side switches at once.
+
+### Diegesis updates
+
+- A Diegesis update no longer stops the game from starting or takes Immersive Jewelry down with it. At start-up the mod checks
+  every part of Diegesis it uses; whatever a newer release no longer offers is switched off and falls back, and the log
+  (and `/immersivejewelry diegesis`) says exactly what. Fallbacks, from mild to severe: station keys through the game's own
+  key events; the authored camera side only; the staging drawer as a list; the jars and drawer moved by the mod's own clicks;
+  station scenes simplified step by step until the library can read them; and at worst the hands-on stations stay closed
+  while the blocks keep their walk-up use (putting things on, taking them off, packing work), with a message saying why.
+- Items and work never depend on Diegesis: benches, wheels, stones, staged stacks and unfinished pieces load and save the same
+  with any Diegesis, and a change the check could not foresee switches the stations off for the session instead of crashing.
+- Checked by running the mod (built for beta 11) against Diegesis beta 10, which lacks everything beta 11 added.
+
+### Safety and fixes
+
+- Discrete commands are numbered per lease and paced (20 a second); repeats, stale clicks (a position that changed in the
+  meantime), malformed arguments and commands about another work change nothing, and the bench's state is sent again.
+- Station keys arrive through Diegesis' new key hook; a held key's repeats never run a one-shot action (a tool change, a
+  confirm, a pack) twice.
+- Jade shows the supply count and how full the drawer is (never what a shut drawer holds); `/immersivejewelry sessions` shows
+  the bench's storage and the last command number, and its lease line is translated now.
+- New handbook entry *Preparing the Bench* and a new demonstration *The Drawer and the Jars*, in all five languages.
+
 ## 1.2.2 - The Jeweler's Handbook, demonstrations, rigs and body language
 
 The Jeweler's Handbook is now a full Patchouli book with live pages, every step of the craft has a Ponder demonstration

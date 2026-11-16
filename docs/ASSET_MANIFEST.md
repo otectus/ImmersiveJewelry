@@ -1,4 +1,4 @@
-# Immersive Jewelry - library and asset manifest (1.2.2)
+# Immersive Jewelry - library and asset manifest (1.3.0)
 
 What each presentation library owns, the assets it reads, their editable sources and the names the code depends on.
 Versions and ranges live only in `gradle.properties`; `mods.toml` takes them from there.
@@ -7,15 +7,16 @@ Versions and ranges live only in `gradle.properties`; `mods.toml` takes them fro
 
 | Library | Artifact (Maven) | Sides | Used by |
 |---|---|---|---|
-| Diegesis | `curse.maven:diegesis-1790227:<diegesis_curse_file>` | both | `workstation/station`, `client/workstation` (since 1.2.0) |
+| Diegesis | `curse.maven:diegesis-1790227:<diegesis_curse_file>` | both | `workstation/station`, `blockentity/JewelersBenchBlockEntity` (its `StationHost` state, 1.3), `client/workstation` (since 1.2.0) |
 | Patchouli | `vazkii.patchouli:Patchouli:<patchouli_version>` (`:api` to compile) | both | `client/guide`, `item/HandbookItem` (client path) |
 | GeckoLib 4 | `software.bernie.geckolib:geckolib-forge-1.20.1:<geckolib_version>` (mclib compile-only) | both | `blockentity/StationBlockEntity` (animatable), `client/presentation/geo` |
-| Ponder | `net.createmod.ponder:Ponder-Forge-1.20.1:<ponder_version>` (not transitive) | client | `client/compat/ponder` |
-| Flywheel | `dev.engine-room.flywheel:flywheel-forge-1.20.1:<flywheel_version>` (runtime) | client | required by Ponder |
-| playerAnimator | `dev.kosmx.player-anim:player-animation-lib-forge:<playeranimator_version>` | client | `client/presentation/anim`, `client/compat/ponder/JewelerActor` |
+| Ponder | `net.createmod.ponder:Ponder-Forge-1.20.1:<ponder_version>` (not transitive) | client, optional (1.3.0) | `client/compat/ponder` |
+| Flywheel | `dev.engine-room.flywheel:flywheel-forge-1.20.1:<flywheel_version>` (runtime) | client, optional (1.3.0) | needed by Ponder only |
+| playerAnimator | `dev.kosmx.player-anim:player-animation-lib-forge:<playeranimator_version>` | client, optional (1.3.0) | `client/presentation/anim` (`JewelerPoses`, `JewelerLayer`) |
 
 Repositories have content filters (`build.gradle`). No library is shaded. Common code imports none of Patchouli, Ponder or
-playerAnimator (`LibraryResourcesTest.theLibrariesAreDeclaredWithTheirSides`).
+playerAnimator (`LibraryResourcesTest.theLibrariesAreDeclaredWithTheirSides`); the optional ones are reached only behind
+`client/presentation/OptionalLibraries` (`LibraryResourcesTest.theOptionalLibrariesAreReachedOnlyBehindTheirGates`).
 
 ## GeckoLib rigs
 
@@ -67,7 +68,8 @@ first person disabled. Clips are chosen by `PoseRules` from the station's synced
 Book `immersive_jewelry:jewelers_handbook`: `data/immersive_jewelry/patchouli_books/jewelers_handbook/book.json` (i18n,
 custom book item, not generated), structure under `assets/immersive_jewelry/patchouli_books/jewelers_handbook/en_us/`.
 Structure source: `tools/generate_book.py` (OUTLINE). Text: lang keys `book.immersive_jewelry.*`, the fourteen 1.2
-chapters as `handbook.immersive_jewelry.<chapter>.<n>`. 11 categories, 36 entries.
+chapters as `handbook.immersive_jewelry.<chapter>.<n>`. 11 categories, 37 entries (1.3: `designs/preparation`, the search
+field, the staging drawer, the supply jars and preparing stones).
 
 Custom components (`client/guide`, page types `immersive_jewelry:<template>`): `gem_card` (`gem` or `generic`),
 `cut_card` (`cut`), `design_card` (`design` or `others`), `finish_card` (`finish`), `metal_card` (`show`: `routes` or
@@ -76,11 +78,23 @@ Custom components (`client/guide`, page types `immersive_jewelry:<template>`): `
 
 ## Ponder lessons
 
-Plugin `JewelryPonderPlugin`; 33 lessons (`client/guide/Lessons`), scene ids `immersive_jewelry:<lesson>`, hidden deep-link
+Plugin `JewelryPonderPlugin`; 34 lessons (`client/guide/Lessons`; 1.3: `staging_and_supplies`, the drawer and the jars, on
+the demonstration bench's own state only), scene ids `immersive_jewelry:<lesson>`, hidden deep-link
 tags `immersive_jewelry:lesson/<lesson>`, index tags `first_piece`, `lapidary`, `setting`, `finishing`, `care`,
 `equipment`. Structures (`tools/generate_ponder.py`): `ponder/wheel.nbt`, `ponder/bench.nbt`, `ponder/workshop.nbt`.
 Captions: `immersive_jewelry.ponder.shared.<lesson>.<n>`, headers `immersive_jewelry.ponder.<lesson>.header`, tags
 `immersive_jewelry.ponder.tag.<tag>[.description]`.
+
+## Station scenes (Diegesis)
+
+`assets/immersive_jewelry/diegesis/stations/{lapidary_wheel,jewelers_bench}.json`, authored by hand against the beta 11
+schema (pinned `$schema`), read by `client/workstation/SceneLoader` and transformed by `workstation/station/SceneComfort`
+before the library's codec (never auto-loaded from `diegesis/scenes/`). Names the code depends on: the `work` painter node;
+wheel `handle`, `stone`, `lap`, `collar`, `cup`, `loupe`, `lever`, `specimen_<n>`; bench `piece`, `dock`, `tray_0`-`tray_7`
+(`takes_items`), `supply_0`-`supply_2` (library slots `supplies[0..2]`), `drawer` (the handle), `lamp` (the work lamp's
+light), the tool and folio nodes, and the bench's `placing` (group `staging`, surfaces 0 and 1 are the drawer's two
+compartments, written open). The drawer, its case and the lamp are drawn by `BenchPainter` (no new texture: the bench's wood,
+felt and brass sprites).
 
 ## Worn jewelry
 

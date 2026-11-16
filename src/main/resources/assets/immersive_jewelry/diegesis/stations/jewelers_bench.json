@@ -1,10 +1,10 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Pocky-l/diegesis/main/docs/schema/scene.schema.json",
-  "$comment": "Immersive Jewelry: the Jeweler's Bench. Nodes are pick and stroke zones only; the behaviour places them (client/workstation/render/BenchPainter) and draws the piece, tools, tray and supplies through the 'work' node. The camera looks obliquely at the clamp. Placement nodes take items (Diegesis takes_items): a stack carried from the drawer hovers them, the behaviour shows where it would go and its click becomes a Jewelry placement.",
+  "$schema": "https://raw.githubusercontent.com/Pocky-l/diegesis/v1.0.0-beta.11/docs/schema/scene.schema.json",
+  "$comment": "Immersive Jewelry: the Jeweler's Bench. Nodes are pick and stroke zones only; the behaviour places them (client/workstation/render/BenchPainter) and draws the piece, tools, tray, jars, drawer and lamp through the 'work' node. The camera looks obliquely at the clamp from the front right (the left working side mirrors it across x = 8). Placement nodes take items (Diegesis takes_items): a stack carried from the drawer hovers them, the behaviour shows where it would go and its click becomes a Jewelry placement. The supply jars are library slots bound to the bench's supplies; 'placing' is the staging drawer's two compartments, written where the drawer stands open (the behaviour moves and hides them with it).",
   "work_plane": 14.5,
   "camera": {
     "position": [
-      8.0,
+      6.5,
       27.0,
       -5.0
     ],
@@ -20,7 +20,7 @@
       {
         "id": "loupe",
         "position": [
-          8.0,
+          7.4,
           19.6,
           2.2
         ],
@@ -67,6 +67,71 @@
     "edge": "bottom",
     "color": "#FFF0E6D0",
     "background": "#90101216"
+  },
+  "placing": {
+    "group": "staging",
+    "surfaces": [
+      {
+        "from": [
+          7.6,
+          1.25
+        ],
+        "to": [
+          9.7,
+          3.45
+        ],
+        "height": 14.12,
+        "clearance": 3.0,
+        "headroom": 4.5,
+        "open": []
+      },
+      {
+        "from": [
+          5.3,
+          1.25
+        ],
+        "to": [
+          7.4,
+          3.45
+        ],
+        "height": 14.12,
+        "clearance": 3.0,
+        "headroom": 4.5,
+        "open": []
+      }
+    ],
+    "item_size": 1.6,
+    "scale_range": [
+      0.75,
+      1.1
+    ],
+    "turn_step": 15,
+    "stacking": true,
+    "item_light": false,
+    "counts": "hover",
+    "frame_pose": false,
+    "hover_lift": 0,
+    "snap": 0.1,
+    "physics": {
+      "gravity": 260,
+      "friction": 0.8,
+      "upright_flat": true,
+      "rock": 6,
+      "flat_depth": 0.3,
+      "hover": 0.6,
+      "carry_lag": 0.02,
+      "climb": 24,
+      "swing": true,
+      "swing_angle": 4,
+      "swing_calm": 0.1,
+      "hop_time": 0.08,
+      "toss": 0,
+      "hand_pushes": false,
+      "turn_power": 1.2,
+      "fall_off": "held",
+      "max_speed": 40,
+      "bounce": 0
+    }
   },
   "nodes": [
     {
@@ -139,6 +204,37 @@
         ]
       },
       "tooltip": "workstation.immersive_jewelry.node.dock"
+    },
+    {
+      "id": "drawer",
+      "collider": {
+        "from": [
+          -2.4,
+          -0.45,
+          -0.3
+        ],
+        "to": [
+          2.4,
+          0.45,
+          0.3
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.drawer"
+    },
+    {
+      "id": "lamp",
+      "pickable": false,
+      "light": {
+        "level": 9,
+        "radius": 14,
+        "color": "#40FFE6C0",
+        "flicker": 0,
+        "offset": [
+          0,
+          -0.2,
+          0
+        ]
+      }
     },
     {
       "id": "loupe",
@@ -294,52 +390,37 @@
     },
     {
       "id": "supply_0",
-      "takes_items": true,
-      "collider": {
-        "from": [
-          -0.6,
-          -0.8,
-          -0.6
-        ],
-        "to": [
-          0.6,
-          0.8,
-          0.6
-        ]
+      "slot": {
+        "slot": "supplies[0]",
+        "display": "upright",
+        "size": 1.3,
+        "item_size": 0.9,
+        "counts": "always",
+        "count_facing": "camera"
       },
       "tooltip": "workstation.immersive_jewelry.node.supply"
     },
     {
       "id": "supply_1",
-      "takes_items": true,
-      "collider": {
-        "from": [
-          -0.6,
-          -0.8,
-          -0.6
-        ],
-        "to": [
-          0.6,
-          0.8,
-          0.6
-        ]
+      "slot": {
+        "slot": "supplies[1]",
+        "display": "upright",
+        "size": 1.3,
+        "item_size": 0.9,
+        "counts": "always",
+        "count_facing": "camera"
       },
       "tooltip": "workstation.immersive_jewelry.node.supply"
     },
     {
       "id": "supply_2",
-      "takes_items": true,
-      "collider": {
-        "from": [
-          -0.6,
-          -0.8,
-          -0.6
-        ],
-        "to": [
-          0.6,
-          0.8,
-          0.6
-        ]
+      "slot": {
+        "slot": "supplies[2]",
+        "display": "upright",
+        "size": 1.3,
+        "item_size": 0.9,
+        "counts": "always",
+        "count_facing": "camera"
       },
       "tooltip": "workstation.immersive_jewelry.node.supply"
     },

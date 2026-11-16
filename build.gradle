@@ -46,19 +46,40 @@ minecraft {
         client {
             if (project.hasProperty('smokeTest')) {
                 property 'immersive_jewelry.smoketest.output', file('run/smoketest').absolutePath
+                property 'immersive_jewelry.logRefusals', 'true'
                 mods { immersive_jewelry_smoketest { source sourceSets.smokeTest } }
             }
         }
         server { args '--nogui' }
         gameTestServer {
             workingDirectory project.file('run-gametest')
+            // Refused discrete commands are logged (rate-limited) in test runs; production logs them at debug only.
+            property 'immersive_jewelry.logRefusals', 'true'
+            // Against another Diegesis than the tested one: the tests that pin the tested release's exact behaviour relax.
+            if (project.hasProperty('diegesisRuntimeJar')) property 'immersive_jewelry.compatRun', 'true'
             mods { immersive_jewelry { source sourceSets.gameTest } }
         }
     }
 }
 
+// A Diegesis to run against instead of the tested one (see dependencies). Copied under a name that carries its content hash,
+// so the remapped copy ForgeGradle caches can never be a previous jar's.
+if (project.hasProperty('diegesisRuntimeJar')) {
+    def source = file(project.diegesisRuntimeJar)
+    def hash = java.security.MessageDigest.getInstance('SHA-256').digest(source.bytes).encodeHex().toString().substring(0, 12)
+    ext.diegesisRuntimeVersion = "compat-${hash}"
+    def dir = layout.buildDirectory.dir('diegesis-runtime').get().asFile
+    dir.mkdirs()
+    java.nio.file.Files.copy(source.toPath(), new File(dir, "diegesis-runtime-${diegesisRuntimeVersion}.jar").toPath(),
+            java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+    configurations.matching { it.name == 'runtimeClasspath' }.configureEach {
+        exclude group: 'curse.maven', module: 'diegesis-1790227'
+    }
+}
+
 repositories {
     flatDir { dirs 'libs' }
+    if (project.hasProperty('diegesisRuntimeJar')) flatDir { dirs layout.buildDirectory.dir('diegesis-runtime').get().asFile }
     maven { url = 'https://maven.theillusivec4.top/' }
     maven {
         url = 'https://maven.blamejared.com/'
@@ -102,18 +123,32 @@ dependencies {
     }
 
     // In-world workstation scenes, focus camera and picking (client/workstation adapter). Required on both sides.
+    // -PdiegesisRuntimeJar=<path to a Diegesis Forge jar> compiles against the tested release but runs (GameTests, client)
+    // against the given one, to see how the compatibility layer (integration/diegesis/DiegesisCompat) copes with an API it was
+    // not built for; pass -Pdiegesis_version_range=... too when that release is outside the declared range. Dev runs only.
     implementation fg.deobf("curse.maven:diegesis-1790227:${diegesis_curse_file}")
+    if (project.hasProperty('diegesisRuntimeJar')) {
+        runtimeOnly fg.deobf("local:diegesis-runtime:${diegesisRuntimeVersion}")
+    }
 
     // Library integrations (1.2.2, gradle.properties). Patchouli: the documented compile-against-API arrangement.
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
     runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
     // Ponder's POM names an older Flywheel build as a runtime dependency; the tested Flywheel is pinned instead.
-    implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")) { transitive = false }
-    runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
+    // Ponder, Flywheel and playerAnimator are optional client libraries (since 1.3.0): compiled against, in the dev runtime unless
+    // -PnoPonder (Ponder and Flywheel) or -PnoPlayerAnimator, which test the game without them.
+    compileOnly(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")) { transitive = false }
+    if (!project.hasProperty('noPonder')) {
+        runtimeOnly(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")) { transitive = false }
+        runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
+    }
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
     // GeckoLib's keyframe values are mclib IValues; GeckoLib ships mclib inside its jar, so it is compile-only here.
     compileOnly "com.eliotlash.mclib:mclib:${geckolib_mclib_version}"
-    implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${playeranimator_version}")
+    compileOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${playeranimator_version}")
+    if (!project.hasProperty('noPlayerAnimator')) {
+        runtimeOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${playeranimator_version}")
+    }
 
     // Station overlays (integration/jade). Jade discovers the plugin by annotation; nothing references it otherwise.
     compileOnly fg.deobf("curse.maven:jade-324717:${jade_curse_file}")

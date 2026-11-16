@@ -90,6 +90,7 @@ public final class JewelryCommands {
                 .then(Commands.literal("listcuts").executes(JewelryCommands::listCuts))
                 .then(Commands.literal("reloaddebug").executes(JewelryCommands::reloadDebug))
                 .then(Commands.literal("sessions").executes(JewelryCommands::sessions))
+                .then(Commands.literal("diegesis").executes(JewelryCommands::diegesis))
                 .then(Commands.literal("worn").then(Commands.argument("target", EntityArgument.player()).executes(JewelryCommands::worn)))
                 .then(Commands.literal("learn").then(Commands.argument("targets", EntityArgument.players())
                         .then(Commands.literal("all").executes(c -> learn(c, null)))
@@ -257,8 +258,28 @@ public final class JewelryCommands {
             Component line = debug("lease", player != null ? player.getGameProfile().getName() : lease.player.toString(),
                     lease.station.dimension().location(), lease.station.pos().toShortString(), lease.nextStep(), lease.lastSeq());
             c.getSource().sendSuccess(() -> line, false);
+            // The bench's storage at that station: how full each group is, the drawer, the last command number (protocol 5).
+            var level = c.getSource().getServer().getLevel(lease.station.dimension());
+            if (level != null && level.getBlockEntity(lease.station.pos()) instanceof com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity bench) {
+                int supplies = 0, staged = 0;
+                for (int i = 0; i < com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity.SUPPLIES; i++) if (!bench.supply(i).isEmpty()) supplies++;
+                for (int i = 0; i < com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity.STAGING; i++) if (!bench.staged(i).isEmpty()) staged++;
+                Component storage = debug("bench_storage", supplies, staged, bench.drawerOpen(), lease.lastCommand());
+                c.getSource().sendSuccess(() -> storage, false);
+            }
         }
         return all.size();
+    }
+
+    /** What of the installed Diegesis the server uses: each feature on or off, and what an off one is missing. */
+    private static int diegesis(CommandContext<CommandSourceStack> c) {
+        String installed = com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.installedVersion();
+        String tested = com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.testedVersion();
+        c.getSource().sendSuccess(() -> Component.translatable("command.immersive_jewelry.diegesis", installed, tested), false);
+        for (String line : com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.status()) {
+            c.getSource().sendSuccess(() -> debug("line", line), false);
+        }
+        return com.otectus.immersivejewelry.workstation.station.JewelryStations.available() ? 1 : 0;
     }
 
     private static int worn(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {

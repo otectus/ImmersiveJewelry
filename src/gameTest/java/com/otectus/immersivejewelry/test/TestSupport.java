@@ -110,8 +110,17 @@ final class TestSupport {
             }
         }
 
+        int commandSeq;
+
+        /** A discrete command, numbered as the client numbers them, 60 ms of test clock after the last (inside the budget). */
         void command(long workId, WorkCommand command, CompoundTag args) {
-            WorkInputService.command(player, new WorkCommandPacket(pos, lease.token, workId, command, args));
+            clock += 60L;
+            WorkInputService.command(player, new WorkCommandPacket(pos, lease.token, ++commandSeq, workId, command, args), clock);
+        }
+
+        /** A command with a chosen sequence number at the current test clock (repeats, floods). */
+        void commandAt(int seq, WorkCommand command, CompoundTag args) {
+            WorkInputService.command(player, new WorkCommandPacket(pos, lease.token, seq, 0L, command, args), clock);
         }
 
         void command(long workId, WorkCommand command) {
@@ -160,6 +169,19 @@ final class TestSupport {
             WorkSessionManager.onLogout(sp);
             com.otectus.immersivejewelry.effect.JewelryWearers.onLogout(sp);
         }
+    }
+
+    /**
+     * The items a station dropped just now: item entities spawned this tick ({@code tickCount} 0) at its drop point, one block
+     * over its middle. All tests run as one batch on a grid, so an item flung from a neighbouring test can land near a station;
+     * counting only what appeared at this station's own drop point this tick keeps such strays out, while a station that
+     * dropped something twice is still seen twice.
+     */
+    static java.util.List<net.minecraft.world.entity.item.ItemEntity> freshDrops(GameTestHelper h, BlockPos station) {
+        BlockPos pos = station;
+        net.minecraft.world.phys.AABB at = new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 2,
+                pos.getZ() + 1);
+        return h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, at, e -> e.tickCount == 0);
     }
 
     private TestSupport() {}

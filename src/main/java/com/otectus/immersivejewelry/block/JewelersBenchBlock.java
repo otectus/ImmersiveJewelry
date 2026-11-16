@@ -48,7 +48,7 @@ public class JewelersBenchBlock extends StationBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new JewelersBenchBlockEntity(pos, state);
+        return JewelersBenchBlockEntity.create(pos, state);
     }
 
     @Nullable

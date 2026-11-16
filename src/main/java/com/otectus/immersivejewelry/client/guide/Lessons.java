@@ -31,6 +31,7 @@ public enum Lessons {
     SEAT_AND_PRONGS(Topic.SETTING, Subject.PLIERS),
     BEZEL_SETTING(Topic.SETTING, Subject.BENCH),
     THREE_STONES(Topic.SETTING, Subject.BENCH),
+    STAGING_AND_SUPPLIES(Topic.SETTING, Subject.BENCH),
     ATLAS_SOLITAIRE_RING(Topic.SETTING, Subject.SKETCH, "solitaire_ring"),
     ATLAS_BEZEL_RING(Topic.SETTING, Subject.SKETCH, "bezel_ring"),
     ATLAS_TRILOGY_RING(Topic.SETTING, Subject.SKETCH, "trilogy_ring"),

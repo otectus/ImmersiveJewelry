@@ -2,7 +2,6 @@ package com.otectus.immersivejewelry.client.compat.jei;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.otectus.immersivejewelry.client.workstation.WorkstationClient;
-import com.pockyl.diegesis.api.client.DiegesisClient;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -45,7 +44,7 @@ final class StationLookups {
     private static void registerChildScreen() {
         if (childScreenRegistered) return;
         childScreenRegistered = true;
-        DiegesisClient.registerChildScreen(screen -> screen instanceof IRecipesGui && WorkstationClient.atStation());
+        com.otectus.immersivejewelry.client.workstation.DiegesisAccess.registerChildScreen(screen -> screen instanceof IRecipesGui && WorkstationClient.atStation());
     }
 
     private StationLookups() {}

@@ -5,9 +5,6 @@ import com.mojang.math.Axis;
 import com.otectus.immersivejewelry.client.presentation.anim.JewelerClip;
 import com.otectus.immersivejewelry.client.presentation.anim.JewelerPoses;
 import com.otectus.immersivejewelry.config.ClientConfig;
-import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.createmod.ponder.foundation.PonderScene;
 import net.createmod.ponder.foundation.element.AnimatedSceneElementBase;
@@ -29,7 +26,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The demonstrating jeweler: a player model standing in the demonstration's own level, posed by the very playerAnimator clips
+ * The demonstrating jeweler: a player model standing in the demonstration's own level, posed (when playerAnimator runs; else it
+ * stands as modelled) by the very playerAnimator clips
  * a real jeweler plays ({@link JewelerClip}), sampled at the scene's time, so pause, replay, speed and chapter jumps always
  * show the right frame and nothing runs while the scene is paused. There is no entity or player behind it, no layer is
  * registered on any real player, and nothing is sent anywhere. {@link #reset} restores the opening state before Ponder
@@ -148,24 +146,11 @@ final class JewelerActor extends AnimatedSceneElementBase {
         m.leftPants.copyFrom(m.leftLeg);
     }
 
+    /** Poses the model at the clip's frame; without playerAnimator the jeweler stands as modelled. */
     private static void apply(PlayerModel<AbstractClientPlayer> m, JewelerClip playing, double elapsed) {
+        if (!com.otectus.immersivejewelry.client.presentation.OptionalLibraries.bodyPoses()) return;
         boolean reduced = ClientConfig.reducedTutorialMotion() || ClientConfig.bodyAnimation() == ClientConfig.BodyAnimation.REDUCED;
-        KeyframeAnimation animation = JewelerPoses.animation(playing, reduced);
-        if (animation == null) return;
-        double t = Math.max(0, elapsed);
-        int tick = (int) Math.floor(t);
-        if (playing.loop && playing.length > 0) tick %= playing.length;
-        else tick = Math.min(tick, playing.length);
-        float delta = (float) (t - Math.floor(t));
-        KeyframeAnimationPlayer keyframes = new KeyframeAnimationPlayer(animation, tick);
-        if (!keyframes.isActive()) return;
-        keyframes.setupAnim(delta);
-        AnimationApplier applier = new AnimationApplier(keyframes);
-        applier.setTickDelta(delta);
-        applier.updatePart("head", m.head);
-        applier.updatePart("torso", m.body);
-        applier.updatePart("rightArm", m.rightArm);
-        applier.updatePart("leftArm", m.leftArm);
+        JewelerPoses.pose(m, playing, elapsed, reduced);
     }
 
     private static PlayerModel<AbstractClientPlayer> model() {

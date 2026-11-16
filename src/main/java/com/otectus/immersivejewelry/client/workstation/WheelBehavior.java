@@ -126,19 +126,32 @@ final class WheelBehavior extends WorkstationBehavior {
     // ------------------------------------------------------------------------------------------------ scene
 
     @Override
-    public void onSceneReady(StationView view) {
-        super.onSceneReady(view);
-        float[] camera = SceneLoader.INSTANCE.camera(JewelryStations.WHEEL_ID);
+    protected net.minecraft.resources.ResourceLocation stationId() {
+        return JewelryStations.WHEEL_ID;
+    }
+
+    /**
+     * The handle's mapping follows the camera actually used (the authored shot, mirrored for the left working side): the
+     * screen's right and up, and how far the grip moves on screen per unit of sweep and of height, so the handle follows the
+     * pointer one to one from either side. The work itself stays in the wheel's own coordinates.
+     */
+    @Override
+    protected void cameraChanged() {
+        float[] camera = SceneLoader.INSTANCE.camera(JewelryStations.WHEEL_ID, mirror);
         if (camera != null) {
             Vector3f look = new Vector3f(camera[3] - camera[0], camera[4] - camera[1], camera[5] - camera[2]).normalize();
             right.set(look).cross(0F, 1F, 0F).normalize();
             up.set(right).cross(look).normalize();
         }
-        // How far the grip moves on screen per unit of sweep and of height: the handle follows the pointer one to one.
         Vector3f ds = WheelPainter.handleGrip(0.1F, 1F, 0F).sub(WheelPainter.handleGrip(-0.1F, 1F, 0F)).div(0.2F);
         Vector3f dh = WheelPainter.handleGrip(0F, 1F, 0F).sub(WheelPainter.handleGrip(0F, 0.5F, 0F)).div(0.5F);
         kSweep = nonZero(ds.dot(right), 3F);
         kHeight = nonZero(dh.dot(up), 3F);
+    }
+
+    @Override
+    public void onSceneReady(StationView view) {
+        super.onSceneReady(view);
         place("handle", WheelPainter.handleGrip(0F, 1F, 0F));
         place("collar", WheelPainter.collarAt(0F, 1F));
         place("stone", WheelPainter.stoneAt(0F, 1F, 0F).add(0F, 1F, 0F));
@@ -528,8 +541,23 @@ final class WheelBehavior extends WorkstationBehavior {
         height = 1F;
         dipUntil = Util.getNanos() + DIP_NANOS;
         sound(ModSounds.WHEEL_DIP.get(), "cup", 0.5F, 1F);
-        burst(com.pockyl.diegesis.api.client.DiegesisParticles.SPLASH, new Vector3f(WheelPainter.CUP).add(0F, 0.4F, 0F),
-                new Vector3f(0F, 3F, 0F), 0.6F, 4, 0xFFB8D8E8);
+        // The library's own splash style: a look only, left out with a Diegesis that no longer has it.
+        com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.run(com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.Feature.PARTICLES,
+                "the cooling cup's splash", () -> burst(com.pockyl.diegesis.api.client.DiegesisParticles.SPLASH,
+                        new Vector3f(WheelPainter.CUP).add(0F, 0.4F, 0F), new Vector3f(0F, 3F, 0F), 0.6F, 4, 0xFFB8D8E8));
+    }
+
+    /** The loupe's notes are an overlay: the library offers no keys under it, so its own key reaches it this way. */
+    @Override
+    boolean overlayOpen() {
+        return inspecting;
+    }
+
+    @Override
+    boolean overlayKey(int key, int scan, int modifiers, boolean repeat) {
+        if (!operating() || !is(WorkstationKeys.INSPECT, key, scan)) return false;
+        if (!repeat) inspect();
+        return true;
     }
 
     private void inspect() {

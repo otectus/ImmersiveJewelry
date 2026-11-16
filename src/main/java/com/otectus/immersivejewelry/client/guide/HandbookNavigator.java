@@ -3,7 +3,6 @@ package com.otectus.immersivejewelry.client.guide;
 import com.otectus.immersivejewelry.ImmersiveJewelry;
 import com.otectus.immersivejewelry.blockentity.StationBlockEntity;
 import com.otectus.immersivejewelry.client.StationNotices;
-import com.pockyl.diegesis.api.client.DiegesisClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -147,7 +146,7 @@ public final class HandbookNavigator {
         } finally {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level != null) token = new ReturnToken(mc.level.dimension(), station.getBlockPos().immutable(), revision(station));
-            if (mc.screen != null && DiegesisClient.isStationScreen(mc.screen)) mc.screen.onClose();
+            if (mc.screen != null && com.otectus.immersivejewelry.client.workstation.DiegesisAccess.isStationScreen(mc.screen)) mc.screen.onClose();
             else if (mc.screen != null) mc.setScreen(null);
             pending = new HelpRequest(topic, !fromKey, watch);
         }
@@ -200,7 +199,7 @@ public final class HandbookNavigator {
             }
         }
         if (!request.decided) return;
-        boolean back = !DiegesisClient.isFocused() && mc.screen == null;
+        boolean back = !com.otectus.immersivejewelry.client.workstation.DiegesisAccess.isFocused() && mc.screen == null;
         if (!back && request.age <= HELP_WAIT_TICKS) return;
         pending = null;
         open(request.topic, request.watch);

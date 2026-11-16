@@ -8,7 +8,7 @@ import com.otectus.immersivejewelry.network.packet.WorkCommandPacket;
 import com.otectus.immersivejewelry.network.packet.WorkPrefsPacket;
 import com.otectus.immersivejewelry.workstation.WorkCommand;
 import com.otectus.immersivejewelry.workstation.station.JewelryStations;
-import com.pockyl.diegesis.api.client.DiegesisClient;
+import com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat;
 import com.pockyl.diegesis.api.client.StationView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -35,13 +35,22 @@ import java.util.Optional;
  * over a station without ending it. The station is still focused and the lease still held then, so keys reach the
  * station only while its own screen is shown, and everything held is let go while anything else covers it. A key the
  * station has no use for at that moment may look up the stack under the cursor in a recipe viewer ({@link RecipeLookup}).</p>
+ *
+ * <p>Since beta 11 a key reaches the station through the library's {@code StationBehavior.onKey} while nothing is laid over
+ * the scene; this class no longer handles those presses. It bridges only what the library does not offer: keys and characters
+ * while one of the station's own overlays is open (the folio's search field among them: Escape then blurs the field before it
+ * closes anything, and no letter is a shortcut), and every key release. While a text field has the keyboard
+ * ({@link #textInputActive}) the handbook key is text too.</p>
  */
 public final class WorkstationClient {
     @Nullable
     private static BlockPos leasePos;
     private static int leaseToken;
+    /** The number of this lease's last command (protocol 5): the server drops a repeated or older one. */
+    private static int commandSeq;
     private static final java.util.Set<net.minecraft.resources.ResourceLocation> KNOWN = new java.util.HashSet<>();
     private static boolean requireSketches = true;
+    private static int knownVersion;
 
     public static void init(IEventBus modBus) {
         modBus.addListener(WorkstationClient::onClientSetup);
@@ -50,6 +59,10 @@ public final class WorkstationClient {
         modBus.addListener(WorkstationClient::onConfig);
         MinecraftForge.EVENT_BUS.addListener(WorkstationClient::onKey);
         MinecraftForge.EVENT_BUS.addListener(WorkstationClient::onKeyReleased);
+        MinecraftForge.EVENT_BUS.addListener(WorkstationClient::onChar);
+        // The folio's catalogue is rebuilt after anything it is made from changes.
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.client.event.RecipesUpdatedEvent e) -> FolioCatalogue.invalidate());
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TagsUpdatedEvent e) -> FolioCatalogue.invalidate());
         MinecraftForge.EVENT_BUS.addListener(WorkstationClient::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(WorkstationClient::onLogin);
         MinecraftForge.EVENT_BUS.addListener(WorkstationClient::onLogout);
@@ -58,8 +71,10 @@ public final class WorkstationClient {
 
     private static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            DiegesisClient.registerBehavior(JewelryStations.WHEEL_ID, WheelBehavior::new);
-            DiegesisClient.registerBehavior(JewelryStations.BENCH_ID, BenchBehavior::new);
+            // Only for stations the library registered, and only with a client half that links (DiegesisCompat).
+            if (!DiegesisAccess.ready()) return;
+            DiegesisAccess.registerBehavior(JewelryStations.WHEEL_ID, view -> GuardedBehavior.wrap(() -> new WheelBehavior(view)));
+            DiegesisAccess.registerBehavior(JewelryStations.BENCH_ID, view -> GuardedBehavior.wrap(() -> new BenchBehavior(view)));
             WorkEffects.register();
         });
     }
@@ -75,8 +90,11 @@ public final class WorkstationClient {
 
     private static void onConfig(ModConfigEvent.Reloading event) {
         if (event.getConfig().getSpec() == ClientConfig.SPEC) {
-            SceneLoader.INSTANCE.refresh();
+            boolean sceneOptions = SceneLoader.INSTANCE.refresh();
             sendPreferences();
+            // A scene in use keeps the definition it was built from (the library rebuilds scenes on a resource reload only): let
+            // go of everything and say when the new options show. The working side switches by itself once nothing is pressed.
+            if (sceneOptions) focused().ifPresent(WorkstationBehavior::onOptionsChanged);
         }
     }
 
@@ -88,12 +106,14 @@ public final class WorkstationClient {
             if (pos.equals(leasePos)) {
                 leasePos = null;
                 leaseToken = 0;
+                commandSeq = 0;
                 behaviour(pos).ifPresent(WorkstationBehavior::onLeaseEnded);
             }
             return;
         }
         leasePos = pos.immutable();
         leaseToken = token;
+        commandSeq = 0;
         behaviour(pos).ifPresent(WorkstationBehavior::onLeaseGranted);
     }
 
@@ -101,6 +121,17 @@ public final class WorkstationClient {
         KNOWN.clear();
         KNOWN.addAll(learned);
         requireSketches = require;
+        knownVersion++;
+    }
+
+    /** Counts the updates of the known sketches, so the folio's lists notice one. */
+    static int knownVersion() {
+        return knownVersion;
+    }
+
+    /** The client's definitions were replaced (a server sync): the folio's catalogue starts over. */
+    public static void onDefinitionsChanged() {
+        FolioCatalogue.invalidate();
     }
 
     /** Whether this player may use a design, as far as the client knows (the server checks again). */
@@ -121,7 +152,7 @@ public final class WorkstationClient {
 
     static void command(BlockPos pos, long workId, WorkCommand command, CompoundTag args) {
         int token = token(pos);
-        if (token != 0) ModNetwork.CHANNEL.sendToServer(new WorkCommandPacket(pos, token, workId, command, args));
+        if (token != 0) ModNetwork.CHANNEL.sendToServer(new WorkCommandPacket(pos, token, ++commandSeq, workId, command, args));
     }
 
     static void sendPreferences() {
@@ -147,44 +178,79 @@ public final class WorkstationClient {
 
     /** The behaviour of the Jewelry station the local player works at, if any. */
     static Optional<WorkstationBehavior> focused() {
-        if (!DiegesisClient.isFocused()) return Optional.empty();
-        return DiegesisClient.focusedStation().flatMap(WorkstationClient::behaviourOf);
+        if (!DiegesisAccess.isFocused()) return Optional.empty();
+        return DiegesisAccess.focusedStation().flatMap(WorkstationClient::behaviourOf);
     }
 
     private static Optional<WorkstationBehavior> behaviour(BlockPos pos) {
-        return DiegesisClient.station(pos).flatMap(WorkstationClient::behaviourOf);
+        return DiegesisAccess.station(pos).flatMap(WorkstationClient::behaviourOf);
     }
 
     private static Optional<WorkstationBehavior> behaviourOf(StationView view) {
         return Optional.ofNullable(WorkstationBehavior.of(view));
     }
 
+    /**
+     * Keys while one of the station's overlays is open: the library offers none to the station then (it closes the overlay on
+     * Escape and the inventory key itself, before any hook), so they come from Forge's event, which runs first. With no
+     * overlay the library's {@code onKey} hook has the key and nothing happens here. The overlay owns what it takes, and never
+     * hands a key on to a recipe viewer behind it.
+     */
     private static void onKey(ScreenEvent.KeyPressed.Pre event) {
-        if (!DiegesisClient.isStationScreen(event.getScreen())) return;
+        if (!DiegesisAccess.isStationScreen(event.getScreen())) return;
         focused().ifPresent(b -> {
-            if (b.keyPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
-                event.setCanceled(true);
+            boolean took;
+            if (b.overlayOpen()) {
+                took = b.overlayPressed(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+            } else if (!DiegesisCompat.has(DiegesisCompat.Feature.KEY_HOOKS)) {
+                // A Diegesis without the station key hook: the station's keys come this way, as before 1.3.
+                took = b.stationKey(event.getKeyCode(), event.getScanCode(), event.getModifiers());
+            } else {
                 return;
             }
-            // The station's keys keep their meaning; one it has no use for now may look up what is under the cursor.
-            ItemStack under = b.stackUnderCursor();
-            if (!under.isEmpty() && recipeLookup.lookUp(event.getKeyCode(), event.getScanCode(), under)) event.setCanceled(true);
+            if (took) event.setCanceled(true);
+        });
+    }
+
+    /** Characters for an overlay's text field (the library offers the station none while an overlay is open). */
+    private static void onChar(ScreenEvent.CharacterTyped.Pre event) {
+        if (!DiegesisAccess.isStationScreen(event.getScreen())) return;
+        focused().filter(WorkstationBehavior::overlayOpen).ifPresent(b -> {
+            if (b.overlayChar(event.getCodePoint(), event.getModifiers())) event.setCanceled(true);
         });
     }
 
     private static void onKeyReleased(ScreenEvent.KeyReleased.Pre event) {
         // Under a child screen nothing is held any more (the tick lets go), and its own keys stay its own.
-        if (!DiegesisClient.isStationScreen(event.getScreen())) return;
+        if (!DiegesisAccess.isStationScreen(event.getScreen())) return;
         focused().ifPresent(b -> {
-            if (b.keyReleased(event.getKeyCode(), event.getScanCode())) event.setCanceled(true);
+            if (b.keyUp(event.getKeyCode(), event.getScanCode())) event.setCanceled(true);
         });
     }
 
     private static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
-        // Losing the window, or a child screen over the station: every held action is let go at once.
-        if (!mc.isWindowActive() || !DiegesisClient.isStationScreen(mc.screen)) focused().ifPresent(WorkstationBehavior::releaseAll);
+        // Losing the window, or a child screen over the station: every held action is let go at once, and no key is held.
+        if (!mc.isWindowActive() || !DiegesisAccess.isStationScreen(mc.screen)) {
+            focused().ifPresent(b -> {
+                b.releaseAll();
+                b.forgetKeys();
+            });
+        }
+    }
+
+    /**
+     * Whether a text field at the station has the keyboard now (the folio's search): every key is text then, the handbook
+     * key included.
+     */
+    public static boolean textInputActive() {
+        return DiegesisAccess.isStationScreen(Minecraft.getInstance().screen) && focused().map(WorkstationBehavior::textInputActive).orElse(false);
+    }
+
+    /** A recipe viewer's lookup of {@code stack} for a key the station did not use. */
+    static boolean lookUp(int key, int scan, ItemStack stack) {
+        return recipeLookup.lookUp(key, scan, stack);
     }
 
     // ------------------------------------------------------------------------------------------------ recipe viewers
@@ -224,11 +290,11 @@ public final class WorkstationClient {
 
     /**
      * The stack under the cursor at a Jewelry station whose screen is shown: a stack of the inventory drawer
-     * ({@link DiegesisClient#hoveredStack}), or the real stack the station shows at the hovered node (a stone in the tray,
+     * ({@code DiegesisClient.hoveredStack}), or the real stack the station shows at the hovered node (a stone in the tray,
      * the piece in the clamp, the stone on the quill). Empty elsewhere. This is what a {@link RecipeLookup} is given.
      */
     public static ItemStack stackUnderCursor() {
-        if (!DiegesisClient.isStationScreen(Minecraft.getInstance().screen)) return ItemStack.EMPTY;
+        if (!DiegesisAccess.isStationScreen(Minecraft.getInstance().screen)) return ItemStack.EMPTY;
         return focused().map(WorkstationBehavior::stackUnderCursor).orElse(ItemStack.EMPTY);
     }
 
@@ -239,6 +305,7 @@ public final class WorkstationClient {
     private static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         leasePos = null;
         leaseToken = 0;
+        commandSeq = 0;
         KNOWN.clear();
         GemGeometry.clear();
         Hands.clear();

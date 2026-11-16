@@ -1,5 +1,191 @@
 # Workstation validation
 
+## 1.3.0: Ponder, Flywheel and playerAnimator optional (validated 2026-11-16)
+
+The three client libraries are now `mandatory=false` (ranges unchanged, still enforced when installed) and reached only behind
+`client/presentation/OptionalLibraries`. `-PnoPonder` (Ponder and Flywheel) and `-PnoPlayerAnimator` remove them from the dev
+runtime; `dependencyInsight` confirmed all three absent with both flags and present without. Evidence:
+`build/reports/optional-libraries-1.3.0/`.
+
+**Passed**
+
+- `build`: **PASS**, 85 unit tests. New `LibraryResourcesTest.theOptionalLibrariesAreReachedOnlyBehindTheirGates`: Ponder is
+  named only in `client/compat/ponder`, playerAnimator only in `JewelerPoses`/`JewelerLayer`, and every entry call is gated; the
+  sides test now requires `mandatory=false` for the three. The jar's `mods.toml` declares all three optional.
+- `runGameTestServer`: **68/68**, and **68/68** with `-PnoPonder -PnoPlayerAnimator`.
+- `runClient -PsmokeTest` without all three: the whole workflow ran (wheel, bench, folio, drawer, finish, Jade, JEI, handbook),
+  **100/101**, no class-loading error or crash. Without the libraries: lessons reported unavailable, the station works with no
+  body pose, help from a station opens the handbook. The one failure was a new check of mine
+  (`no_ponder_watch_opens_nothing`), which ran while the previous phase's handbook entry was still open; fixed to close it first.
+- `IJ_LIBRARIES_ONLY` client runs, after that fix: **without all three 37/37** (Watch opens nothing, help with a lesson opens its
+  page instead); **Ponder without playerAnimator 41/41** (all 34 lessons compile, four play with the jeweler unposed);
+  **all three 42/42** (clips load, lessons play, the body poses while operating and stops with the lease). No class-loading
+  error or crash in any log.
+
+**Not run:** a dedicated server without the jars on its classpath at all (the GameTest server is a dedicated dist, run here
+without them); Flywheel present without Ponder (nothing in Jewelry names Flywheel); the greyed Watch button looked at by eye.
+
+## 1.3.0: Diegesis compatibility layer (validated 2026-11-16)
+
+Validated on 2026-11-16, same setup as the beta 11 section below. The declared range is now `[1.0.0-beta.11,)`; this checks that a
+Diegesis other than the tested one degrades instead of breaking. No newer Diegesis than beta 11 existed, so the mismatch was
+produced by running the mod, compiled against beta 11, on **Diegesis 1.0.0-beta.10** (CurseForge file 9624632; the jar in the
+project folder, SHA-256 `2b7c9f5b…666bed`, byte-identical to the cached CurseForge file): it lacks every beta 11 API addition
+(station key hooks, drawer surface transforms and visibility, the room query, camera mirroring) and rejects the beta 11 scene
+fields, the kind of difference a future release could bring. Command:
+`gradlew-quiet.sh . <task> -PdiegesisRuntimeJar=$PWD/diegesis-forge-1.20.1-1.0.0-beta.10.jar "-Pdiegesis_version_range=[1.0.0-beta.10,)"`.
+Evidence: `build/reports/diegesis-compat-1.3.0/`.
+
+**Passed**
+
+- `build`: **PASS**, 84 unit tests. New: `DiegesisCompatTest` (7: every probed member exists in the tested release exactly as
+  listed; a server probes only the common features; a missing optional method, a missing host interface, a missing core class,
+  an interface that gained an abstract method, and a removed hook Jewelry overrides each turn off exactly the right features)
+  and `DiegesisUsageTest` (reads Jewelry's compiled classes: every Diegesis method, constructor, field, implemented interface
+  and overridden hook they use is probed; it found 19 unprobed uses on its first run, now listed).
+- `runGameTestServer` on beta 11: **68/68**, and **68/68** with `-PnoSmithing -PnoCurios`. New: every fallback level of both
+  scenes parses with the library and keeps every node the behaviours use; the probe and the registered stations agree; a bench
+  without the library's host keeps everything and the library's tag.
+- `runGameTestServer` **on beta 10: 68/68**. Probe: `stations`, `native_storage` on; the wheel scene reads as written, the bench
+  scene at `PLAIN_SLOTS`.
+- `runClient -PsmokeTest` **on beta 10: pass, 104/104 checks, no linkage error or crash** in the log
+  ([result](../build/reports/diegesis-compat-1.3.0/smoketest-result-on-beta10.json),
+  [log](../build/reports/diegesis-compat-1.3.0/logs/runClient-on-beta10.log)). Start-up line: on `stations, native_storage,
+  client`; off `key_hooks, camera_mirror, drawer_motion, room_query`, each with its missing members. The whole workflow ran on the
+  fallbacks: station keys through Forge's screen events (cutting, setting, finishing and the folio's search, all by keys),
+  the drawer as a list and shift-clicked into without the room query, the working-side option ignored with the station usable,
+  the bench scene simplified once (`PLAIN_SLOTS` plus the client's own removal of the drawer's surfaces), the handbook and the
+  lessons.
+- `runClient -PsmokeTest` on beta 11 (the release path, through the guards): **pass, 106/106 checks**, all eight features on,
+  every beta 11 check passing ([result](../build/reports/diegesis-compat-1.3.0/smoketest-result-beta11.json),
+  [log](../build/reports/diegesis-compat-1.3.0/logs/runClient-beta11.log)).
+
+**Failed, then fixed**
+
+- First GameTest run: 5 failures. The bench block's own `newBlockEntity` made a plain bench directly, so a world's benches were
+  never library hosts and native storage was silently off (the `isBound` gate kept it safe). It now uses the factory.
+- One `-PnoSmithing -PnoCurios` run: two older break tests counted every dropped item twice (it passed on the two reruns). All
+  68 tests run as one batch on a grid, and those tests counted any item within two blocks; items from neighbouring tests can
+  land there. They now count only items spawned that tick at the station's own drop point (`TestSupport.freshDrops`), which
+  still sees a real double drop. [Log](../build/reports/diegesis-compat-1.3.0/logs/runGameTestServer-noSmithing-noCurios-intermittent-failure.log).
+- The beta 10 client log showed the "scene simplified" warning repeated on every client-option change; it is now logged once a
+  session.
+
+**Not run, not claimed**
+
+- A Diegesis newer than beta 11 (none exists yet). Beta 10 exercises missing members and refused scene fields; a release that
+  changes a method's behaviour without changing its signature is not detectable by the probe, and a renamed `StationHost` or
+  changed `StationState` constructor was checked by unit tests and the plain-bench GameTest, not by a real build.
+- A Diegesis missing the core (stations or client) in a real game: covered by the unit tests' simulated lookups and by the
+  guarded code paths, not by a launched game with such a jar.
+- The `no_scene` and `incompatible` in-game messages were not triggered in a run.
+
+## 1.3.0: Diegesis 1.0.0-beta.11 (validated 2026-11-16)
+
+Validated on 2026-11-16 (Linux, Java 17, Forge 47.4.23; Curios 5.14.1 and Immersive Smithing 1.0.0 in the dev runtime unless
+noted; Patchouli, Ponder, Flywheel, GeckoLib and playerAnimator as in 1.2.2) against Diegesis **1.0.0-beta.11**, CurseForge
+file 9643618, whose resolved jar's SHA-256 matches the GitHub release asset
+(`22b541fb23b41988ac2cd75b52ca8e93e868050fbe56831968f412ee7d844f16`). Jewelry 1.2.2 (`7ca0b4f`) was the starting point.
+Evidence is in `build/reports/diegesis-beta11-1.3.0/`. Earlier sections below are history, not results for this release.
+
+**Baseline (before any change)**
+
+- 1.2.2 with beta 10: `build` **PASS**. [Log](../build/reports/diegesis-beta11-1.3.0/logs/baseline-1.2.2-beta10-build.log).
+- 1.2.2 code compiled against beta 11 (only the pinned properties changed): `compileJava` PASS, `runGameTestServer` **56/56**.
+  [Log](../build/reports/diegesis-beta11-1.3.0/logs/baseline-1.2.2-beta11-runGameTestServer.log).
+
+**Passed (final tree)**
+
+- `build`: **PASS**, 76 unit tests, no failures or skips (new: `StorageProtocolTest`, 4: command ordinals and the sequenced
+  wire format, the argument budget for the largest legitimate commands and a refused oversized one, the calm/lamp comfort
+  transform). `build/libs/immersive-jewelry-1.3.0.jar`; its `mods.toml` requires Diegesis `[1.0.0-beta.11]` on both sides.
+- `runGameTestServer`: **65/65**, and **65/65** with `-PnoSmithing -PnoCurios`. Changed contracts: `DiegesisGameTests` (beta 10
+  refused; the bench has exactly the `supplies` and `staging` groups and the schema instance its host state uses, the wheel
+  none; the jars are camera-counted slots and no longer `takes_items`; the drawer's `placing`; normal, calm and lamp-off scenes
+  after `SceneComfort` all parse with the library's codec). New `BenchStorageGameTests` (8): the native-slot gate (no lease,
+  shut drawer, wrong item, wrong group or index all refused), the host state as a window on the bench's arrays (no second
+  inventory in `save()`), staging and moving with exact counts and NBT (creative moves too), stale/repeated/flooding/malformed
+  commands, exact preparation (one from a stack of three, best cut first, one gem only, no work started), save/load/drop
+  (format 2 without a clamp read as format 2, 1.2 benches get an empty shut drawer, stray poses dropped, every stack dropped
+  once), the client-copy generation path, and sneak-use retrieval from a shut drawer.
+- Scenes against the pinned beta 11 JSON Schema (`docs/schema/scene.schema.json` at `ae9e324`, Draft 2020-12, `jsonschema`):
+  **0 errors** for both files.
+- Resource checks: all six generators `--check` up to date (book: 61 files, 218 keys in 5 locales; 37 entries); `check_mod.py`
+  reports only the documented item sub-models.
+- `runClient -PsmokeTest`, third run on the final tree: **pass, 106/106 checks**
+  ([result](../build/reports/diegesis-beta11-1.3.0/smoketest-result-run3.json),
+  [log](../build/reports/diegesis-beta11-1.3.0/logs/runClient-smoke-run3.log), screenshots in
+  `build/reports/diegesis-beta11-1.3.0/screenshots/`). The whole 1.2.2 workflow (wheel, bench, prongs, finish, loupe, JEI child
+  screen, Jade, handbook, slots, accessibility, libraries) and 19 new checks driven through Minecraft's keyboard handler and
+  character callback and the behaviour Diegesis holds: the folio's search field takes `/`, then E, B, H, Q, R, D and three
+  Unicode characters (one outside the BMP) as text with the folio, the station and the inventory unchanged; the first Escape
+  leaves the field, the second closes the folio; the drawer list opens by key and opens the drawer; a stack the work area has
+  no place for is shift-clicked in after `hasRoomFor`, lands in staging slot 0, and the host state reads the bench's array;
+  the list moves it back to the inventory and shuts the drawer; the left working side mirrors the camera and switches back;
+  the new handbook entry opens and the new lesson plays (at Ponder's default zoom the drawer is small behind the jeweler).
+  Client frame interval while focused: median 8.4 ms, p95 13.7 ms, p99 18.1 ms (vsync off, 120 fps cap); render thread
+  median 3.0 ms, p95 5.6 ms; 20.0 client ticks/s. One run on one desktop; not a profile of the drawer's physics alone.
+  No error from the mod or Diegesis in the client log.
+
+**Failed, then fixed**
+
+- First client run: `tweezers_seat` timed out (and the bench phases after it). Seating a stone sent its position's generation,
+  which pushed the SEAT arguments past the 512-byte budget (`CompoundTag.sizeInBytes` charges about 80 bytes an entry), so the
+  server dropped it. Reproduced headlessly (`aSyncedCopyCarriesTheGenerationsCommandsName`), fixed by raising the budget to
+  1024 deliberately (decoder limit four times that, as before) with a unit test for the largest legitimate commands; refusals
+  are now logged with their reason (rate-limited). [Stopped run 1](../build/reports/diegesis-beta11-1.3.0/logs/runClient-smoke-run1-stopped.log),
+  [GameTest reproduction](../build/reports/diegesis-beta11-1.3.0/logs/runGameTestServer-argument-budget-failure.log).
+- Second client run: **pass, 104/104 checks** ([result](../build/reports/diegesis-beta11-1.3.0/smoketest-result-run2.json),
+  [log](../build/reports/diegesis-beta11-1.3.0/logs/runClient-smoke-run2.log)). Its screenshots showed the open drawer's pull
+  under the caption bar, and the "options apply next time" notice after a working-side change, which applies at once. The
+  drawer now slides 2.4 px (surfaces z 1.25-3.45) and the notice shows only when a scene option changed.
+
+### Beta 11 adoption checklist (handoff section 2)
+
+| ID | Disposition | Where |
+|---|---|---|
+| B11-01 physics | **Adopted** on the staging drawer only (gentle values, calm option drops it); the tray, clamp, sockets and dock are never physics bodies | `jewelers_bench.json` `placing.physics`, `SceneComfort` |
+| B11-02 weighted drag/turn | **Adopted** through the library's defaults (`turn_power` 1.2, `max_speed` 40); presentation only, nothing reads it | scene |
+| B11-03 `placing.counts` | **Adopted**: `hover` for staged stacks; the jars use slot counts (`always`) | scene |
+| B11-04 `BLOCK_OPPOSITE` | **Not applicable**: both blocks' `facing` names their front; `BLOCK` kept | `JewelryStations` |
+| B11-05 `setSurfaceTransform` | **Adopted**: both drawer surfaces slide with one eased progress (translation only, reused matrix); the handle node moves with it | `BenchBehavior.applyDrawer` |
+| B11-06 `setPlacingVisible` / `setSurfaceVisible` | **Adopted**: placing hidden every frame while shut; surfaces shown/hidden on change and put back in `onSceneReady`; the server refuses a shut drawer too | `BenchBehavior`, `WorkstationLogic` |
+| B11-07 `mirrorCamera` | **Adopted**: shots authored from the front right (bench x 6.5, wheel x 7.0), `workingSide` LEFT mirrors across x = 8; pointer mapping from the effective camera | `SceneLoader.camera(id, mirror)`, `cameraChanged` |
+| B11-08 `hasRoomFor` | **Adopted** before a shift-click into the drawer; the server moves only what fits, the rest stays | `BenchBehavior.onInventoryShiftClick`, `BenchOperations.stageIn` |
+| B11-09 `frame_pose` false | **Adopted** (explicit) for staged stacks; checked by eye in the drawer screenshot only | scene |
+| B11-10 `hover_lift` 0 | **Adopted** (explicit) | scene |
+| B11-11 `onKey` / `onChar` | **Adopted**: station keys through `onKey` (then a recipe-viewer lookup); `onChar` unused (no field without an overlay); a scoped Forge bridge for the stations' overlays (keys, characters) and every release | `WorkstationBehavior`, `WorkstationClient` |
+| B11-12 `MenuBinding.alsoAccepts` | **Not applicable**: SERVER stations, no vanilla menu | - |
+| B11-13 `count_facing: camera` | **Adopted** on the three jar slots; no output bindings (the clamp's result is Jewelry's) | scene |
+| B11-14 Mouse Tweaks gestures | **Native** on the jars and the drawer (the library's); not exercised with Mouse Tweaks installed | - |
+| B11-15 wheel / middle drag | **Native** on the jars and the drawer; `onScroll` still turns a held stone or the collar only where the station owns the gesture | `WorkstationBehavior.onScroll` |
+| B11-16 scene lights | **Adopted**: a steady lamp (`flicker` 0, level 9), `workLamp` option; it does not relight painter/GeckoLib parts or the world (documented) | scene `lamp`, `BenchPainter.lamp` |
+| B11-17 projection fix | **Inherited**; not exercised at a large render distance | - |
+| B11-18 hidden-block return | **Inherited**; the stations never hide their block, both renderers keep the `isSceneDrawn` handoff | renderers |
+| B11-19 neighbour faces | **Inherited**; no local workaround existed | - |
+| B11-20 counts over particles | **Inherited**; only counts use it (no label shows a shut drawer's contents) | - |
+| B11-21 highlight texture | **Inherited** (native slot highlights on the jars) | - |
+| B11-22 carried stacks before upright stations | **Inherited**; `carry_size` kept | scene |
+| B11-23 placement fixes | **Inherited**; the drawer is a transformed surface pair | - |
+
+**Not run** (need people, other machines or other mod stacks; not claimed)
+
+- Two real clients and a bystander on a dedicated server (remote drawer motion and staged poses, late joiners, bursty
+  latency); a dedicated `runServer` boot with only the server-side libraries (still needs the user's `run/eula.txt`; the
+  GameTest server is a dedicated dist but keeps the client libraries on its classpath).
+- Mouse Tweaks installed (flags off/on after restart), InvMove, Embeddium/Oculus with shaders, a white-concrete-replacing
+  resource pack, a large render distance or a distant-horizons renderer, and a laptop GPU.
+- Native gestures by real mouse input in the drawer and jars (drag, turn, crowd, middle-drag spreading, the wheel's one-in
+  and one-back including a full inventory), and placing a carried stack onto a drawer surface: the client run drove the
+  drawer through its list, the shift-click callback and `hasRoomFor`, not through pointer gestures on the surfaces.
+- Pointer work (a stroke on the piece) with the camera mirrored, in four block facings: the client run checked that the
+  mirror switches on and off with nothing pressed; the mapping itself is the same code path for both sides.
+- The folio's Prepare page by mouse in the real client (the server side is covered by GameTests), IME composition (only
+  committed characters, including a supplementary one, were sent), a held H in the search field (only taps were sent),
+  remapped keys, and narrator.
+- Frame-time profiling of a busy workshop with four physics stacks per bench, calm against natural; the client run reports
+  only the whole-run frame and render-thread times (above).
+
 ## 1.2.2: Patchouli, Ponder, GeckoLib, playerAnimator
 
 Validated on 2026-11-15 on the 1.2.1 setup (Linux, Java 17, Forge 47.4.23, Diegesis 1.0.0-beta.10, Curios and Immersive

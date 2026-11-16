@@ -66,5 +66,6 @@ client/       everything client-only: screens, renderers, colours, particles, pa
 - Player-facing text is always a translation key in `assets/immersive_jewelry/lang/en_us.json`; the handbook and the
   Ponder captions too (every locale carries every key: `LibraryResourcesTest`).
 - Patchouli, Ponder and playerAnimator are referenced only under `client/`; presentation (rigs, poses, books, lessons) never
-  changes work, items or effects.
+  changes work, items or effects. Ponder (with Flywheel) and playerAnimator are optional (1.3.0): reach them only behind
+  `client/presentation/OptionalLibraries`.
 - Tag ingredients can be empty: test them with `Inventories.items` / `Inventories.isEmpty`, never `Ingredient#isEmpty`.

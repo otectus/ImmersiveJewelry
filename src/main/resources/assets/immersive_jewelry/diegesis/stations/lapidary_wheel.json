@@ -1,10 +1,10 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Pocky-l/diegesis/main/docs/schema/scene.schema.json",
-  "$comment": "Immersive Jewelry: the Lapidary Wheel. Nodes are pick and stroke zones only; the behaviour places them on the quill rig (client/workstation/render/WheelPainter) and draws every moving part through the 'work' node. The camera shows the quill, the contact on the lap and the lap together. Placement nodes take items (Diegesis takes_items): a stack carried from the drawer hovers them, the behaviour shows where it would go and its click becomes a Jewelry placement.",
+  "$schema": "https://raw.githubusercontent.com/Pocky-l/diegesis/v1.0.0-beta.11/docs/schema/scene.schema.json",
+  "$comment": "Immersive Jewelry: the Lapidary Wheel. Nodes are pick and stroke zones only; the behaviour places them on the quill rig (client/workstation/render/WheelPainter) and draws every moving part through the 'work' node. The camera shows the quill, the contact on the lap and the lap together, from the front right (the left working side mirrors it across x = 8). Placement nodes take items (Diegesis takes_items): a stack carried from the drawer hovers them, the behaviour shows where it would go and its click becomes a Jewelry placement.",
   "work_plane": 13,
   "camera": {
     "position": [
-      8.0,
+      7.0,
       26.5,
       -7.5
     ],

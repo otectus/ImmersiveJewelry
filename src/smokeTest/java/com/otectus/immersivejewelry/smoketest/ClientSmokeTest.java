@@ -286,15 +286,24 @@ public final class ClientSmokeTest {
                 rigs &= anims.containsKey(ImmersiveJewelry.id("animations/" + rig + ".animation.json"));
             }
             checks.put("gecko_rigs_baked", rigs);
-            boolean clips = true;
-            for (var clip : com.otectus.immersivejewelry.client.presentation.anim.JewelerClip.values()) {
-                clips &= dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry.getAnimation(clip.id(false)) != null;
-                clips &= dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry.getAnimation(clip.id(true)) != null;
+            // The optional libraries (1.3.0): checked when present; when absent, what stands in for them is checked instead.
+            checks.put("optional_ponder", com.otectus.immersivejewelry.client.presentation.OptionalLibraries.ponder() ? "present" : "absent");
+            checks.put("optional_player_animator", com.otectus.immersivejewelry.client.presentation.OptionalLibraries.bodyPoses() ? "present" : "absent");
+            if (com.otectus.immersivejewelry.client.presentation.OptionalLibraries.bodyPoses()) {
+                boolean clips = true;
+                for (var clip : com.otectus.immersivejewelry.client.presentation.anim.JewelerClip.values()) {
+                    clips &= dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry.getAnimation(clip.id(false)) != null;
+                    clips &= dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry.getAnimation(clip.id(true)) != null;
+                }
+                checks.put("player_clips_loaded", clips);
             }
-            checks.put("player_clips_loaded", clips);
-            List<String> problems = com.otectus.immersivejewelry.client.compat.ponder.JewelryPonder.compileAll();
-            checks.put("ponder_lessons_compile", problems.isEmpty());
-            if (!problems.isEmpty()) log("ponder problems: " + problems);
+            if (com.otectus.immersivejewelry.client.presentation.OptionalLibraries.ponder()) {
+                List<String> problems = com.otectus.immersivejewelry.client.compat.ponder.JewelryPonder.compileAll();
+                checks.put("ponder_lessons_compile", problems.isEmpty());
+                if (!problems.isEmpty()) log("ponder problems: " + problems);
+            } else {
+                checks.put("no_ponder_lessons_reported_unavailable", !com.otectus.immersivejewelry.client.guide.HandbookNavigator.tutorialsAvailable());
+            }
             checks.put("patchouli_book_registered", !vazkii.patchouli.api.PatchouliAPI.get().getBookStack(
                     com.otectus.immersivejewelry.client.guide.HandbookNavigator.BOOK).isEmpty());
             return false;
@@ -326,7 +335,7 @@ public final class ClientSmokeTest {
             return false;
         });
         String[][] entries = {{"stones/gems", "1"}, {"designs/atlas", "6"}, {"wheel/cuts", "4"}, {"finishing/finishes", "4"}, {"start/controls", "1"},
-                {"metal/blanks", "3"}};
+                {"metal/blanks", "3"}, {"designs/preparation", "4"}};
         for (String[] entry : entries) {
             add("handbook_" + entry[0].replace('/', '_'), 60, (mc, t) -> {
                 if (t == 2) com.otectus.immersivejewelry.client.guide.HandbookNavigator.openEntry(ImmersiveJewelry.id(entry[0]),
@@ -340,7 +349,28 @@ public final class ClientSmokeTest {
                 return false;
             });
         }
-        add("ponder_watch", 260, (mc, t) -> {
+        if (!com.otectus.immersivejewelry.client.presentation.OptionalLibraries.ponder()) {
+            // Without Ponder: a Watch call shows a notice and opens no screen; asking for help with a lesson opens its page.
+            add("no_ponder_watch_and_help", 80, (mc, t) -> {
+                if (t == 0) mc.setScreen(null); // the previous phase leaves a handbook entry open
+                if (t == 2) com.otectus.immersivejewelry.client.guide.HandbookNavigator.watch(
+                        com.otectus.immersivejewelry.client.guide.Lessons.FIRST_PIECE, ImmersiveJewelry.id("start/first_piece"), 4);
+                if (t == 10) {
+                    checks.put("no_ponder_watch_opens_nothing", mc.screen == null);
+                    com.otectus.immersivejewelry.client.guide.HandbookNavigator.open(new com.otectus.immersivejewelry.client.guide.HelpTopics.Topic(
+                            ImmersiveJewelry.id("start/first_piece"), 0, com.otectus.immersivejewelry.client.guide.Lessons.FIRST_PIECE), true);
+                }
+                if (t == 50) {
+                    checks.put("no_ponder_help_opens_the_page", com.otectus.immersivejewelry.client.guide.HandbookNavigator.BOOK.equals(
+                            vazkii.patchouli.api.PatchouliAPI.get().getOpenBookGui()));
+                    shot(mc, "smoketest_no_ponder_help_page");
+                    mc.setScreen(null);
+                    return true;
+                }
+                return false;
+            });
+        }
+        if (com.otectus.immersivejewelry.client.presentation.OptionalLibraries.ponder()) add("ponder_watch", 260, (mc, t) -> {
             if (t == 2) com.otectus.immersivejewelry.client.guide.HandbookNavigator.watch(com.otectus.immersivejewelry.client.guide.Lessons.FIRST_PIECE,
                     ImmersiveJewelry.id("start/first_piece"), 4);
             if (t == 20) checks.put("ponder_opens", mc.screen instanceof net.createmod.ponder.foundation.ui.AbstractPonderScreen);
@@ -351,7 +381,7 @@ public final class ClientSmokeTest {
             }
             return false;
         });
-        add("ponder_returns_to_book", 60, (mc, t) -> {
+        if (com.otectus.immersivejewelry.client.presentation.OptionalLibraries.ponder()) add("ponder_returns_to_book", 60, (mc, t) -> {
             if (t == 30) {
                 checks.put("ponder_returns_to_book", com.otectus.immersivejewelry.client.guide.HandbookNavigator.BOOK.equals(
                         vazkii.patchouli.api.PatchouliAPI.get().getOpenBookGui()));
@@ -361,7 +391,9 @@ public final class ClientSmokeTest {
             return false;
         });
         for (var lesson : new com.otectus.immersivejewelry.client.guide.Lessons[]{com.otectus.immersivejewelry.client.guide.Lessons.ROUND_CUT,
-                com.otectus.immersivejewelry.client.guide.Lessons.ATLAS_HALO_AMULET, com.otectus.immersivejewelry.client.guide.Lessons.ANTIQUE_FINISH}) {
+                com.otectus.immersivejewelry.client.guide.Lessons.ATLAS_HALO_AMULET, com.otectus.immersivejewelry.client.guide.Lessons.ANTIQUE_FINISH,
+                com.otectus.immersivejewelry.client.guide.Lessons.STAGING_AND_SUPPLIES}) {
+            if (!com.otectus.immersivejewelry.client.presentation.OptionalLibraries.ponder()) break;
             add("ponder_" + lesson.id(), 300, (mc, t) -> {
                 if (t == 2) com.otectus.immersivejewelry.client.guide.HandbookNavigator.watch(lesson, null, 0);
                 if (t == 280) shot(mc, "smoketest_ponder_" + lesson.id());
@@ -379,19 +411,29 @@ public final class ClientSmokeTest {
                 give(mc, ItemStack.EMPTY);
             }
             if (t == 10 || (t == 80 && !DiegesisClient.isFocused())) use(mc, bench());
-            if (t > 30 && DiegesisClient.isFocused() && mc.player != null
-                    && com.otectus.immersivejewelry.client.presentation.anim.JewelerPoses.posing(mc.player)) {
-                checks.put("body_pose_while_operating", true);
+            if (com.otectus.immersivejewelry.client.presentation.OptionalLibraries.bodyPoses()) {
+                if (t > 30 && DiegesisClient.isFocused() && mc.player != null
+                        && com.otectus.immersivejewelry.client.presentation.anim.JewelerPoses.posing(mc.player)) {
+                    checks.put("body_pose_while_operating", true);
+                    mc.setScreen(null);
+                    return true;
+                }
+                if (t == 150) checks.put("body_pose_while_operating", false);
+                return false;
+            }
+            // Without playerAnimator: the station works the same, only no body is posed.
+            if (t > 30 && DiegesisClient.isFocused() && WorkstationClient.operates(bench())) {
+                checks.put("no_player_animator_station_works", true);
                 mc.setScreen(null);
                 return true;
             }
-            if (t == 150) checks.put("body_pose_while_operating", false);
+            if (t == 150) checks.put("no_player_animator_station_works", false);
             return false;
         });
         add("body_pose_released", 60, (mc, t) -> {
             if (t == 40) {
                 checks.put("body_pose_ends_with_lease", mc.player != null
-                        && !com.otectus.immersivejewelry.client.presentation.anim.JewelerPoses.posing(mc.player));
+                        && (!com.otectus.immersivejewelry.client.presentation.OptionalLibraries.bodyPoses() || !com.otectus.immersivejewelry.client.presentation.anim.JewelerPoses.posing(mc.player)));
                 return true;
             }
             return false;
@@ -763,6 +805,10 @@ public final class ClientSmokeTest {
             }
             return false;
         });
+        // Diegesis 1.0.0-beta.11: typing in the folio, the staging drawer and the working side, through real keys.
+        add("beta11_folio_search", 80, ClientSmokeTest::folioSearch);
+        add("beta11_drawer", 180, ClientSmokeTest::stagingDrawer);
+        add("beta11_working_side", 60, ClientSmokeTest::workingSide);
         if (WorkstationDesignChecks.enabled()) add("design_gallery", 280,
                 (mc, t) -> WorkstationDesignChecks.tick(mc, checks, t));
         add("leave_bench", 60, (mc, t) -> {
@@ -1065,6 +1111,148 @@ public final class ClientSmokeTest {
         ClientConfig.LARGER_TARGETS.set(on);
         ClientConfig.WORKSTATION_HANDS.set(!on);
         SceneLoader.INSTANCE.refresh();
+    }
+
+    // ================================================================================================ beta 11
+
+    private static int inventoryTotal(Minecraft mc) {
+        int n = 0;
+        if (mc.player != null) for (ItemStack s : mc.player.getInventory().items) n += s.getCount();
+        return n;
+    }
+
+    private static int typedTotal = -1;
+
+    /**
+     * The folio's search field owns the keyboard: the search key focuses it, letters that are station, help, drop and close keys
+     * elsewhere (E, B, H, Q, R, D) are text, Unicode arrives as characters, the first Escape leaves the field and only the second
+     * closes the folio. Keys go through Minecraft's keyboard handler, characters through its character callback.
+     */
+    private static boolean folioSearch(Minecraft mc, int t) {
+        if (t == 2) press(mc, WorkstationKeys.FOLIO);
+        if (t == 8) {
+            checks.put("b11_folio_open", overlayShown());
+            tap(mc, GLFW.GLFW_KEY_SLASH);
+        }
+        if (t == 12) {
+            checks.put("b11_search_focused", WorkstationClient.textInputActive());
+            typedTotal = inventoryTotal(mc);
+        }
+        if (t == 14) for (char c : "ebhqrd".toCharArray()) type(mc, c);
+        if (t == 16) {
+            typedChar(mc, 0x00E9);
+            typedChar(mc, 0x0436);
+            typedChar(mc, 0x1F48E);
+        }
+        if (t == 24) {
+            checks.put("b11_typing_keeps_folio", overlayShown() && WorkstationClient.textInputActive());
+            checks.put("b11_typing_keeps_station", DiegesisClient.isFocused() && WorkstationClient.operates(bench())
+                    && DiegesisClient.isStationScreen(mc.screen));
+            checks.put("b11_typing_drops_nothing", inventoryTotal(mc) == typedTotal);
+            shot(mc, "smoketest_bench_folio_search");
+            tap(mc, GLFW.GLFW_KEY_ESCAPE);
+        }
+        if (t == 30) {
+            checks.put("b11_escape_blurs_first", overlayShown() && !WorkstationClient.textInputActive());
+            tap(mc, GLFW.GLFW_KEY_ESCAPE);
+        }
+        if (t == 38) {
+            checks.put("b11_second_escape_closes", !overlayShown() && DiegesisClient.isFocused());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * The staging drawer: its list by key, opened from the list, a stack the work area has no place for shift-clicked in (the
+     * behaviour asks the library's hasRoomFor; the server moves it), the host state reading the bench's own array, the stack
+     * back to the inventory from the list, and the drawer shut again.
+     */
+    private static boolean stagingDrawer(Minecraft mc, int t) {
+        JewelersBenchBlockEntity b = clientBench(mc);
+        StationView view = WorkstationClient.focusedView().orElse(null);
+        if (t == 2) server(mc, (server, player) -> player.getInventory().add(new ItemStack(ModItems.FINE_PLIERS.get())));
+        if (t == 8) press(mc, WorkstationKeys.DRAWER);
+        if (t == 14) {
+            checks.put("b11_drawer_list_shown", overlayShown());
+            press(mc, WorkstationKeys.TOOL);
+        }
+        if (t == 40) {
+            checks.put("b11_drawer_opened", b.drawerOpen());
+            escape(mc);
+        }
+        if (t == 50 && view != null && mc.player != null) {
+            int slot = -1;
+            for (int i = 0; i < mc.player.getInventory().items.size(); i++) {
+                if (mc.player.getInventory().items.get(i).is(ModItems.FINE_PLIERS.get())) slot = i;
+            }
+            int from = slot;
+            ItemStack stack = from < 0 ? ItemStack.EMPTY : mc.player.getInventory().items.get(from).copy();
+            // The room query exists only in Diegesis 1.0.0-beta.11 and later: elsewhere the drawer goes without it.
+            if (com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.has(com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.Feature.ROOM_QUERY)) checks.put("b11_room_for_pliers", view.hasRoomFor(stack));
+            WorkstationClient.behaviourAt(view.pos()).ifPresent(bh -> checks.put("b11_shift_in_taken", from >= 0 && bh.onInventoryShiftClick(view, from, stack)));
+        }
+        if (t == 80) {
+            checks.put("b11_staged_in_drawer", b.staged(0).is(ModItems.FINE_PLIERS.get()));
+            checks.put("b11_host_state_reads_drawer", b instanceof com.otectus.immersivejewelry.blockentity.HostedBenchBlockEntity host
+                    && ItemStack.matches(host.stationState().getItem(com.pockyl.diegesis.api.state.SlotRef.of("staging", 0)), b.staged(0)));
+            shot(mc, "smoketest_bench_drawer_open");
+            press(mc, WorkstationKeys.DRAWER);
+        }
+        if (t == 86) press(mc, WorkstationKeys.APPLY);
+        if (t == 110) {
+            checks.put("b11_drawer_list_to_inventory", b.staged(0).isEmpty() && count(mc, ModItems.FINE_PLIERS.get()) == 1);
+            press(mc, WorkstationKeys.TOOL);
+        }
+        if (t == 140) {
+            checks.put("b11_drawer_shut", !b.drawerOpen());
+            escape(mc);
+        }
+        return t > 150;
+    }
+
+    /** The left working side mirrors the camera across the block's middle while nothing is pressed, and back. */
+    private static boolean workingSide(Minecraft mc, int t) {
+        StationView view = WorkstationClient.focusedView().orElse(null);
+        if (view == null) return t > 10;
+        if (t == 2) ClientConfig.WORKING_SIDE.set(ClientConfig.WorkingSide.LEFT);
+        if (t == 20) {
+            boolean mirror = com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.has(com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.Feature.CAMERA_MIRROR);
+            // Without mirroring in the library the option is ignored: the station stays usable from the authored side.
+            checks.put(mirror ? "b11_mirror_left" : "compat_side_option_ignored", mirror ? view.cameraMirror() == 8F
+                    : DiegesisClient.isFocused() && WorkstationClient.operates(bench()));
+            shot(mc, "smoketest_bench_left_side");
+            ClientConfig.WORKING_SIDE.set(ClientConfig.WorkingSide.RIGHT);
+        }
+        if (t == 40) {
+            if (com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.has(com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.Feature.CAMERA_MIRROR)) checks.put("b11_mirror_back", Float.isNaN(view.cameraMirror()));
+            return true;
+        }
+        return false;
+    }
+
+    private static void tap(Minecraft mc, int code) {
+        key(mc, code, true);
+        key(mc, code, false);
+    }
+
+    /** A letter as a real key gives it: the key down, its character, the key up. */
+    private static void type(Minecraft mc, char c) {
+        int code = GLFW.GLFW_KEY_A + (c - 'a');
+        key(mc, code, true);
+        typedChar(mc, c);
+        key(mc, code, false);
+    }
+
+    /** A character through Minecraft's own character callback (the path an IME's text takes too). */
+    private static void typedChar(Minecraft mc, int codePoint) {
+        try {
+            var m = net.minecraft.client.KeyboardHandler.class.getDeclaredMethod("charTyped", long.class, int.class, int.class);
+            m.setAccessible(true);
+            m.invoke(mc.keyboardHandler, mc.getWindow().getWindow(), codePoint, 0);
+        } catch (ReflectiveOperationException e) {
+            checks.put("char_probe", e.toString());
+        }
     }
 
     // ================================================================================================ input helpers
@@ -1488,6 +1676,9 @@ public final class ClientSmokeTest {
     }
 
     static void finish(Minecraft mc, boolean pass, String reason) {
+        // Which Diegesis ran, and what of it Jewelry used (DiegesisCompat): a run against another release is read with this.
+        checks.put("diegesis_version", com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.installedVersion());
+        checks.put("diegesis_features", String.join(", ", com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.status()));
         WorkstationContinuityChecks.publish(checks);
         WorkstationArmChecks.restore(mc);
         finished = true;

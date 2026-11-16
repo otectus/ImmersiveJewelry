@@ -10,20 +10,20 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 /**
  * Client wiring of the stations' presentation libraries: the GeckoLib rigs (resource reload, forgetting a world) and the
- * jeweler's body poses on playerAnimator (the per-player layer factory, the tick that picks clips). Reached only from
- * {@code ClientSetup}.
+ * jeweler's body poses on playerAnimator (the per-player layer factory, the tick that picks clips), only when playerAnimator
+ * runs ({@link OptionalLibraries}). Reached only from {@code ClientSetup}.
  */
 public final class Presentation {
     public static void init(IEventBus modBus) {
         modBus.addListener(Presentation::onClientSetup);
         modBus.addListener(Presentation::onReloadListeners);
         modBus.addListener(Presentation::onAddLayers);
-        MinecraftForge.EVENT_BUS.addListener(JewelerPoses::onClientTick);
+        if (OptionalLibraries.bodyPoses()) MinecraftForge.EVENT_BUS.addListener(JewelerPoses::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(Presentation::onLogout);
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(JewelerPoses::register);
+        if (OptionalLibraries.bodyPoses()) event.enqueueWork(JewelerPoses::register);
         // Curios draws its own slots through the shared worn-jewelry renderer.
         if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) {
             event.enqueueWork(com.otectus.immersivejewelry.client.presentation.worn.CuriosWornRenderers::register);
@@ -45,12 +45,12 @@ public final class Presentation {
         event.registerReloadListener((barrier, manager, prep, apply, prepExec, applyExec) ->
                 barrier.wait(null).thenRunAsync(() -> {
                     JewelryRigs.reload();
-                    JewelerPoses.reload();
+                    if (OptionalLibraries.bodyPoses()) JewelerPoses.reload();
                 }, applyExec));
     }
 
     private static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
-        JewelerPoses.reset();
+        if (OptionalLibraries.bodyPoses()) JewelerPoses.reset();
         JewelryRigs.forget();
         com.otectus.immersivejewelry.client.presentation.worn.WornAppearance.clear();
     }

@@ -72,6 +72,11 @@ public final class WheelOperations {
             takeStone(player, wheel);
             return;
         }
+        if (!com.otectus.immersivejewelry.workstation.station.JewelryStations.available()) {
+            // The hands-on wheel needs Diegesis; the stone, the lap and any work on them are kept as they are.
+            Feedback.info(player, "hands_on_unavailable", com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.installedVersion());
+            return;
+        }
         Feedback.info(player, wheel.hasStone() ? "wheel_work_hint" : "wheel_hint");
     }
 

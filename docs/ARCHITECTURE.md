@@ -85,12 +85,14 @@ Since 1.2.0 the Lapidary Wheel and the Jeweler's Bench are worked in the world: 
 camera settles over it and the work is done with the station's own handle, tools and hands. The 1.1 minigame screens,
 sessions and their packets are gone; one process engine remains.
 
-- **Diegesis behind a thin adapter (handoff 10).** Diegesis (Forge; `1.0.0-beta.10`, CurseForge file 9624632, since
-  1.2.1, `1.0.0-beta.9` in 1.2.0; a required dependency on both sides, range in `gradle.properties`) supplies focus,
+- **Diegesis behind a thin adapter (handoff 10).** Diegesis (Forge; `1.0.0-beta.11`, CurseForge file 9643618, since
+  1.3.0; `1.0.0-beta.10` in 1.2.1-1.2.2, `1.0.0-beta.9` in 1.2.0; a required dependency on both sides, range in
+  `gradle.properties`) supplies focus,
   camera framing, glances, captions, scene nodes, picking and pointer strokes. `workstation/station/JewelryStations`
   registers the two `StationType`s (block orientation, exclusive, reach 5, `openWhen` refusing sneaking players,
   stations someone else works and items that are put on the station by walking up); `WorkstationLogic` turns opening and
-  closing into leases and refuses every library slot and custom action. The client half is `client/workstation`: one
+  closing into leases, gates the bench's two library slot groups (1.3, below) and refuses every other slot and every
+  custom action. The client half is `client/workstation`: one
   `StationBehavior` per station (`WheelBehavior`, `BenchBehavior`, base `WorkstationBehavior`) that paints the moving
   parts through the scene's `work` node, maps strokes and clicks to controls, and runs the keyboard frontend. Only
   public `com.pockyl.diegesis.api` types are used.
@@ -121,9 +123,107 @@ sessions and their packets are gone; one process engine remains.
   the station (`toScreen`, `stationScreenClass`: a permanent grid again, and JEI's own input on the station's screen
   would compete with the station's keys) and an earlier `interactive_at` (clicks count once the camera has arrived,
   the default).
-- **One custody path.** Every item move (walk-up placement, taking things, staging stones from the inventory, taking
-  a result) goes through `WheelOperations`/`BenchOperations`, from the block's use or from a `WorkCommandPacket`; the
-  stacks are real server stacks in the block entities and the scene only shows them.
+- **Diegesis 1.0.0-beta.11 in use (1.3.0).** Every addition of the release was weighed (the checklist is in
+  `docs/WORKSTATION_VALIDATION.md`, beta 11 section):
+  - *Storage with one owner.* The bench's schema (`JewelryStations.BENCH_SCHEMA`, one instance: the library recognises a
+    `StationHost`'s state by it) has exactly two groups, both `kept()`: `supplies` (3, the jars) and `staging` (4,
+    `placed()`, the staging drawer). `JewelersBenchBlockEntity` is a `StationHost` and binds both groups to its own
+    `supplies` and `staging` arrays with `SlotStorage` in its constructor, on both sides, before anything is saved or drawn:
+    the arrays stay the only owner, `StationState.save()` leaves bound groups out, and the bench saves the library's part
+    (staged stacks' poses) under `Station`. The wheel declares nothing. The clamp, the sockets, the eight-cell tray and the
+    dock stay Jewelry operations; a stone is never a loose physics body while it is worked.
+  - *The gate.* Native gestures (click, split, shift-click, double-click gathering, wheel, middle-drag spreading, placing,
+    posing, spilling) all ask `WorkstationLogic.mayPlace`/`mayTake` before a stack moves: this player's lease, reach, a
+    named group and index, the item (`BenchOperations.isSupply` with the real bench for the jars; `isStageable` for the
+    drawer), and for the drawer that it is open, checked on the server, not only drawn. Library transfers move real cursor
+    and inventory stacks, in creative mode too (no MENU-style cloning); so do the Jewelry staging commands. The supply jar
+    nodes are library slots (`slot` bindings, counts `always`, `count_facing: camera`) and no longer `takes_items`; their
+    old Jewelry PLACE/TAKE click handling is gone, so one gesture has one transfer owner. The walk-up path and shift-clicks
+    from the inventory (`onInventoryShiftClick`, always answered by the behaviour) keep using `BenchOperations.place`.
+  - *The staging drawer.* Two walled surfaces of the scene's one `placing` (written open, closed lips `open: []`, gentle
+    physics: no toss, no pushing hand, `fall_off: held`, no bounce; hover counts; `frame_pose` false, `hover_lift` 0). The
+    behaviour moves both surfaces and the handle with one eased progress (`setSurfaceTransform`, translation only), sets them
+    visible only while the drawer is out (`setSurfaceVisible`, put back in `onSceneReady`) and hides the stacks every frame
+    it is shut (`setPlacingVisible`). The drawer's wanted position is the bench's (`DrawerOpen`, saved and synced); the
+    painter draws the case and drawer, the library the stacks. `DrawerOverlay` lists the four real stacks by number and
+    moves each by command (`MOVE_STAGED`, to the work area through `place` or to the inventory, only what fits), open or
+    shut: the way to every staged stack that does not depend on geometry. Sneak-use also retrieves staged stacks.
+    `hasRoomFor` is asked only before a shift-click into the drawer; the server moves at most what fits.
+  - *Commands.* Protocol 5: `WorkCommandPacket` carries a per-lease sequence (repeats and older ones dropped) and the lease
+    has its own command budget (`COMMAND_RATE`/`COMMAND_BURST`, 20 a second, apart from the library's 40 actions a second).
+    The arguments' budget is 1024 bytes (`CompoundTag.sizeInBytes`, about 80 per entry; it was 512, which a seat with its
+    generation exceeds); the decoder still allows four times the budget. Refusals are logged at most once a second (debug,
+    or info with `-Dimmersive_jewelry.logRefusals=true`, set in the dev runs).
+    `BenchOperations.command` validates each action's arguments (types, cursor -1 only, finite seat offsets, bounded lists),
+    refuses seating, lifting and declaring done on another work than the one named, and refuses a command that names a stale
+    position generation (`Gen`; every bench position has one, raised on every change and sent with each update). New
+    commands at the end of `WorkCommand`: `DRAWER`, `STAGE_IN`, `MOVE_STAGED`, `PREPARE` (the folio's exact preparation:
+    the server counts the stones still needed for one gem and moves exactly those, preferred slots first, then the best
+    cuts; staged stones only when asked).
+  - *Keys.* `StationBehavior.onKey` takes the station's keys when nothing is laid over the scene (then a recipe-viewer
+    lookup), and a held key's repeats never run a one-shot action twice. The library offers no keys under a
+    `ScreenOverlay`, so `WorkstationClient` keeps a scoped Forge bridge for the stations' own overlays only
+    (`ScreenEvent.KeyPressed.Pre`, `CharacterTyped.Pre`) and for every release (`KeyReleased.Pre`; the library has no
+    release hook). The folio's search field (`EditBox`) owns every key while focused (Escape blurs it first), and the
+    handbook key checks `WorkstationClient.textInputActive()` before opening help.
+  - *Camera.* Both shots are now authored from the front right; the client option `workingSide` LEFT mirrors them across
+    x = 8 (`mirrorCamera`). Pointer mapping is rebuilt from the effective camera (`SceneLoader.camera(id, mirror)`,
+    `cameraChanged`), and a change of side waits until no tool is pressed.
+  - *Comfort.* `workstation/station/SceneComfort` (pure JSON, shared with the GameTests) applies the comfort options before
+    the codec; new: `looseItemMotion` (calm drops `placing.physics`; AUTO, the default, is calm with reduced motion), `workLamp` (drops the lamp
+    node's light; the lamp is steady, `flicker` 0). The library rebuilds live scenes only on a resource reload, so a scene in
+    use keeps its options until next opened (the player is told); the working side switches live.
+  - *Lighting.* The lamp is a scene light: it brightens scene models (`lit_as_block`) and lights the surfaces' pools, not the
+    world, not mob spawning. Jewelry's own parts are painter and GeckoLib draws with the block's light; the lamp does not
+    relight them, and moving drawer surfaces are not light occluders.
+  - *Not applicable, by design:* `MenuBinding.alsoAccepts` (server stations, no vanilla menu), `Orientation.BLOCK_OPPOSITE`
+    (both blocks' facing names their front; `BLOCK` stays), `OutputBinding` count facing (no outputs: the clamp's result is
+    Jewelry's), `isBlockHidden` (no hidden-block replacement: the base blocks stay; both renderers keep the `isSceneDrawn`
+    handoff and the Ponder exception), `moveCamera`/`hidesBlocks` and `setOutlineSeenOnly` (as before).
+- **Diegesis compatibility (1.3.0).** Diegesis is a beta whose API still changes, so Jewelry does not require the exact
+  release it was built against: `diegesis_version_range` is `[<tested>,)`, open upwards, and its lower bound is read at run
+  time as the tested release. What protects the game instead:
+  - *Probe.* `integration/diegesis/DiegesisCompat` (no Diegesis import) checks at start-up, by reflection, every class, method,
+    field and implemented interface Jewelry uses, grouped into features: `STATIONS`, `NATIVE_STORAGE` (server and client),
+    `CLIENT`, `KEY_HOOKS`, `CAMERA_MIRROR`, `DRAWER_MOTION`, `ROOM_QUERY`, `PARTICLES` (client). A feature is on only when all its members
+    are there with the same signatures and every interface Jewelry implements has exactly the abstract methods it implements
+    (a library default Jewelry overrides, such as `StationLogic.mayPlace`, must still exist, or native storage stays off rather
+    than fall back to the library's permissive default). One log line says what is on; each missing member is listed;
+    `/immersivejewelry diegesis` shows the same. `DiegesisCompatTest` holds the member list to the tested release and checks
+    what removing or changing members turns off; `DiegesisUsageTest` reads Jewelry's compiled classes and fails when any
+    Diegesis method, constructor, field, implemented interface or overridden hook they use is missing from the list.
+  - *Nothing that holds items depends on the library.* `JewelersBenchBlockEntity` imports nothing from Diegesis; its factory
+    (`create`, used by the block and the block entity type) makes `HostedBenchBlockEntity` (the `StationHost` subclass) only
+    with native storage on, and a plain bench otherwise or if making the hosted one fails. A plain bench keeps the library's
+    `Station` tag as read (dropping only poses of places whose stack changed), so poses return with a compatible Diegesis.
+    `JewelryStations` (ids, rules) is library-free; `DiegesisStations` registers, inside a guard, only with `STATIONS` on.
+  - *Guards.* Client code reaches static library calls only through `client/workstation/DiegesisAccess` (lambdas, so a
+    changed method fails inside the guard), and Diegesis holds each station's behaviour behind `GuardedBehavior`: Diegesis
+    catches `RuntimeException`s from station code, not the `LinkageError` a changed API throws, which would end the render
+    thread. A `LinkageError` turns the client half off for the session (the block entity renderers draw the stations again),
+    makes the behaviours inert, lets go of held input and tells the player once that the work is kept. Optional calls go through
+    `DiegesisCompat.run(feature, ...)`, which turns only that feature off. Particles are their own feature (looks only), and
+    their styles fail one by one.
+  - *Scenes.* `SceneComfort.fallback` simplifies a scene by levels (`NO_PHYSICS`, `PLAIN_PLACING`, `PLAIN_SLOTS`,
+    `NO_PLACING`, `NO_JAR_SLOTS`, `NO_EXTRAS`, `BARE`); `SceneLoader` registers the first level the installed library reads,
+    logs any lower level, and records whether the drawer's surfaces and the jar slots are in it. A station whose scene no level
+    fits opens without one and says so.
+  - *Fallbacks.* Without `KEY_HOOKS` station keys come through Forge's screen events (as in 1.2). Without `CAMERA_MIRROR` the
+    authored side is used. Without `DRAWER_MOTION` (or a scene without `placing`) the drawer is its list and the painter draws
+    the staged stacks; without `ROOM_QUERY` a shift-click into the drawer skips the look (the server moves only what fits).
+    Without `NATIVE_STORAGE` the bench schema has no groups, the jars are pick zones again and every move is a Jewelry command;
+    `WorkstationLogic` also refuses any group that is not really bound. Without `STATIONS` or `CLIENT` the hands-on stations
+    do not open; the blocks keep their walk-up use (placing, taking, packing) and say why on an empty-handed use.
+  - *Checking another release.* `-PdiegesisRuntimeJar=<jar>` (with `-Pdiegesis_version_range=...` when it is outside the range)
+    compiles against the tested release and runs GameTests or the client against the given jar; the GameTests then hold only
+    the compatibility guarantees (`immersive_jewelry.compatRun`). Validated against 1.0.0-beta.10, which lacks every beta 11
+    addition: `docs/WORKSTATION_VALIDATION.md`.
+- **One custody path per position.** Every move of the wheel's stone and lap and of the bench's clamp, sockets, tray and
+  dock (walk-up placement, taking things, preparing stones from the inventory, taking a result) goes through
+  `WheelOperations`/`BenchOperations`, from the block's use or from a `WorkCommandPacket`. The bench's supply jars and staging
+  drawer have exactly two: the same operations, and the library's native gestures through `WorkstationLogic`'s gate; both
+  write the same arrays, and each gesture has one owner. The stacks are real server stacks in the block entities and the
+  scene only shows them.
 - **Work orders (handoff 7).** A cut is a `CutWork` (`workstation/order`) in the stone's own NBT (`Work`, schema 1:
   cut, recut flag, seed, `FacetParams`, `FacetSim` state, revision, lap wear), so it travels with the stone. A bench job
   is a `BenchWork` in the bench (or, packed, in an `unfinished_jewelry` carrier with the frame and stones): kind
@@ -170,6 +270,14 @@ handoff" below) on top of the 1.2.x hands-on stations: that handoff's first case
 orders, leases, custody and save schemas above are extended, not replaced. Inventory of assets, bones, clips and keys:
 `ASSET_MANIFEST.md`.
 
+- **Optional libraries (1.3.0).** Ponder (with Flywheel) and playerAnimator are optional client dependencies
+  (`mandatory=false`, still range-checked when present). `client/presentation/OptionalLibraries` (no library import) answers
+  whether each runs; `ClientSetup` calls `JewelryPonder.init` only with Ponder, `Presentation` registers the body-pose layer
+  and tick only with playerAnimator, and `JewelerActor` poses the demonstrator through `JewelerPoses.pose` only with
+  playerAnimator (Ponder without playerAnimator shows an unposed jeweler). Without Ponder the handbook keeps its default
+  launcher, which reports lessons unavailable (Watch buttons disabled, help opens the page). Ponder is named only inside
+  `client/compat/ponder` and playerAnimator only by `JewelerPoses` and `JewelerLayer`; `LibraryResourcesTest
+  .theOptionalLibrariesAreReachedOnlyBehindTheirGates` holds that. `-PnoPonder` / `-PnoPlayerAnimator` run without them.
 - **One owner per concern.** Diegesis: focus, camera, picking, captions and scene lifecycle (unchanged). GeckoLib: the
   articulated meshes of the lap, lever, vise and bench tools. playerAnimator: the third-person body. Patchouli: reading.
   Ponder: demonstrations. The work, items and effects stay with the Jewelry code; no library callback, marker or render
@@ -283,7 +391,10 @@ Villager-made jewelry is capped below Masterwork (`villagerMaxWorkmanship`).
 | 10.4 band "Rough" | omitted | its thresholds define six bands, and the name collides with the uncut rough stone |
 | 7.1 one pliers item | Jeweler's Pliers and Fine Pliers | a tolerance tier (spec 7.1 "quality tier") |
 | 7.2 upgradeable wheel | Emery Lap and Diamond Lap in the wheel's lap slot | two items instead of five components |
-| handoff 10.1 Diegesis storage bindings for item moves | every move is a Jewelry operation (block use or `WorkCommandPacket`); library slots and custom actions are refused | one custody path and one transport per action kind (handoff 9); the operation rules stay in one place |
+| handoff 10.1 Diegesis storage bindings for item moves | every move of work positions (wheel, clamp, sockets, tray, dock) is a Jewelry operation; since 1.3 only the bench's supply jars and staging drawer are library slots, bound to the bench's own arrays and gated by `WorkstationLogic`; custom actions stay refused | one owner per stack; precision work keeps one custody path, loose storage gets native gestures (beta 11 handoff 5.2) |
+| beta 11 handoff 10.1 example surface over the work area | the drawer's two surfaces in front of the vise, between the jars and the tray, over the bench's knee cut-out (x 5.3-9.7, z 1.25-3.45, open endpoint), sliding 2.4 px into a low case | the only open area the shot sees that is clear of the vise, the tools' paths and the stone tray; a drawer pulled out past the block's front, or further than this, is out of frame or under the captions |
+| beta 11 handoff 10.4 close or defer a live scene on an options change | the scene in use keeps its options until it is next opened, with a notice; held input is released; the working side switches live | the library rebuilds code-registered scenes only on a resource reload; mutating library internals is ruled out |
+| beta 11 handoff 10.5 lamp lighting the close-up | a steady scene light (pools on surfaces, `lit_as_block` models); painter and GeckoLib parts keep the block's light | the documented scope of beta 11 scene lights; no world light, no extra render path |
 | handoff 12 scenes in `assets/immersive_jewelry/diegesis/scenes/` | `assets/immersive_jewelry/diegesis/stations/<station>.json`, loaded by `SceneLoader` and registered with `DiegesisClient.registerScene` | Diegesis auto-loads `diegesis/scenes` unmodified; the stations' scenes must be rewritten for no-zoom, instant transitions and reduced motion and always have block and entity clearing off |
 | handoff 12 example `work_profiles/setting/prong.json` | defaults at `work_profiles/defaults/<interaction>.json`, used as `immersive_jewelry:defaults/<interaction>` | one fallback id per interaction; any other path can be named by a design, cut or finish |
 | handoff 7 bezel tool | the bench's built-in pusher (no pliers, full precision) | a bezel needs no prong grip; pliers stay the prong tool |

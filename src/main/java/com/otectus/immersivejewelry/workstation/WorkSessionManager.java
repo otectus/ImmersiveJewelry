@@ -43,6 +43,8 @@ public final class WorkSessionManager {
     private static final Map<GlobalPos, Lease> BY_STATION = new HashMap<>();
     private static final Map<UUID, Preferences> PREFERENCES = new HashMap<>();
     private static final Random RANDOM = new Random();
+    /** Discrete commands a lease may send per second, and how many at once (its own budget, apart from the library's). */
+    public static final int COMMAND_RATE = 20, COMMAND_BURST = 20;
     /** Input silence after which a tool still pressed is lifted (plus the player's latency allowance). */
     private static final long HEARTBEAT_MS = 400L;
 
@@ -61,6 +63,9 @@ public final class WorkSessionManager {
         private double tokens;
         private long refillMs;
         private boolean active;
+        private int lastCommand;
+        private double commandTokens = COMMAND_BURST;
+        private long commandRefillMs;
 
         Lease(UUID player, GlobalPos station, int token, long now) {
             this.player = player;
@@ -68,7 +73,25 @@ public final class WorkSessionManager {
             this.token = token;
             this.lastInputMs = now;
             this.refillMs = now;
+            this.commandRefillMs = now;
         }
+
+        /**
+         * Accepts one discrete command: its sequence number must be higher than every one before under this lease (a repeat or
+         * an older one is dropped), and the lease's command budget ({@value #COMMAND_RATE} a second, a burst of
+         * {@value #COMMAND_BURST}) must have room. A command refused by the budget still uses up its number.
+         */
+        public boolean admitCommand(int seq, long now) {
+            if (seq <= lastCommand) return false;
+            lastCommand = seq;
+            commandTokens = Math.min(COMMAND_BURST, commandTokens + Math.max(0L, now - commandRefillMs) * COMMAND_RATE / 1000.0);
+            commandRefillMs = now;
+            if (commandTokens < 1.0) return false;
+            commandTokens -= 1.0;
+            return true;
+        }
+
+        public int lastCommand() { return lastCommand; }
 
         public int nextStep() { return nextStep; }
         public int lastSeq() { return lastSeq; }

@@ -43,13 +43,15 @@ public final class StationStates {
         for (int i = 0; i < sockets.length; i++) sockets[i] = bench.socket(i);
         for (int i = 0; i < tray.length; i++) tray[i] = bench.tray(i);
         for (int i = 0; i < supplies.length; i++) supplies[i] = bench.supply(i);
+        ItemStack[] staged = new ItemStack[JewelersBenchBlockEntity.STAGING];
+        for (int i = 0; i < staged.length; i++) staged[i] = bench.staged(i);
         JewelryDesignRecipe design = design(bench, work);
         SettingSim sim = work != null ? work.setting() : null;
         SettingStyle style = sim != null ? sim.params().style() : design != null ? design.style() : SettingStyle.PRONG;
         int points = sim != null ? sim.params().points() : design != null ? design.pointsPerStone() : 4;
         return new BenchPainter.State(bench.clamp(), sockets, tray, supplies, bench.dock(), work, layout(bench, work), style, points,
                 sim != null ? sim.params().tolerance() : 0.1F, BenchPainter.Tool.NONE, null, 0F, false, 0, 0, -1, 0F, null, false, false,
-                work == null && bench.clamp().getItem() instanceof JewelryItem ? 1F : 0F, 0F);
+                work == null && bench.clamp().getItem() instanceof JewelryItem ? 1F : 0F, 0F, bench.drawerOpen() ? 1F : 0F, false, staged);
     }
 
     @Nullable

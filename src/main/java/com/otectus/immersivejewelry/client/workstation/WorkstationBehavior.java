@@ -3,9 +3,9 @@ package com.otectus.immersivejewelry.client.workstation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.otectus.immersivejewelry.client.workstation.render.Geo;
 import com.otectus.immersivejewelry.config.ClientConfig;
+import com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat;
 import com.otectus.immersivejewelry.workstation.WorkCommand;
 import com.otectus.immersivejewelry.workstation.sim.WorkSample;
-import com.pockyl.diegesis.api.client.DiegesisClient;
 import com.pockyl.diegesis.api.client.StationBehavior;
 import com.pockyl.diegesis.api.client.StationView;
 import net.minecraft.Util;
@@ -22,7 +22,9 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -30,6 +32,18 @@ import java.util.WeakHashMap;
  * fixed-step input stream and its prediction for the operator, contextual hints, cues and sounds, and the keyboard
  * frontend. A behaviour exists for every station shown on this client (worked by us, worked by someone else, or idle
  * near us) and draws all of them the same way from the synced state; only the operator's adds prediction and input.
+ *
+ * <p>Keys (Diegesis 1.0.0-beta.11): with nothing laid over the scene, a key reaches the station through the library's own
+ * {@link #onKey} hook, before the library's keys; the station takes what it uses, and a key it has no use for may look up the
+ * stack under the cursor in a recipe viewer. While one of the station's overlays is open (the folio, the loupe's notes, the
+ * drawer's list) the library offers no keys at all, so {@code WorkstationClient} hands them to {@link #overlayKey} /
+ * {@link #overlayChar} from Forge's screen events instead; releases always come that way (the library has no release hook).
+ * A held key's repeats never run a one-shot action twice: only the press that started it does, and its repeats are swallowed
+ * when it was taken.</p>
+ *
+ * <p>Camera side: the player's working side mirrors the camera across the block's middle ({@code StationView.mirrorCamera});
+ * pointer mapping is always rebuilt from the camera actually used ({@link #cameraChanged}). A change of side waits until no
+ * tool is pressed, lets everything go, then switches.</p>
  */
 abstract class WorkstationBehavior implements StationBehavior {
     private static final Map<StationView, WorkstationBehavior> BY_VIEW = new WeakHashMap<>();
@@ -45,6 +59,11 @@ abstract class WorkstationBehavior implements StationBehavior {
     private Component cue;
     private long cueUntil;
     private long lastFrame = Util.getNanos();
+    /** Keys down now (as this station heard them), and those of them whose first press the station took. */
+    private final Set<Integer> down = new HashSet<>();
+    private final Set<Integer> taken = new HashSet<>();
+    /** The mirror plane this behaviour maps the pointer for (NaN: the authored shot). */
+    protected float mirror = Float.NaN;
 
     protected WorkstationBehavior(StationView view) {
         this.view = view;
@@ -67,6 +86,29 @@ abstract class WorkstationBehavior implements StationBehavior {
     @Override
     public void onSceneReady(StationView view) {
         view.node("work").ifPresent(node -> node.setPainter(this::paint));
+        applyMirror();
+    }
+
+    /** Sets the player's working side on the view and rebuilds the pointer mapping for it. */
+    protected void applyMirror() {
+        float plane = SceneLoader.mirrorPlane();
+        mirror = Float.NaN;
+        // A Diegesis without mirroring keeps the authored side; the mapping then follows the authored camera.
+        DiegesisCompat.run(DiegesisCompat.Feature.CAMERA_MIRROR, "the working side", () -> {
+            view.mirrorCamera(plane);
+            mirror = view.cameraMirror();
+        });
+        cameraChanged();
+    }
+
+    /** The station's id (its scene's). */
+    protected abstract net.minecraft.resources.ResourceLocation stationId();
+
+    /** The camera the scene is seen through changed (scene ready, side switched): recompute what pointer mapping uses. */
+    protected void cameraChanged() {}
+
+    private static boolean samePlane(float a, float b) {
+        return Float.isNaN(a) ? Float.isNaN(b) : a == b;
     }
 
     private void paint(PoseStack pose, MultiBufferSource buffers, int light) {
@@ -84,13 +126,21 @@ abstract class WorkstationBehavior implements StationBehavior {
         lastHint = Component.empty();
         hovered = null;
         releaseAll();
+        forgetKeys();
+        applyMirror();
         // The compact drawer lists what this station can use, unless the player wants everything there.
         view.setInventoryFilter(stack -> ClientConfig.get(ClientConfig.DRAWER_SHOWS_EVERYTHING) || usable(stack));
+        if (!SceneLoader.INSTANCE.hasScene(stationId())) {
+            // The installed Diegesis could not read even the simplest scene: say so; the work is kept, Escape leaves.
+            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("workstation.immersive_jewelry.no_scene",
+                    DiegesisCompat.installedVersion()).withStyle(net.minecraft.ChatFormatting.GOLD));
+        }
     }
 
     @Override
     public void onClose(StationView view) {
         releaseAll();
+        forgetKeys();
         flush(true);
         view.loopSound("work", null, 0F, 1F);
         view.loopSound("motor", null, 0F, 1F);
@@ -100,6 +150,12 @@ abstract class WorkstationBehavior implements StationBehavior {
     public void frame(StationView view, float deltaSeconds) {
         long now = Util.getNanos();
         lastFrame = now;
+        // The working side changed in the options: never under a pressed tool; let go, switch, map anew.
+        if (!samePlane(SceneLoader.mirrorPlane(), mirror) && !active()) {
+            releaseAll();
+            flush(true);
+            applyMirror();
+        }
         update(deltaSeconds, now);
         if (operating()) {
             recorder.pump(sample(), active(), now, this::predict);
@@ -150,6 +206,85 @@ abstract class WorkstationBehavior implements StationBehavior {
 
     void onLeaseEnded() {
         releaseAll();
+        forgetKeys();
+    }
+
+    /** The client options changed while working here: let go, and say that scene options show on the next visit. */
+    void onOptionsChanged() {
+        releaseAll();
+        forgetKeys();
+        flush(true);
+        if (operating()) view.showCaption(Component.translatable("workstation.immersive_jewelry.cue.options_next_visit"), 3F);
+    }
+
+    /** Forgets which keys are down (a child screen, focus lost, the lease or the station ended). */
+    void forgetKeys() {
+        down.clear();
+        taken.clear();
+    }
+
+    /**
+     * A key went down with nothing laid over the scene (Diegesis' hook, before its own keys). Taken: a key this station uses
+     * now, or one a recipe viewer looks up the stack under the cursor with. A repeat runs nothing; it is swallowed when the
+     * press was taken.
+     */
+    @Override
+    public boolean onKey(StationView view, int key, int scan, int modifiers) {
+        return stationKey(key, scan, modifiers);
+    }
+
+    /** A key for the station with nothing laid over the scene: from {@link #onKey}, or Forge's event with a Diegesis without it. */
+    boolean stationKey(int key, int scan, int modifiers) {
+        if (!operating()) return false;
+        if (!down.add(key)) return taken.contains(key);
+        boolean took = keyPressed(key, scan, modifiers);
+        if (!took) {
+            ItemStack under = stackUnderCursor();
+            took = !under.isEmpty() && WorkstationClient.lookUp(key, scan, under);
+        }
+        if (took) taken.add(key);
+        return took;
+    }
+
+    /** No field to type into while nothing is laid over the scene: characters stay the library's. */
+    @Override
+    public boolean onChar(StationView view, char character, int modifiers) {
+        return false;
+    }
+
+    /** Whether one of this station's overlays is open (it then gets the keys through {@link #overlayKey}). */
+    boolean overlayOpen() {
+        return false;
+    }
+
+    /** Whether a text field of an open overlay has the keyboard: every key and character is text then. */
+    boolean textInputActive() {
+        return false;
+    }
+
+    /** A key went down while one of this station's overlays is open; {@code repeat}: a held key's repeat. */
+    boolean overlayKey(int key, int scan, int modifiers, boolean repeat) {
+        return false;
+    }
+
+    /** A character was typed while one of this station's overlays is open. */
+    boolean overlayChar(int codePoint, int modifiers) {
+        return false;
+    }
+
+    /** Keys reaching an open overlay: tracks the press so a held key's repeats are known as such. */
+    boolean overlayPressed(int key, int scan, int modifiers) {
+        boolean repeat = !down.add(key);
+        boolean took = overlayKey(key, scan, modifiers, repeat);
+        if (took) taken.add(key);
+        return took || repeat && taken.contains(key);
+    }
+
+    /** A key came up: always reaches the station, so a held action never sticks. */
+    boolean keyUp(int key, int scan) {
+        down.remove(key);
+        taken.remove(key);
+        return keyReleased(key, scan);
     }
 
     boolean keyPressed(int key, int scan, int modifiers) {
@@ -190,7 +325,7 @@ abstract class WorkstationBehavior implements StationBehavior {
 
     /** What is under the cursor: the drawer's stack there, or the station's own stack at the hovered node. */
     ItemStack stackUnderCursor() {
-        ItemStack inDrawer = DiegesisClient.hoveredStack();
+        ItemStack inDrawer = DiegesisAccess.hoveredStack();
         if (!inDrawer.isEmpty()) return inDrawer;
         return hovered == null ? ItemStack.EMPTY : shownStack(hovered);
     }

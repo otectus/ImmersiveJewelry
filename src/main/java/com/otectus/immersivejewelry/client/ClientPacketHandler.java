@@ -39,6 +39,7 @@ public final class ClientPacketHandler {
         JewelryDefinitions.setClient(JewelryDefinitions.build(json, errors::add));
         JewelryDefinitions.logErrors(errors, "client");
         JewelryColors.clearSamples();
+        com.otectus.immersivejewelry.client.workstation.WorkstationClient.onDefinitionsChanged();
     }
 
     public static void knownDesigns(KnownDesignsPacket packet) {

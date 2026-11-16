@@ -300,8 +300,7 @@ public final class WheelGameTests {
         CutWork work = wheel.work().orElseThrow();
         op.feed(work.id(), java.util.Collections.nCopies(60, new WorkSample(2048, 0, 0, work.sim().region(), WorkSample.TRIM_BIAS, 0)));
         h.destroyBlock(STATION);
-        AABB box = new AABB(h.absolutePos(STATION)).inflate(2);
-        var drops = h.getLevel().getEntitiesOfClass(ItemEntity.class, box);
+        var drops = TestSupport.freshDrops(h, h.absolutePos(STATION));
         long stones = drops.stream().filter(e -> e.getItem().is(ModItems.ROUGH_GEM.get())).count();
         long laps = drops.stream().filter(e -> e.getItem().is(ModItems.EMERY_LAP.get())).count();
         h.assertTrue(stones == 1 && laps == 1, "one stone and one lap: " + stones + ", " + laps);

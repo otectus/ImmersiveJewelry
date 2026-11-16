@@ -32,9 +32,11 @@ public final class WorkstationKeys {
     public static final KeyMapping CONFIRM = key("confirm", GLFW.GLFW_KEY_ENTER);
     public static final KeyMapping FOLIO = key("folio", GLFW.GLFW_KEY_B);
     public static final KeyMapping TURN = key("turn", GLFW.GLFW_KEY_R);
+    /** The bench's staging drawer: its list of the four staged stacks, opening and shutting it (works with the drawer shut too). */
+    public static final KeyMapping DRAWER = key("drawer", GLFW.GLFW_KEY_N);
 
     public static final List<KeyMapping> ALL = List.of(RAISE, LOWER, LEFT, RIGHT, APPLY, NEXT, PREVIOUS, TRIM_UP, TRIM_DOWN, TOOL, INSPECT,
-            COOL, CONFIRM, FOLIO, TURN);
+            COOL, CONFIRM, FOLIO, TURN, DRAWER);
 
     /**
      * The handbook key (outside the station category: it works everywhere). In the world it opens the handbook; over an item
@@ -45,7 +47,7 @@ public final class WorkstationKeys {
 
     /** The keys the handbook lists, in reading order. */
     public static final List<KeyMapping> HELP_ORDER = List.of(APPLY, RAISE, LOWER, LEFT, RIGHT, NEXT, PREVIOUS, TRIM_UP, TRIM_DOWN, TURN,
-            TOOL, INSPECT, COOL, FOLIO, CONFIRM, HANDBOOK);
+            TOOL, INSPECT, COOL, FOLIO, DRAWER, CONFIRM, HANDBOOK);
 
     private static KeyMapping key(String name, int glfw) {
         return new KeyMapping("key.immersive_jewelry.workstation." + name, KeyConflictContext.GUI, InputConstants.Type.KEYSYM, glfw, CATEGORY);

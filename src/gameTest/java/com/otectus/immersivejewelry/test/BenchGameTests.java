@@ -315,7 +315,7 @@ public final class BenchGameTests {
         give(h, player, STATION, stone(DIAMOND, "brilliant", 0.7F));
         set(op, bench, new SettingBot(SettingBot.Style.CAREFUL), 60);
         h.destroyBlock(STATION);
-        var drops = h.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(h.absolutePos(STATION)).inflate(2));
+        var drops = TestSupport.freshDrops(h, h.absolutePos(STATION));
         long carriers = drops.stream().filter(e -> e.getItem().is(ModItems.UNFINISHED_JEWELRY.get())).count();
         long blanks = drops.stream().filter(e -> e.getItem().is(ModItems.RING_BLANK.get())).count();
         long stones = drops.stream().filter(e -> e.getItem().is(ModItems.CUT_GEM.get())).mapToInt(e -> e.getItem().getCount()).sum();

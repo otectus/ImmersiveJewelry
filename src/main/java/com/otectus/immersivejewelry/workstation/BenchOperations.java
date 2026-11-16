@@ -13,6 +13,7 @@ import com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity;
 import com.otectus.immersivejewelry.config.ServerConfig;
 import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.data.finish.FinishDefinition;
+import com.otectus.immersivejewelry.data.metal.MetalDefinition;
 import com.otectus.immersivejewelry.item.CutGemItem;
 import com.otectus.immersivejewelry.item.JewelryBlankItem;
 import com.otectus.immersivejewelry.item.JewelryItem;
@@ -37,6 +38,7 @@ import com.otectus.immersivejewelry.workstation.sim.SurfaceParams;
 import com.otectus.immersivejewelry.workstation.sim.SurfaceSim;
 import com.otectus.immersivejewelry.workstation.sim.WorkSample;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -53,6 +55,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +67,9 @@ import java.util.Optional;
  * changes nothing.
  */
 public final class BenchOperations {
-    public static final String CLAMP = "clamp", TRAY = "tray", SUPPLY = "supply", DOCK = "dock";
+    public static final String CLAMP = "clamp", TRAY = "tray", SUPPLY = "supply", DOCK = "dock", SOCKET = "socket", STAGING = "staging";
+    /** At most this many inventory slots name the preferred stones of one preparation ({@link WorkCommand#PREPARE}). */
+    public static final int MAX_PREFERRED = 36;
 
     // ================================================================================================ walk-up use
 
@@ -80,6 +85,12 @@ public final class BenchOperations {
             return;
         }
         if (!held.isEmpty() && place(player, bench, held, null, -1, true)) return;
+        if (!com.otectus.immersivejewelry.workstation.station.JewelryStations.available()) {
+            // The hands-on bench needs Diegesis; everything on the bench and the work in the clamp are kept as they are, and
+            // walking up still places, takes and packs.
+            Feedback.info(player, "hands_on_unavailable", com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.installedVersion());
+            return;
+        }
         Feedback.info(player, bench.clamp().isEmpty() ? "bench_hint" : "bench_work_hint");
     }
 
@@ -150,6 +161,13 @@ public final class BenchOperations {
                 return;
             }
         }
+        // The staging drawer: walking up retrieves a staged stack whether the drawer is open or not.
+        for (int i = 0; i < JewelersBenchBlockEntity.STAGING; i++) {
+            if (!bench.staged(i).isEmpty()) {
+                moveStaged(player, bench, i, 0, false);
+                return;
+            }
+        }
         if (!bench.dock().isEmpty()) take(player, bench, DOCK, 0);
     }
 
@@ -162,8 +180,17 @@ public final class BenchOperations {
      */
     public static boolean place(ServerPlayer player, JewelersBenchBlockEntity bench, ItemStack source, @Nullable String target, int index,
                                 boolean quietIfNotAccepted) {
+        return place(player, bench, source, target, index, quietIfNotAccepted, false);
+    }
+
+    /**
+     * {@code real}: the source is a stack the bench owns already (a staged stack), so even a creative player's placement moves
+     * it instead of copying it.
+     */
+    static boolean place(ServerPlayer player, JewelersBenchBlockEntity bench, ItemStack source, @Nullable String target, int index,
+                         boolean quietIfNotAccepted, boolean real) {
         if (source.isEmpty()) return false;
-        boolean creative = player.getAbilities().instabuild;
+        boolean creative = !real && player.getAbilities().instabuild;
         if (source.getItem() instanceof UnfinishedJewelryItem && (target == null || CLAMP.equals(target))) {
             if (!bench.clamp().isEmpty() || bench.work() != null || bench.seatedCount() > 0) return refuse(player, "clamp_occupied", quietIfNotAccepted);
             if (!bench.unpack(source)) return refuse(player, "carrier_unreadable", quietIfNotAccepted);
@@ -222,7 +249,8 @@ public final class BenchOperations {
     public static void placeFrom(ServerPlayer player, JewelersBenchBlockEntity bench, int from, @Nullable String target, int index) {
         if (target != null && target.isEmpty()) target = null;
         ItemStack source;
-        if (from < 0) {
+        if (from < -1) return;
+        if (from == -1) {
             source = player.inventoryMenu.getCarried();
         } else if (from < player.getInventory().items.size()) {
             source = player.getInventory().items.get(from);
@@ -294,6 +322,212 @@ public final class BenchOperations {
             }
         }
         return stack.is(ItemTags.create(new ResourceLocation("forge", "nuggets")));
+    }
+
+    /**
+     * The library's rule for the {@code supplies} group, which cannot see the bench: anything that is a supply for some
+     * clamped piece (any metal's repair material among them). {@code WorkstationLogic} then asks {@link #isSupply} with the
+     * actual bench, so the library never takes in what this bench has no use for.
+     */
+    public static boolean maybeSupply(ItemStack stack) {
+        if (isSupply(stack, null)) return true;
+        if (stack.isEmpty()) return false;
+        if (stack.is(ItemTags.create(new ResourceLocation("forge", "ingots")))) return true;
+        for (MetalDefinition metal : JewelryDefinitions.current().metals()) {
+            if (metal.repair() != null && !Inventories.isEmpty(metal.repair()) && metal.repair().test(stack)) return true;
+        }
+        return false;
+    }
+
+    /** What the staging drawer takes: the bench's own inputs (stones, frames, pieces, carriers, pliers, supplies), nothing else. */
+    public static boolean isStageable(ItemStack stack) {
+        return isWalkUpItem(stack) || maybeSupply(stack);
+    }
+
+    // ================================================================================================ the staging drawer
+
+    /** Opens or shuts the staging drawer (presentation for everyone; the server still checks each move on its own). */
+    public static void setDrawer(ServerPlayer player, JewelersBenchBlockEntity bench, boolean open) {
+        if (bench.drawerOpen() == open) return;
+        bench.setDrawerOpen(open);
+        sound(player, bench, ModSounds.BENCH_PLACE.get(), 0.35F, open ? 0.8F : 0.7F);
+    }
+
+    /**
+     * Puts (part of) an inventory stack ({@code from}, or -1 for the cursor) into the staging drawer: into a staged stack of the
+     * same item first, then the first empty place. {@code count} 0 is the whole stack. Moves the real stack, also in creative
+     * mode, and at most what fits: whatever has no room stays where it was. Returns how many moved.
+     */
+    public static int stageIn(ServerPlayer player, JewelersBenchBlockEntity bench, int from, int count) {
+        if (!bench.drawerOpen()) {
+            Feedback.fail(player, "drawer_closed");
+            return 0;
+        }
+        if (from < -1 || from >= player.getInventory().items.size() || count < 0) return 0;
+        ItemStack source = from == -1 ? player.inventoryMenu.getCarried() : player.getInventory().items.get(from);
+        if (source.isEmpty()) return 0;
+        if (!isStageable(source)) {
+            Feedback.fail(player, "drawer_cannot_take");
+            return 0;
+        }
+        int wanted = count == 0 ? source.getCount() : Math.min(count, source.getCount());
+        int moved = 0;
+        for (int pass = 0; pass < 2 && moved < wanted; pass++) {
+            for (int i = 0; i < JewelersBenchBlockEntity.STAGING && moved < wanted; i++) {
+                ItemStack at = bench.staged(i);
+                boolean ok = pass == 0 ? !at.isEmpty() && ItemStack.isSameItemSameTags(at, source) && at.getCount() < at.getMaxStackSize()
+                        : at.isEmpty();
+                if (!ok) continue;
+                int room = (at.isEmpty() ? source.getMaxStackSize() : at.getMaxStackSize() - at.getCount());
+                int n = Math.min(room, wanted - moved);
+                bench.setStaged(i, at.isEmpty() ? source.copyWithCount(n) : at.copyWithCount(at.getCount() + n));
+                source.shrink(n);
+                moved += n;
+            }
+        }
+        if (moved == 0) {
+            Feedback.fail(player, "drawer_full");
+            return 0;
+        }
+        if (from == -1) player.inventoryMenu.setCarried(source.isEmpty() ? ItemStack.EMPTY : source);
+        player.inventoryMenu.broadcastChanges();
+        sound(player, bench, ModSounds.BENCH_PLACE.get(), 0.4F, 1.6F);
+        return moved;
+    }
+
+    /**
+     * Moves (part of) staged stack {@code index} on: {@code toWork} into the work area (wherever {@link #place} puts it: the tray,
+     * the supplies, the clamp or the dock), else into the inventory. Only what is taken leaves the drawer, exactly once, and the
+     * drawer keeps the rest; a refused or partial move says why. Walking up and the drawer's list reach this with the drawer
+     * shut too: it is the way back to every staged stack. Returns how many moved.
+     */
+    public static int moveStaged(ServerPlayer player, JewelersBenchBlockEntity bench, int index, int count, boolean toWork) {
+        if (index < 0 || index >= JewelersBenchBlockEntity.STAGING || count < 0) return 0;
+        ItemStack staged = bench.staged(index);
+        if (staged.isEmpty()) return 0;
+        int wanted = count == 0 ? staged.getCount() : Math.min(count, staged.getCount());
+        ItemStack moving = staged.copyWithCount(wanted);
+        if (toWork) {
+            if (!place(player, bench, moving, null, -1, false, true)) return 0;
+        } else {
+            player.getInventory().add(moving);
+            if (moving.getCount() == wanted) {
+                Feedback.fail(player, "inventory_full");
+                return 0;
+            }
+            sound(player, bench, ModSounds.BENCH_PLACE.get(), 0.6F, 1.3F);
+        }
+        int moved = wanted - moving.getCount();
+        if (moved <= 0) return 0;
+        bench.setStaged(index, staged.copyWithCount(staged.getCount() - moved));
+        player.inventoryMenu.broadcastChanges();
+        if (moved < wanted) Feedback.info(player, "moved_part", moved, wanted);
+        return moved;
+    }
+
+    /** A stone a preparation could move into the tray: where it is ({@code staging} or the inventory) and how good its cut is. */
+    private record Candidate(boolean staged, int index, GemData gem, int preference) {}
+
+    /**
+     * Prepares the stones for a design ({@link WorkCommand#PREPARE}): moves exactly as many accepted stones of one gem into the
+     * tray as the design still needs, counting what the sockets and the tray already hold for it. The player's preferred
+     * inventory slots ({@code prefer}, in order) go first, then the best cuts; staged stones are a source only when
+     * {@code fromStaging}. The gem is the one already chosen on the bench, else {@code gem}, else the first stone taken. Nothing
+     * is chosen, committed, taught or charged: the design is still chosen and checked at the first closure. Real stacks move,
+     * one stone at a time, even in creative mode. Reports what moved and what is still missing.
+     */
+    public static void prepare(ServerPlayer player, JewelersBenchBlockEntity bench, @Nullable ResourceLocation designId, @Nullable ResourceLocation gem,
+                               int[] prefer, boolean fromStaging) {
+        JewelryDesignRecipe design = BenchPlanner.design(player.level(), designId);
+        if (design == null) {
+            Feedback.fail(player, "design_unavailable");
+            return;
+        }
+        BenchWork work = bench.work();
+        boolean sameDesign = work != null && design.getId().equals(work.design());
+        ResourceLocation family = null;
+        int have = 0;
+        if (sameDesign) {
+            for (int s = 0; s < design.stones(); s++) {
+                GemData g = CutGemItem.data(bench.socket(s)).orElse(null);
+                if (g != null && design.accepts(g)) {
+                    family = family == null ? g.gem() : family;
+                    have++;
+                }
+            }
+        }
+        for (int i = 0; i < JewelersBenchBlockEntity.TRAY; i++) {
+            GemData g = CutGemItem.data(bench.tray(i)).orElse(null);
+            if (g == null || !design.accepts(g) || (family != null && !family.equals(g.gem()))) continue;
+            family = family == null ? g.gem() : family;
+            have += bench.tray(i).getCount();
+        }
+        if (family == null) family = gem;
+        int need = design.stones() - have;
+        if (need <= 0) {
+            Feedback.info(player, "prepare_ready", design.stones());
+            return;
+        }
+        List<Candidate> candidates = new ArrayList<>();
+        var inventory = player.getInventory().items;
+        for (int i = 0; i < inventory.size(); i++) {
+            GemData g = CutGemItem.data(inventory.get(i)).orElse(null);
+            if (g == null || !design.accepts(g)) continue;
+            int rank = -1;
+            for (int p = 0; p < prefer.length && p < MAX_PREFERRED; p++) if (prefer[p] == i) rank = p;
+            candidates.add(new Candidate(false, i, g, rank < 0 ? Integer.MAX_VALUE : rank));
+        }
+        if (fromStaging) {
+            for (int i = 0; i < JewelersBenchBlockEntity.STAGING; i++) {
+                GemData g = CutGemItem.data(bench.staged(i)).orElse(null);
+                if (g != null && design.accepts(g)) candidates.add(new Candidate(true, i, g, Integer.MAX_VALUE));
+            }
+        }
+        candidates.sort(Comparator.comparingInt(Candidate::preference).thenComparing(c -> -c.gem().cutQuality()));
+        int moved = 0;
+        boolean trayFull = false;
+        for (Candidate c : candidates) {
+            if (moved >= need || trayFull) break;
+            if (family != null && !family.equals(c.gem().gem())) continue;
+            ItemStack source = c.staged() ? bench.staged(c.index()) : inventory.get(c.index());
+            while (moved < need && !source.isEmpty() && CutGemItem.data(source).isPresent()) {
+                if (!trayInsert(bench, source.copyWithCount(1))) {
+                    trayFull = true;
+                    break;
+                }
+                family = c.gem().gem();
+                moved++;
+                if (c.staged()) {
+                    bench.setStaged(c.index(), source.copyWithCount(source.getCount() - 1));
+                    source = bench.staged(c.index());
+                } else {
+                    source.shrink(1);
+                }
+            }
+        }
+        if (moved > 0) {
+            player.inventoryMenu.broadcastChanges();
+            sound(player, bench, ModSounds.BENCH_PLACE.get(), 0.5F, 1.5F);
+        }
+        int missing = need - moved;
+        if (missing <= 0) Feedback.info(player, "prepared", moved);
+        else if (trayFull) Feedback.fail(player, "prepared_tray_full", moved, missing);
+        else Feedback.fail(player, "prepared_missing", moved, missing);
+    }
+
+    /** One stone into the tray: onto the same stack where it stacks, else the first empty cell. */
+    private static boolean trayInsert(JewelersBenchBlockEntity bench, ItemStack one) {
+        for (int i = 0; i < JewelersBenchBlockEntity.TRAY; i++) {
+            ItemStack at = bench.tray(i);
+            if (!at.isEmpty() && ItemStack.isSameItemSameTags(at, one) && at.getCount() < at.getMaxStackSize()) {
+                bench.setTray(i, at.copyWithCount(at.getCount() + 1));
+                return true;
+            }
+        }
+        int empty = bench.firstEmptyTray();
+        if (empty < 0) return false;
+        bench.setTray(empty, one);
+        return true;
     }
 
     // ================================================================================================ the plan
@@ -950,7 +1184,25 @@ public final class BenchOperations {
 
     // ================================================================================================ commands
 
+    /**
+     * One validated discrete action. Before anything moves: the arguments the action needs are present and of their type, a
+     * command about the current work names that work, and a command about one position may name the generation of that
+     * position it saw ({@code Gen}): a click on a stale picture (the position changed in between) changes nothing, and the
+     * bench's state is sent again so the client sees what is really there.
+     */
     public static void command(ServerPlayer player, JewelersBenchBlockEntity bench, WorkCommand command, long workId, CompoundTag args) {
+        if (!argumentsValid(command, args)) {
+            WorkInputService.refused(player, command, "arguments");
+            bench.syncSoon();
+            return;
+        }
+        if (stale(bench, command, workId, args)) {
+            WorkInputService.refused(player, command, "stale");
+            // Nothing changed; the bench's state goes out again so the picture the click was made on is corrected.
+            Feedback.fail(player, "stale_action");
+            bench.syncSoon();
+            return;
+        }
         switch (command) {
             case PLACE -> placeFrom(player, bench, args.getInt("From"), args.getString("Target"), args.getInt("Index"));
             case TAKE -> take(player, bench, args.getString("Target"), args.getInt("Index"));
@@ -962,9 +1214,85 @@ public final class BenchOperations {
             case BEGIN -> begin(player, bench, args.getString("Kind"), ResourceLocation.tryParse(args.getString("Finish")));
             case FINISH_WORK -> finishWork(player, bench, workId);
             case PACK -> pack(player, bench);
+            case DRAWER -> setDrawer(player, bench, args.getBoolean("Open"));
+            case STAGE_IN -> stageIn(player, bench, args.getInt("From"), args.getInt("Count"));
+            case MOVE_STAGED -> moveStaged(player, bench, args.getInt("Index"), args.getInt("Count"), "work".equals(args.getString("To")));
+            case PREPARE -> prepare(player, bench, ResourceLocation.tryParse(args.getString("Design")),
+                    args.contains("Gem", Tag.TAG_STRING) ? ResourceLocation.tryParse(args.getString("Gem")) : null,
+                    args.getIntArray("Prefer"), args.getBoolean("FromStaging"));
             default -> {
             }
         }
+    }
+
+    /** The arguments each action reads, with their types; seat offsets finite. */
+    static boolean argumentsValid(WorkCommand command, CompoundTag args) {
+        return switch (command) {
+            case PLACE -> has(args, "From", Tag.TAG_INT) && args.getInt("From") >= -1 && has(args, "Index", Tag.TAG_INT);
+            case TAKE -> has(args, "Target", Tag.TAG_STRING) && has(args, "Index", Tag.TAG_INT) && args.getInt("Index") >= 0;
+            case SELECT_DESIGN -> has(args, "Design", Tag.TAG_STRING);
+            case SELECT_FINISH -> has(args, "Finish", Tag.TAG_STRING);
+            case SEAT -> has(args, "Tray", Tag.TAG_INT) && has(args, "Socket", Tag.TAG_INT) && args.getInt("Tray") >= 0
+                    && args.getInt("Tray") < JewelersBenchBlockEntity.TRAY && finite(args, "Dx") && finite(args, "Dy") && finite(args, "Turn");
+            case LIFT -> has(args, "Socket", Tag.TAG_INT) && (!args.contains("Tray") || has(args, "Tray", Tag.TAG_INT));
+            case BEGIN -> has(args, "Kind", Tag.TAG_STRING);
+            case DRAWER -> has(args, "Open", Tag.TAG_BYTE);
+            case STAGE_IN -> has(args, "From", Tag.TAG_INT) && args.getInt("From") >= -1 && has(args, "Count", Tag.TAG_INT) && args.getInt("Count") >= 0;
+            case MOVE_STAGED -> has(args, "Index", Tag.TAG_INT) && has(args, "Count", Tag.TAG_INT) && args.getInt("Count") >= 0
+                    && has(args, "To", Tag.TAG_STRING);
+            case PREPARE -> has(args, "Design", Tag.TAG_STRING) && (!args.contains("Prefer") || has(args, "Prefer", Tag.TAG_INT_ARRAY)
+                    && args.getIntArray("Prefer").length <= MAX_PREFERRED);
+            default -> true;
+        };
+    }
+
+    private static boolean has(CompoundTag args, String key, int type) {
+        return args.contains(key, type);
+    }
+
+    private static boolean finite(CompoundTag args, String key) {
+        return has(args, key, Tag.TAG_FLOAT) && Float.isFinite(args.getFloat(key));
+    }
+
+    /** Whether the action was made on a picture of the bench that is out of date (another work, a changed position). */
+    static boolean stale(JewelersBenchBlockEntity bench, WorkCommand command, long workId, CompoundTag args) {
+        BenchWork work = bench.work();
+        // Seating, lifting and declaring a setting done are about one work: it must be the one there now. Choosing a finish,
+        // letting go of a plan and packing may also follow a plan chosen a moment ago (the client does not know its id yet), so
+        // they are refused only when they name another work.
+        boolean ofWork = command == WorkCommand.SEAT || command == WorkCommand.LIFT || command == WorkCommand.FINISH_WORK;
+        if (ofWork && (work == null || work.id() != workId)) return true;
+        boolean mayFollow = command == WorkCommand.SELECT_FINISH || command == WorkCommand.CANCEL_PLAN || command == WorkCommand.PACK;
+        if (mayFollow && work != null && workId != 0 && work.id() != workId) return true;
+        if (!args.contains("Gen", Tag.TAG_INT)) return false;
+        String group;
+        int index;
+        switch (command) {
+            case TAKE -> {
+                group = args.getString("Target");
+                index = args.getInt("Index");
+            }
+            case SEAT -> {
+                group = TRAY;
+                index = args.getInt("Tray");
+            }
+            case LIFT -> {
+                group = SOCKET;
+                index = args.getInt("Socket");
+            }
+            case PACK -> {
+                group = CLAMP;
+                index = 0;
+            }
+            case MOVE_STAGED -> {
+                group = STAGING;
+                index = args.getInt("Index");
+            }
+            default -> {
+                return false;
+            }
+        }
+        return bench.generation(group, index) != args.getInt("Gen");
     }
 
     // ================================================================================================ helpers

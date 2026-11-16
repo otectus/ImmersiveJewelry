@@ -32,5 +32,17 @@ public enum WorkCommand {
     /** Bench: declare retightening done. */
     FINISH_WORK,
     /** Bench: pack committed work into an unfinished-jewelry carrier. */
-    PACK
+    PACK,
+    // Added in protocol 5 (1.3.0). Ordinals are the wire format: new actions go at the end, never between.
+    /** Bench: open ({@code Open} true) or shut the staging drawer. */
+    DRAWER,
+    /** Bench: put {@code Count} (0 = all) of an inventory stack ({@code From}, -1 = the cursor) into the staging drawer. */
+    STAGE_IN,
+    /** Bench: move {@code Count} (0 = all) of staged stack {@code Index} {@code To} {@code work} (where it belongs) or {@code inventory}. */
+    MOVE_STAGED,
+    /**
+     * Bench: move exactly the stones design {@code Design} still needs into the tray: of gem {@code Gem} (optional), preferred
+     * inventory slots {@code Prefer} first, staged stones too with {@code FromStaging}. The server counts and chooses.
+     */
+    PREPARE
 }

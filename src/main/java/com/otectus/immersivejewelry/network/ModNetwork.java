@@ -26,9 +26,13 @@ import net.minecraftforge.network.simple.SimpleChannel;
  *
  * <p>Protocol 4 (1.2.2): {@link WornAppearancePacket}, the sanitized look of what a player wears in the built-in slots, so
  * other clients can draw it. A 1.2.0 or 1.2.1 client or server is refused at login.</p>
+ *
+ * <p>Protocol 5 (1.3.0): {@link WorkCommandPacket} carries a per-lease command sequence, and four bench commands were added at
+ * the end of {@code WorkCommand} (the drawer, staging in, moving a staged stack, preparing a design's stones). A 1.2.x client or
+ * server is refused at login.</p>
  */
 public final class ModNetwork {
-    public static final String VERSION = "4";
+    public static final String VERSION = "5";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(ImmersiveJewelry.id("main"),
             () -> VERSION, VERSION::equals, VERSION::equals);
 

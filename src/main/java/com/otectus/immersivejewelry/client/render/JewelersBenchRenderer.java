@@ -7,7 +7,6 @@ import com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity;
 import com.otectus.immersivejewelry.client.workstation.StationStates;
 import com.otectus.immersivejewelry.client.workstation.render.BenchPainter;
 import com.otectus.immersivejewelry.client.workstation.render.Geo;
-import com.pockyl.diegesis.api.client.DiegesisClient;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -25,7 +24,7 @@ public class JewelersBenchRenderer implements BlockEntityRenderer<JewelersBenchB
     public void render(JewelersBenchBlockEntity bench, float partialTick, PoseStack pose, MultiBufferSource buffers, int light, int overlay) {
         // A demonstration's station (Ponder) is never the scene's: only a station of the world steps aside for its scene.
         if (!com.otectus.immersivejewelry.client.presentation.PresentationClock.isPreview(bench.getLevel())
-                && DiegesisClient.isSceneDrawn(bench.getBlockPos())) return;
+                && com.otectus.immersivejewelry.client.workstation.DiegesisAccess.isSceneDrawn(bench.getBlockPos())) return;
         Direction facing = bench.getBlockState().getValue(StationBlock.FACING);
         pose.pushPose();
         pose.translate(0.5, 0, 0.5);

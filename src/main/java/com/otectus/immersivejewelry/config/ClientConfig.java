@@ -42,6 +42,15 @@ public final class ClientConfig {
     public static final ForgeConfigSpec.BooleanValue ASSISTED_SWEEP;
     public static final ForgeConfigSpec.BooleanValue DRAWER_SHOWS_EVERYTHING;
     public static final ForgeConfigSpec.ConfigValue<java.util.List<? extends String>> FOLIO_FAVORITES;
+    public static final ForgeConfigSpec.EnumValue<WorkingSide> WORKING_SIDE;
+    public static final ForgeConfigSpec.EnumValue<LooseItemMotion> LOOSE_ITEM_MOTION;
+    public static final ForgeConfigSpec.BooleanValue WORK_LAMP;
+
+    /** Which side of a station the camera looks from: the authored shot from the front right, or its mirror image. */
+    public enum WorkingSide { RIGHT, LEFT }
+
+    /** How loose stacks in the bench's staging drawer move: by the scene's physics, or standing exactly as put. */
+    public enum LooseItemMotion { AUTO, NATURAL, CALM }
 
     public static final ForgeConfigSpec.EnumValue<BodyAnimation> BODY_ANIMATION;
     public static final ForgeConfigSpec.BooleanValue REDUCED_TUTORIAL_MOTION;
@@ -122,6 +131,14 @@ public final class ClientConfig {
                 .define("drawerShowsEverything", false);
         FOLIO_FAVORITES = b.comment("Designs starred in the bench's design folio.")
                 .defineListAllowEmpty(java.util.List.of("folioFavorites"), java.util.List::of, o -> o instanceof String);
+        WORKING_SIDE = b.comment("The side the station camera looks from: RIGHT is the authored shot from the front right, LEFT its mirror image."
+                        + " Changes only the view: sockets, numbers, tools and the work are the same either way.")
+                .defineEnum("workingSide", WorkingSide.RIGHT);
+        LOOSE_ITEM_MOTION = b.comment("Loose stacks in the bench's staging drawer: NATURAL settle, tip and push each other (presentation only),"
+                        + " CALM stand exactly where they are put, AUTO is CALM with reduced motion and NATURAL otherwise.")
+                .defineEnum("looseItemMotion", LooseItemMotion.AUTO);
+        WORK_LAMP = b.comment("The bench's work lamp lights the close-up of the bench (a steady scene light; it never lights the world).")
+                .define("workLamp", true);
         b.pop();
 
         b.comment("Visual effects").push("visuals");
@@ -185,6 +202,12 @@ public final class ClientConfig {
     public static BodyAnimation bodyAnimation() {
         BodyAnimation level = get(BODY_ANIMATION);
         return level == BodyAnimation.FULL && get(REDUCED_MOTION) ? BodyAnimation.REDUCED : level;
+    }
+
+    /** Whether staged stacks stand still (calm loose items): asked for, or by reduced motion. */
+    public static boolean calmLooseItems() {
+        LooseItemMotion motion = get(LOOSE_ITEM_MOTION);
+        return motion == LooseItemMotion.CALM || motion == LooseItemMotion.AUTO && get(REDUCED_MOTION);
     }
 
     private ClientConfig() {}

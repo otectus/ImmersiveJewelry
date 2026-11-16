@@ -3,7 +3,6 @@ package com.otectus.immersivejewelry.client.guide;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.otectus.immersivejewelry.client.workstation.WorkstationClient;
 import com.otectus.immersivejewelry.client.workstation.WorkstationKeys;
-import com.pockyl.diegesis.api.client.DiegesisClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
@@ -42,7 +41,9 @@ public final class Handbook {
 
     private static void onScreenKey(ScreenEvent.KeyPressed.Pre event) {
         if (!WorkstationKeys.HANDBOOK.matches(event.getKeyCode(), event.getScanCode())) return;
-        if (DiegesisClient.isStationScreen(event.getScreen())) {
+        // A text field at the station (the folio's search) owns every key: H is a letter there, not help.
+        if (WorkstationClient.textInputActive()) return;
+        if (com.otectus.immersivejewelry.client.workstation.DiegesisAccess.isStationScreen(event.getScreen())) {
             WorkstationClient.focusedStation().ifPresent(station -> {
                 HandbookNavigator.help(station, WorkstationClient::releaseHeld, true, false);
                 event.setCanceled(true);

@@ -143,6 +143,16 @@ public class JewelryJadePlugin implements IWailaPlugin {
             for (int i = 0; i < JewelersBenchBlockEntity.TRAY; i++) stones += bench.tray(i).getCount();
             if (stones > 0) tooltip.add(line("bench.tray", stones).withStyle(ChatFormatting.GRAY));
             if (!bench.dock().isEmpty()) tooltip.add(line("bench.dock", bench.dock().getHoverName()).withStyle(ChatFormatting.GRAY));
+            int supplies = 0;
+            for (int i = 0; i < JewelersBenchBlockEntity.SUPPLIES; i++) supplies += bench.supply(i).getCount();
+            if (supplies > 0) tooltip.add(line("bench.supplies", supplies).withStyle(ChatFormatting.GRAY));
+            // How many stacks the drawer keeps, never what they are: a shut drawer's contents stay out of sight.
+            int staged = 0;
+            for (int i = 0; i < JewelersBenchBlockEntity.STAGING; i++) if (!bench.staged(i).isEmpty()) staged++;
+            if (staged > 0 || bench.drawerOpen()) {
+                tooltip.add(line(bench.drawerOpen() ? "bench.drawer_open" : "bench.drawer_shut", staged, JewelersBenchBlockEntity.STAGING)
+                        .withStyle(ChatFormatting.GRAY));
+            }
         }
 
         @Override

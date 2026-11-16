@@ -49,25 +49,27 @@ Jewelry is made, not crafted. Cut rough stones on the Lapidary Wheel, forge the 
     ordering="AFTER"
     side="BOTH"
 
-# The demonstrations are Ponder scenes: clients only, a dedicated server runs without Ponder and Flywheel.
+# The demonstrations are Ponder scenes. Optional, clients only: without Ponder (and the Flywheel it needs) the handbook's
+# Watch buttons are greyed out and the help key opens the page instead. When present, the tested range is required.
 [[dependencies.${mod_id}]]
     modId="ponder"
-    mandatory=true
+    mandatory=false
     versionRange="${ponder_version_range}"
     ordering="AFTER"
     side="CLIENT"
 
 [[dependencies.${mod_id}]]
     modId="flywheel"
-    mandatory=true
+    mandatory=false
     versionRange="${flywheel_version_range}"
     ordering="AFTER"
     side="CLIENT"
 
-# The jeweler's body poses: clients only; the server sends no animation data, poses follow the stations' synced state.
+# The jeweler's body poses. Optional, clients only: without playerAnimator players work at the stations without body poses
+# (and demonstrations show the jeweler standing). The server sends no animation data; poses follow the stations' synced state.
 [[dependencies.${mod_id}]]
     modId="playeranimator"
-    mandatory=true
+    mandatory=false
     versionRange="${playeranimator_version_range}"
     ordering="AFTER"
     side="CLIENT"

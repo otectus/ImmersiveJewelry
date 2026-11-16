@@ -46,6 +46,12 @@ public final class BenchPainter {
     public static final Vector3f FOLIO = new Vector3f(13.9F, 14.3F, 7.2F);
     public static final Vector3f POUCH = new Vector3f(1.8F, 14.5F, 11.0F);
     public static final Vector3f DOCK = new Vector3f(2.0F, 14.2F, 6.4F);
+    /** How far the staging drawer slides (scene pixels, along +z when it shuts into its case). */
+    public static final float DRAWER_TRAVEL = 2.4F;
+    /** The drawer's two compartments are surfaces 0 and 1 of the scene's {@code placing}, written where the drawer stands open. */
+    public static final int DRAWER_SURFACES = 2;
+    /** Where the work lamp's light comes from: the shade over the back of the bench, aimed at the vise. */
+    public static final Vector3f LAMP_HEAD = new Vector3f(12.6F, 19.6F, 11.4F);
 
     /** The tools on the bench. */
     public enum Tool {
@@ -74,6 +80,17 @@ public final class BenchPainter {
         return new Vector3f(1.6F + i * 1.35F, 14.2F, 1.9F);
     }
 
+    /** The library slot pad of supply jar {@code i}: the jar's floor, so its item stands inside the glass. */
+    public static Vector3f supplySlot(int i) {
+        Vector3f at = supply(i);
+        return new Vector3f(at.x, 14.1F, at.z);
+    }
+
+    /** The drawer's handle (its front's middle) at shown position {@code open} (0 shut .. 1 open). */
+    public static Vector3f drawerHandle(float open) {
+        return new Vector3f(7.5F, 14.45F, 0.92F + (1F - open) * DRAWER_TRAVEL);
+    }
+
     /** A point of the piece's own frame (x right, y up, z towards the worker) in scene pixels. */
     public static Vector3f toScene(float x, float y, float z) {
         // The piece faces the worker at -Z: a half turn about y, then the clamp position and scale.
@@ -89,7 +106,8 @@ public final class BenchPainter {
     public record State(ItemStack clamp, ItemStack[] sockets, ItemStack[] tray, ItemStack[] supplies, ItemStack dock, @Nullable BenchWork work,
                         @Nullable DesignLayout layout, SettingStyle style, int points, float tolerance, Tool tool, @Nullable Vector3f toolAt,
                         float travel, boolean contact, int targetSocket, int targetPoint, int heldTray, float heldTurn, @Nullable Vector3f guide,
-                        boolean highContrast, boolean hands, float relax, float tilt) {}
+                        boolean highContrast, boolean hands, float relax, float tilt, float drawer, boolean nativeSupplies,
+                        @Nullable ItemStack[] staged) {}
 
     public static void draw(Geo geo, State s, float time) {
         JewelryDefinitions defs = JewelryDefinitions.client();
@@ -97,6 +115,9 @@ public final class BenchPainter {
         piece(geo, s, defs);
         tray(geo, s, defs);
         supplies(geo, s);
+        drawer(geo, s.drawer());
+        if (s.staged() != null && s.drawer() > 0.5F) staged(geo, s.staged(), defs);
+        lamp(geo);
         dock(geo, s);
         rack(geo, s);
         folio(geo);
@@ -294,11 +315,69 @@ public final class BenchPainter {
             geo.ring(at.x, at.z, 0.55F, 0.55F, 14.0F, 15.3F, 12, 0x60D8E8F0, false);
             geo.plain();
             geo.cylinder(at.x, at.z, 0.58F, 15.3F, 15.55F, 12, 0xFF8A6A48);
-            if (stack.isEmpty()) continue;
+            // In the scene the library's slot draws the real stack in the jar (with its count): one picture of it, never two.
+            if (stack.isEmpty() || s.nativeSupplies()) continue;
             float fill = Math.min(1F, stack.getCount() / 16F);
             int color = supplyColor(stack);
             geo.cylinder(at.x, at.z, 0.48F, 14.05F, 14.1F + 1.1F * fill, 12, color);
         }
+    }
+
+    /**
+     * The staging drawer and its case in front of the vise: a low walnut case between the supply jars and the stone tray, and a
+     * shallow felt-lined drawer with a brass pull that slides out of it towards the worker ({@code open} 0 shut .. 1 open). Its
+     * two compartments are the placing surfaces; the library draws the staged stacks on them.
+     */
+    private static void drawer(Geo geo, float open) {
+        float dz = (1F - open) * DRAWER_TRAVEL;
+        geo.texture(WOOD);
+        // The case: sides, back and a top board; its front is the drawer's own.
+        geo.box(4.95F, 14.0F, 3.4F, 5.15F, 14.9F, 6.5F, 0xFFB89A7A);
+        geo.box(9.85F, 14.0F, 3.4F, 10.05F, 14.9F, 6.5F, 0xFFB89A7A);
+        geo.box(5.15F, 14.0F, 6.3F, 9.85F, 14.9F, 6.5F, 0xFFB89A7A);
+        geo.box(4.95F, 14.75F, 3.4F, 10.05F, 14.9F, 6.5F, 0xFFC8AA88);
+        // The drawer: floor, sides, back, the divider and its front panel (flush with the case's front when shut).
+        geo.box(5.15F, 14.0F, 1.0F + dz, 9.85F, 14.1F, 3.6F + dz, 0xFFA08262);
+        geo.box(5.15F, 14.1F, 1.2F + dz, 5.25F, 14.55F, 3.6F + dz, 0xFFA08262);
+        geo.box(9.75F, 14.1F, 1.2F + dz, 9.85F, 14.55F, 3.6F + dz, 0xFFA08262);
+        geo.box(5.25F, 14.1F, 3.5F + dz, 9.75F, 14.55F, 3.6F + dz, 0xFFA08262);
+        geo.box(7.45F, 14.1F, 1.2F + dz, 7.55F, 14.4F, 3.5F + dz, 0xFFA08262);
+        geo.box(5.15F, 14.0F, 1.0F + dz, 9.85F, 14.72F, 1.2F + dz, 0xFFC8AA88);
+        geo.texture(FELT);
+        geo.box(5.25F, 14.1F, 1.2F + dz, 7.45F, 14.12F, 3.5F + dz, 0xFFFFFFFF);
+        geo.box(7.55F, 14.1F, 1.2F + dz, 9.75F, 14.12F, 3.5F + dz, 0xFFFFFFFF);
+        geo.texture(BRASS);
+        Vector3f pull = drawerHandle(open);
+        geo.centred(pull.x, pull.y, pull.z, 0.55F, 0.09F, 0.1F, 0xFFE8D4A8);
+        geo.plain();
+    }
+
+    /**
+     * Without the scene (a far bench, a demonstration) nobody draws the drawer's stacks as items: a stone stands at its
+     * compartment place as the tray shows stones, anything else as a small block of its colour. Never with the scene, which
+     * draws the real stacks where they were put.
+     */
+    private static void staged(Geo geo, ItemStack[] staged, JewelryDefinitions defs) {
+        for (int i = 0; i < staged.length; i++) {
+            ItemStack stack = staged[i];
+            if (stack.isEmpty()) continue;
+            float x = i % 2 == 0 ? 8.65F : 6.35F;
+            float z = i < 2 ? 1.8F : 2.9F;
+            GemData data = CutGemItem.data(stack).orElse(null);
+            if (data != null) looseStone(geo, new Vector3f(x, 14.55F, z), data, defs, 0.45F, i * 0.7F);
+            else geo.centred(x, 14.4F, z, 0.4F, 0.28F, 0.4F, supplyColor(stack));
+        }
+    }
+
+    /** The work lamp: a weighted brass foot behind the rack, an upright and an arm bringing a small shade over the vise. */
+    private static void lamp(Geo geo) {
+        geo.texture(BRASS);
+        geo.cylinder(14.6F, 14.0F, 0.75F, 14.0F, 14.25F, 12, 0xFFC8B088);
+        geo.rod(new Vector3f(14.6F, 14.25F, 14.0F), new Vector3f(14.6F, 20.2F, 14.0F), 0.12F, 0xFFFFFFFF);
+        geo.rod(new Vector3f(14.6F, 20.2F, 14.0F), new Vector3f(LAMP_HEAD.x, LAMP_HEAD.y + 0.5F, LAMP_HEAD.z), 0.1F, 0xFFFFFFFF);
+        geo.cylinder(LAMP_HEAD.x, LAMP_HEAD.z, 0.65F, LAMP_HEAD.y, LAMP_HEAD.y + 0.6F, 12, 0xFF6A7A52);
+        geo.plain();
+        geo.cylinder(LAMP_HEAD.x, LAMP_HEAD.z, 0.4F, LAMP_HEAD.y - 0.02F, LAMP_HEAD.y, 12, 0xFFFFF2C8);
     }
 
     private static int supplyColor(ItemStack stack) {

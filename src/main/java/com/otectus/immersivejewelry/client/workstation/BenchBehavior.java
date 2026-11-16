@@ -9,6 +9,7 @@ import com.otectus.immersivejewelry.client.workstation.render.FrameRenderer;
 import com.otectus.immersivejewelry.client.workstation.render.Geo;
 import com.otectus.immersivejewelry.client.workstation.render.Hands;
 import com.otectus.immersivejewelry.config.ClientConfig;
+import com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat;
 import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.item.CutGemItem;
 import com.otectus.immersivejewelry.item.JewelryBlankItem;
@@ -38,6 +39,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -51,6 +53,13 @@ import java.util.Map;
  * grip one prong and their handle travel closes it, the pusher works round a bezel rim, the cloth, burnisher and brush
  * work the surface. The pointer is followed onto the piece's own plane, so targets and contact are where they are drawn.
  * Every action has a key as well. The operator's samples are predicted and replayed on every confirmed state.
+ *
+ * <p>Storage (1.3): the three supply jars are Diegesis slots bound to the bench's own supplies (picked up, put down, split,
+ * scrolled, spread and shift-clicked as any container slot, the library's counts facing the camera), so no Jewelry click
+ * handles them any more. The staging drawer in front of the vise holds four loose stacks on two surfaces of the scene's
+ * {@code placing}: its surfaces, the stacks on them and its handle slide with the drawer, and they are hidden and take nothing
+ * while it is shut (the server refuses them then as well). Its list ({@link DrawerOverlay}) reaches every staged stack by keys,
+ * open or shut. The tray, the clamp, the sockets and the dock stay Jewelry's own.</p>
  */
 final class BenchBehavior extends WorkstationBehavior {
     private static final float TRAVEL_PX = 1.6F;
@@ -85,6 +94,14 @@ final class BenchBehavior extends WorkstationBehavior {
     private int usableVersion = Integer.MIN_VALUE;
     private final Vector3f camera = new Vector3f(8F, 27F, -5F);
     private final Vector3f up = new Vector3f(0F, 1F, 0F);
+    /** The drawer's shown position, 0 shut .. 1 open, easing to the bench's wanted one. */
+    private float drawer;
+    /** Whether the drawer's surfaces were last set shown (a surface's visibility lasts until set again). */
+    @Nullable
+    private Boolean surfacesShown;
+    private final Matrix4f surfaceMove = new Matrix4f();
+    @Nullable
+    private DrawerOverlay drawerList;
 
     BenchBehavior(StationView view) {
         super(view);
@@ -111,22 +128,26 @@ final class BenchBehavior extends WorkstationBehavior {
     // ------------------------------------------------------------------------------------------------ scene
 
     @Override
+    protected net.minecraft.resources.ResourceLocation stationId() {
+        return JewelryStations.BENCH_ID;
+    }
+
+    @Override
     public void onSceneReady(StationView view) {
         super.onSceneReady(view);
-        float[] cam = SceneLoader.INSTANCE.camera(JewelryStations.BENCH_ID);
-        if (cam != null) {
-            camera.set(cam[0], cam[1], cam[2]);
-            Vector3f look = new Vector3f(cam[3] - cam[0], cam[4] - cam[1], cam[5] - cam[2]).normalize();
-            Vector3f right = new Vector3f(look).cross(0F, 1F, 0F).normalize();
-            up.set(right).cross(look).normalize();
-        }
+        // The scene's nodes are new (first show, F3+T): every drawer setting is put back from the bench's real state.
+        JewelersBenchBlockEntity bench = bench();
+        drawer = bench != null && bench.drawerOpen() ? 1F : 0F;
+        surfacesShown = null;
+        applyDrawer();
         place("piece", BenchPainter.PIECE);
         place("folio", BenchPainter.FOLIO);
         place("pouch", BenchPainter.POUCH);
         place("dock", BenchPainter.DOCK);
         place("loupe", new Vector3f(3.6F, 14.6F, 13.6F));
         for (int i = 0; i < JewelersBenchBlockEntity.TRAY; i++) place("tray_" + i, BenchPainter.tray(i));
-        for (int i = 0; i < JewelersBenchBlockEntity.SUPPLIES; i++) place("supply_" + i, BenchPainter.supply(i));
+        for (int i = 0; i < JewelersBenchBlockEntity.SUPPLIES; i++) place("supply_" + i, jarSlots() ? BenchPainter.supplySlot(i) : BenchPainter.supply(i));
+        place(com.otectus.immersivejewelry.workstation.station.SceneComfort.LAMP, BenchPainter.LAMP_HEAD);
         for (BenchPainter.Tool t : new BenchPainter.Tool[]{BenchPainter.Tool.TWEEZERS, BenchPainter.Tool.PUSHER, BenchPainter.Tool.BURNISHER,
                 BenchPainter.Tool.BRUSH, BenchPainter.Tool.CLOTH}) {
             place("tool_" + t.name().toLowerCase(java.util.Locale.ROOT), t.rest());
@@ -137,6 +158,92 @@ final class BenchBehavior extends WorkstationBehavior {
         view.node(node).ifPresent(n -> n.moveTo(at.x, at.y, at.z, 0F));
     }
 
+    /** The pointer mapping follows the camera actually used: the authored shot, mirrored for the left working side. */
+    @Override
+    protected void cameraChanged() {
+        float[] cam = SceneLoader.INSTANCE.camera(JewelryStations.BENCH_ID, mirror);
+        if (cam == null) return;
+        camera.set(cam[0], cam[1], cam[2]);
+        Vector3f look = new Vector3f(cam[3] - cam[0], cam[4] - cam[1], cam[5] - cam[2]).normalize();
+        Vector3f right = new Vector3f(look).cross(0F, 1F, 0F).normalize();
+        up.set(right).cross(look).normalize();
+    }
+
+    // ------------------------------------------------------------------------------------------------ the staging drawer
+
+    /**
+     * Puts the drawer where it is shown now: both surfaces (written open) moved back by what is still shut, with the stacks on
+     * them; the handle with them. Shown and taking stacks only once it is open at all; the items are hidden every frame it is
+     * shut away (the library forgets that each frame), and nothing is said about counts of a shut drawer.
+     */
+    private void applyDrawer() {
+        if (physicalDrawer()) {
+            float shut = (1F - drawer) * BenchPainter.DRAWER_TRAVEL;
+            surfaceMove.identity().translate(0F, 0F, shut);
+            boolean shown = drawer > 0.02F;
+            DiegesisCompat.run(DiegesisCompat.Feature.DRAWER_MOTION, "the staging drawer", () -> {
+                for (int i = 0; i < BenchPainter.DRAWER_SURFACES; i++) view.setSurfaceTransform(i, surfaceMove);
+                if (surfacesShown == null || surfacesShown != shown) {
+                    for (int i = 0; i < BenchPainter.DRAWER_SURFACES; i++) view.setSurfaceVisible(i, shown);
+                    surfacesShown = shown;
+                }
+                view.setPlacingVisible(shown);
+            });
+        }
+        Vector3f handle = BenchPainter.drawerHandle(drawer);
+        view.node("drawer").ifPresent(n -> n.moveTo(handle.x, handle.y, handle.z, 0F));
+    }
+
+    /**
+     * Whether the drawer is physical here: the registered scene has its surfaces and the library can move and hide them. Else
+     * the drawer is its list, and the painter draws the staged stacks in it.
+     */
+    boolean physicalDrawer() {
+        return SceneLoader.INSTANCE.hasPlacing(JewelryStations.BENCH_ID) && DiegesisCompat.has(DiegesisCompat.Feature.DRAWER_MOTION);
+    }
+
+    /** Whether the jars are the library's slots here (else Jewelry's own clicks and placements move their stacks). */
+    boolean jarSlots() {
+        return SceneLoader.INSTANCE.hasJarSlots(JewelryStations.BENCH_ID);
+    }
+
+    /** The drawer's shown position (0 shut .. 1 open). */
+    float drawerShown() {
+        return drawer;
+    }
+
+    void toggleDrawer() {
+        JewelersBenchBlockEntity bench = bench();
+        if (bench == null) return;
+        CompoundTag args = new CompoundTag();
+        args.putBoolean("Open", !bench.drawerOpen());
+        command(WorkCommand.DRAWER, args);
+        sound(ModSounds.BENCH_PLACE.get(), "drawer", 0.35F, bench.drawerOpen() ? 0.7F : 0.8F);
+    }
+
+    void openDrawerList() {
+        if (bench() == null) return;
+        closeFolio();
+        drawerList = new DrawerOverlay(this, () -> drawerList = null);
+        view.showOverlay(drawerList);
+    }
+
+    void closeDrawerList() {
+        if (drawerList != null) view.showOverlay(null);
+        drawerList = null;
+    }
+
+    /** Moves (part of) staged stack {@code index} to the work area or the inventory, naming the generation it was seen with. */
+    void moveStaged(int index, boolean toWork) {
+        JewelersBenchBlockEntity bench = bench();
+        if (bench == null || bench.staged(index).isEmpty()) return;
+        CompoundTag args = new CompoundTag();
+        args.putInt("Index", index);
+        args.putInt("Count", 0);
+        args.putString("To", toWork ? "work" : "inventory");
+        args.putInt("Gen", bench.generation(BenchOperations.STAGING, index));
+        command(WorkCommand.MOVE_STAGED, args);
+    }
     @Override
     protected void draw(Geo geo, float partialTick) {
         JewelersBenchBlockEntity bench = bench();
@@ -149,6 +256,12 @@ final class BenchBehavior extends WorkstationBehavior {
         } finally {
             Hands.operator(null);
         }
+    }
+
+    private static ItemStack[] staged(JewelersBenchBlockEntity bench) {
+        ItemStack[] out = new ItemStack[JewelersBenchBlockEntity.STAGING];
+        for (int i = 0; i < out.length; i++) out[i] = bench.staged(i);
+        return out;
     }
 
     BenchPainter.State state(JewelersBenchBlockEntity bench) {
@@ -168,7 +281,7 @@ final class BenchBehavior extends WorkstationBehavior {
         return new BenchPainter.State(bench.clamp(), sockets, tray, supplies, bench.dock(), work, layout, style, points, tolerance,
                 mine ? tool : BenchPainter.Tool.NONE, mine ? toolAt() : null, travel, pressing || keyApply || toggledApply, targetSocket, targetPoint,
                 mine ? heldTray : -1, heldTurn, mine ? guide(bench) : null, ClientConfig.get(ClientConfig.HIGH_CONTRAST_MINIGAMES),
-                mine && tool != BenchPainter.Tool.NONE, relax, tilt);
+                mine && tool != BenchPainter.Tool.NONE, relax, tilt, drawer, jarSlots(), physicalDrawer() ? null : staged(bench));
     }
 
     @Nullable
@@ -188,6 +301,11 @@ final class BenchBehavior extends WorkstationBehavior {
         JewelersBenchBlockEntity bench = bench();
         if (bench == null) return;
         rebase(bench);
+        // Everyone sees the drawer move to the bench's wanted position; reduced motion or instant transitions skip the slide.
+        float wanted = bench.drawerOpen() ? 1F : 0F;
+        boolean instant = ClientConfig.get(ClientConfig.REDUCED_MOTION) || ClientConfig.get(ClientConfig.INSTANT_TRANSITIONS);
+        drawer = instant ? wanted : Math.abs(wanted - drawer) < 0.01F ? wanted : smooth(drawer, wanted, 9F, dt);
+        applyDrawer();
         if (operating()) keys(dt, bench);
         BenchWork work = shown();
         boolean finished = work == null && bench.clamp().getItem() instanceof JewelryItem;
@@ -543,6 +661,7 @@ final class BenchBehavior extends WorkstationBehavior {
             if (d < s.radius() * 1.2F) {
                 CompoundTag args = new CompoundTag();
                 args.putInt("Socket", i);
+                args.putInt("Gen", bench.generation(BenchOperations.SOCKET, i));
                 command(WorkCommand.LIFT, args);
                 sound(ModSounds.BENCH_SEAT.get(), "piece", 0.4F, 1.6F);
                 return;
@@ -554,6 +673,8 @@ final class BenchBehavior extends WorkstationBehavior {
         CompoundTag args = new CompoundTag();
         args.putInt("Tray", heldTray);
         args.putInt("Socket", socket);
+        JewelersBenchBlockEntity bench = bench();
+        if (bench != null) args.putInt("Gen", bench.generation(BenchOperations.TRAY, heldTray));
         args.putFloat("Dx", Mth.clamp(dx, -1F, 1F));
         args.putFloat("Dy", Mth.clamp(dy, -1F, 1F));
         float turn = Mth.wrapDegrees(heldTurn * Mth.RAD_TO_DEG) / 90F;
@@ -576,7 +697,8 @@ final class BenchBehavior extends WorkstationBehavior {
             } else if (!bench.tray(i).isEmpty()) {
                 take(BenchOperations.TRAY, i);
             }
-        } else if (node.startsWith("supply_")) {
+        } else if (node.startsWith("supply_") && !jarSlots()) {
+            // Jars that are no library slots (a Diegesis without native storage): a click takes the stack back.
             take(BenchOperations.SUPPLY, Integer.parseInt(node.substring(7)));
         } else if (node.startsWith("tool_")) {
             pick(BenchPainter.Tool.valueOf(node.substring(5).toUpperCase(java.util.Locale.ROOT)));
@@ -587,7 +709,11 @@ final class BenchBehavior extends WorkstationBehavior {
                 else pick(BenchPainter.Tool.PLIERS);
             }
             case "folio" -> openFolio();
-            case "pouch" -> command(WorkCommand.PACK);
+            case "drawer" -> {
+                if (button == 1) openDrawerList();
+                else toggleDrawer();
+            }
+            case "pouch" -> pack();
             case "loupe" -> inspect(bench);
             case "piece" -> {
                 if (tool == BenchPainter.Tool.NONE && shown() == null && bench.clamp().getItem() instanceof JewelryItem) take(BenchOperations.CLAMP, 0);
@@ -597,10 +723,20 @@ final class BenchBehavior extends WorkstationBehavior {
         }
     }
 
+    /** Packs committed work, naming the clamp's generation it saw. */
+    void pack() {
+        JewelersBenchBlockEntity bench = bench();
+        CompoundTag args = new CompoundTag();
+        if (bench != null) args.putInt("Gen", bench.generation(BenchOperations.CLAMP, 0));
+        command(WorkCommand.PACK, args);
+    }
+
     private void take(String target, int index) {
+        JewelersBenchBlockEntity bench = bench();
         CompoundTag args = new CompoundTag();
         args.putString("Target", target);
         args.putInt("Index", index);
+        if (bench != null) args.putInt("Gen", bench.generation(target, index));
         command(WorkCommand.TAKE, args);
     }
 
@@ -627,7 +763,7 @@ final class BenchBehavior extends WorkstationBehavior {
     @Override
     public boolean onItemClick(StationView view, String node, ItemStack stack, int button, boolean shift) {
         if (!operating() || stack.isEmpty()) return false;
-        Target target = Target.of(node);
+        Target target = Target.of(node, jarSlots());
         if (target == null) return false;
         CompoundTag args = new CompoundTag();
         args.putInt("From", -1);
@@ -637,15 +773,54 @@ final class BenchBehavior extends WorkstationBehavior {
         return true;
     }
 
+    /**
+     * Shift-click on an inventory stack: where the bench's work area takes it (the tray, a supply jar, the clamp, the dock),
+     * as before; a stack the work area has no place for goes into the open staging drawer, but only when the drawer shows room
+     * for it ({@code hasRoomFor}, a look at the surfaces, not a promise: the server moves only what fits and leaves the rest
+     * where it was). The library's own shift-click never runs here, so one click is one transfer.
+     */
     @Override
     public boolean onInventoryShiftClick(StationView view, int slot, ItemStack stack) {
         if (!operating()) return false;
+        JewelersBenchBlockEntity bench = bench();
+        if (bench != null && !workAreaTakes(bench, stack) && BenchOperations.isStageable(stack)) {
+            if (!bench.drawerOpen() || drawer < 0.98F) {
+                cue(Component.translatable("workstation.immersive_jewelry.cue.open_drawer", key(WorkstationKeys.DRAWER)));
+            } else if (!roomFor(stack)) {
+                cue(Component.translatable("workstation.immersive_jewelry.cue.drawer_no_room"));
+            } else {
+                CompoundTag args = new CompoundTag();
+                args.putInt("From", slot);
+                args.putInt("Count", 0);
+                command(WorkCommand.STAGE_IN, args);
+            }
+            return true;
+        }
         CompoundTag args = new CompoundTag();
         args.putInt("From", slot);
         args.putString("Target", "");
         args.putInt("Index", -1);
         command(WorkCommand.PLACE, args);
         return true;
+    }
+
+    /**
+     * Whether the drawer shows room for one more stack: the library's look at its surfaces, when the drawer is physical and the
+     * library can be asked; otherwise yes (the drawer is a list of four places, and the server moves only what fits).
+     */
+    private boolean roomFor(ItemStack stack) {
+        if (!physicalDrawer() || !DiegesisCompat.has(DiegesisCompat.Feature.ROOM_QUERY)) return true;
+        boolean[] room = {true};
+        DiegesisCompat.run(DiegesisCompat.Feature.ROOM_QUERY, "the drawer's room query", () -> room[0] = view.hasRoomFor(stack));
+        return room[0];
+    }
+
+    /** Whether any place of the work area would take the stack now (what a shift-click there would do). */
+    private static boolean workAreaTakes(JewelersBenchBlockEntity bench, ItemStack stack) {
+        for (String target : new String[]{BenchOperations.CLAMP, BenchOperations.DOCK, BenchOperations.TRAY, BenchOperations.SUPPLY}) {
+            if (BenchOperations.accepts(bench, stack, target, -1)) return true;
+        }
+        return false;
     }
 
     /**
@@ -667,7 +842,7 @@ final class BenchBehavior extends WorkstationBehavior {
     @Override
     protected ItemStack shownStack(String node) {
         JewelersBenchBlockEntity bench = bench();
-        Target target = Target.of(node);
+        Target target = Target.of(node, jarSlots());
         if (bench == null || target == null) return ItemStack.EMPTY;
         return switch (target.group()) {
             case BenchOperations.TRAY -> bench.tray(target.index());
@@ -677,12 +852,16 @@ final class BenchBehavior extends WorkstationBehavior {
         };
     }
 
-    /** A custody target ({@link BenchOperations} group and position) that a placement node of the scene stands for. */
+    /**
+     * A custody target ({@link BenchOperations} group and position) that a placement node of the scene stands for. The supply
+     * jars are one only when they are no library slots ({@code jarSlots} false); as library slots, the library's click is their
+     * only transfer.
+     */
     record Target(String group, int index) {
         @Nullable
-        static Target of(String node) {
+        static Target of(String node, boolean jarSlots) {
             if (node.startsWith("tray_")) return new Target(BenchOperations.TRAY, Integer.parseInt(node.substring(5)));
-            if (node.startsWith("supply_")) return new Target(BenchOperations.SUPPLY, Integer.parseInt(node.substring(7)));
+            if (!jarSlots && node.startsWith("supply_")) return new Target(BenchOperations.SUPPLY, Integer.parseInt(node.substring(7)));
             if (node.equals("dock")) return new Target(BenchOperations.DOCK, 0);
             if (node.equals("piece")) return new Target(BenchOperations.CLAMP, 0);
             return null;
@@ -694,7 +873,7 @@ final class BenchBehavior extends WorkstationBehavior {
     Target placement(JewelersBenchBlockEntity bench) {
         ItemStack stack = carried();
         if (stack.isEmpty() || hovered == null) return null;
-        Target target = Target.of(hovered);
+        Target target = Target.of(hovered, jarSlots());
         return target != null && BenchOperations.accepts(bench, stack, target.group(), target.index()) ? target : null;
     }
 
@@ -703,6 +882,8 @@ final class BenchBehavior extends WorkstationBehavior {
     void openFolio() {
         JewelersBenchBlockEntity bench = bench();
         if (bench == null) return;
+        releaseAll();
+        drawerList = null;
         folio = new FolioOverlay(this, () -> folio = null);
         view.showOverlay(folio);
     }
@@ -716,13 +897,46 @@ final class BenchBehavior extends WorkstationBehavior {
         command(command, args);
     }
 
-    void cueMissing(int missing) {
-        cue(Component.translatable("workstation.immersive_jewelry.cue.stones_missing", missing).withStyle(ChatFormatting.GOLD));
-    }
 
     private void inspect(JewelersBenchBlockEntity bench) {
         view.glance("loupe");
-        view.showOverlay(new InspectionOverlay(observations(bench), view::glanceBack));
+        folio = null;
+        drawerList = null;
+        inspecting = true;
+        view.showOverlay(new InspectionOverlay(observations(bench), () -> {
+            inspecting = false;
+            view.glanceBack();
+        }));
+    }
+
+    private boolean inspecting;
+
+    @Override
+    boolean overlayOpen() {
+        return folio != null || drawerList != null || inspecting;
+    }
+
+    @Override
+    boolean textInputActive() {
+        return folio != null && folio.typing();
+    }
+
+    @Override
+    boolean overlayKey(int key, int scan, int modifiers, boolean repeat) {
+        if (!operating()) return false;
+        if (folio != null) return folio.key(key, scan, modifiers, repeat);
+        if (drawerList != null) return drawerList.key(key, scan, repeat);
+        // The loupe's notes: its own key puts them away again; the library closes them on Escape.
+        if (inspecting && !repeat && is(WorkstationKeys.INSPECT, key, scan)) {
+            view.showOverlay(null);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    boolean overlayChar(int codePoint, int modifiers) {
+        return folio != null && folio.typed(codePoint, modifiers);
     }
 
     private List<Component> observations(JewelersBenchBlockEntity bench) {
@@ -807,7 +1021,6 @@ final class BenchBehavior extends WorkstationBehavior {
     @Override
     boolean keyPressed(int key, int scan, int modifiers) {
         if (!operating()) return false;
-        if (folio != null) return folio.key(key, scan);
         JewelersBenchBlockEntity bench = bench();
         if (bench == null) return false;
         if (is(WorkstationKeys.LOWER, key, scan)) return keyLower = true;
@@ -843,6 +1056,10 @@ final class BenchBehavior extends WorkstationBehavior {
         }
         if (is(WorkstationKeys.INSPECT, key, scan)) {
             inspect(bench);
+            return true;
+        }
+        if (is(WorkstationKeys.DRAWER, key, scan)) {
+            openDrawerList();
             return true;
         }
         return false;
@@ -968,6 +1185,8 @@ final class BenchBehavior extends WorkstationBehavior {
         tool = BenchPainter.Tool.NONE;
         heldTray = -1;
         folio = null;
+        drawerList = null;
+        inspecting = false;
     }
 
     // ------------------------------------------------------------------------------------------------ hints
@@ -1017,15 +1236,6 @@ final class BenchBehavior extends WorkstationBehavior {
                         Math.round(surface.progress() * 100F));
             }
         };
-    }
-
-    /** For the folio: the stones in the tray and inventory a design could use. */
-    List<GemData> trayStones() {
-        List<GemData> out = new ArrayList<>();
-        JewelersBenchBlockEntity bench = bench();
-        if (bench == null) return out;
-        for (int i = 0; i < JewelersBenchBlockEntity.TRAY; i++) CutGemItem.data(bench.tray(i)).ifPresent(out::add);
-        return out;
     }
 
     JewelryDefinitions definitions() {

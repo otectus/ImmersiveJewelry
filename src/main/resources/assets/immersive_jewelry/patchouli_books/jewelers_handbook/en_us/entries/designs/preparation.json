@@ -1,0 +1,30 @@
+{
+  "name": "book.immersive_jewelry.entry.designs.preparation",
+  "icon": "immersive_jewelry:polishing_compound",
+  "category": "immersive_jewelry:designs",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.preparation.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.preparation.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.preparation.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.preparation.3"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "staging_and_supplies",
+      "entry": "immersive_jewelry:designs/preparation",
+      "text": "book.immersive_jewelry.designs.preparation.watch.4"
+    }
+  ]
+}

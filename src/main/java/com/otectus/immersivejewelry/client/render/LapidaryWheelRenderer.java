@@ -8,7 +8,6 @@ import com.otectus.immersivejewelry.client.workstation.render.Geo;
 import com.otectus.immersivejewelry.client.workstation.render.WheelPainter;
 import com.otectus.immersivejewelry.client.workstation.StationStates;
 import com.otectus.immersivejewelry.config.ClientConfig;
-import com.pockyl.diegesis.api.client.DiegesisClient;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -27,7 +26,7 @@ public class LapidaryWheelRenderer implements BlockEntityRenderer<LapidaryWheelB
     public void render(LapidaryWheelBlockEntity wheel, float partialTick, PoseStack pose, MultiBufferSource buffers, int light, int overlay) {
         // A demonstration's station (Ponder) is never the scene's: only a station of the world steps aside for its scene.
         if (!com.otectus.immersivejewelry.client.presentation.PresentationClock.isPreview(wheel.getLevel())
-                && DiegesisClient.isSceneDrawn(wheel.getBlockPos())) return;
+                && com.otectus.immersivejewelry.client.workstation.DiegesisAccess.isSceneDrawn(wheel.getBlockPos())) return;
         Direction facing = wheel.getBlockState().getValue(StationBlock.FACING);
         pose.pushPose();
         pose.translate(0.5, 0, 0.5);

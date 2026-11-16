@@ -22,20 +22,35 @@ public final class WorkEffects {
     public static final ResourceLocation FLECK = ImmersiveJewelry.id("fleck");
 
     static void register() {
+        if (!com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.has(
+                com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.Feature.PARTICLES)) return;
         ResourceLocation[] dust = {ImmersiveJewelry.id("gem_dust_0"), ImmersiveJewelry.id("gem_dust_1"), ImmersiveJewelry.id("gem_dust_2"),
                 ImmersiveJewelry.id("gem_dust_3")};
         ResourceLocation[] sparkle = {ImmersiveJewelry.id("gem_sparkle_0"), ImmersiveJewelry.id("gem_sparkle_1"),
                 ImmersiveJewelry.id("gem_sparkle_2"), ImmersiveJewelry.id("gem_sparkle_3")};
-        DiegesisClient.registerParticle(SLURRY, ParticleStyle.builder(dust).color(0xC09A9488).size(0.12F, 0.22F).life(0.35F, 0.7F)
+        particle(SLURRY, () -> ParticleStyle.builder(dust).color(0xC09A9488).size(0.12F, 0.22F).life(0.35F, 0.7F)
                 .gravity(-30F).drag(0.6F).stretch().build());
-        DiegesisClient.registerParticle(STONE_DUST, ParticleStyle.builder(dust).size(0.08F, 0.16F).life(0.6F, 1.3F)
+        particle(STONE_DUST, () -> ParticleStyle.builder(dust).size(0.08F, 0.16F).life(0.6F, 1.3F)
                 .gravity(-4F).drag(0.85F).wobble(0.15F).build());
-        DiegesisClient.registerParticle(CHIP, ParticleStyle.builder(dust).size(0.18F, 0.3F).life(0.4F, 0.8F)
+        particle(CHIP, () -> ParticleStyle.builder(dust).size(0.18F, 0.3F).life(0.4F, 0.8F)
                 .gravity(-45F).drag(0.3F).build());
-        DiegesisClient.registerParticle(GLINT, ParticleStyle.builder(sparkle).size(0.2F, 0.38F).life(0.25F, 0.55F)
+        particle(GLINT, () -> ParticleStyle.builder(sparkle).size(0.2F, 0.38F).life(0.25F, 0.55F)
                 .emissive().pop().build());
-        DiegesisClient.registerParticle(FLECK, ParticleStyle.builder(dust).color(0xD0E8E0D0).size(0.06F, 0.12F).life(0.4F, 0.9F)
+        particle(FLECK, () -> ParticleStyle.builder(dust).color(0xD0E8E0D0).size(0.06F, 0.12F).life(0.4F, 0.9F)
                 .gravity(-6F).drag(0.8F).wobble(0.1F).build());
+    }
+
+    /**
+     * One particle style. Particles are only looks: a builder method a newer Diegesis no longer has drops that one style (the
+     * station then shows no such particles), and nothing else.
+     */
+    private static void particle(ResourceLocation id, java.util.function.Supplier<ParticleStyle> style) {
+        try {
+            DiegesisClient.registerParticle(id, style.get());
+        } catch (LinkageError e) {
+            ImmersiveJewelry.LOGGER.warn("Immersive Jewelry: Diegesis {} cannot make the particle style {} ({}); it is left out",
+                    com.otectus.immersivejewelry.integration.diegesis.DiegesisCompat.installedVersion(), id, e.toString());
+        }
     }
 
     private WorkEffects() {}

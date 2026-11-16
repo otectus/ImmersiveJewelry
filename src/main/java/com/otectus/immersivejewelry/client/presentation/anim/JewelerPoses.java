@@ -97,6 +97,29 @@ public final class JewelerPoses {
         return animation;
     }
 
+    /**
+     * Poses a player model (a demonstration's jeweler, which is no player) at {@code clip}'s frame {@code elapsed} ticks in,
+     * looping or holding the last frame as the clip says. Nothing is registered anywhere. Only reached when playerAnimator runs.
+     */
+    public static void pose(net.minecraft.client.model.PlayerModel<AbstractClientPlayer> m, JewelerClip playing, double elapsed, boolean reduced) {
+        KeyframeAnimation animation = animation(playing, reduced);
+        if (animation == null) return;
+        double t = Math.max(0, elapsed);
+        int tick = (int) Math.floor(t);
+        if (playing.loop && playing.length > 0) tick %= playing.length;
+        else tick = Math.min(tick, playing.length);
+        float delta = (float) (t - Math.floor(t));
+        dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer keyframes = new dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer(animation, tick);
+        if (!keyframes.isActive()) return;
+        keyframes.setupAnim(delta);
+        dev.kosmx.playerAnim.impl.animation.AnimationApplier applier = new dev.kosmx.playerAnim.impl.animation.AnimationApplier(keyframes);
+        applier.setTickDelta(delta);
+        applier.updatePart("head", m.head);
+        applier.updatePart("torso", m.body);
+        applier.updatePart("rightArm", m.rightArm);
+        applier.updatePart("leftArm", m.leftArm);
+    }
+
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();

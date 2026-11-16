@@ -42,7 +42,7 @@ com.otectus.immersivejewelry.client.presentation.geo 3 files
 com.otectus.immersivejewelry.client.presentation.worn 4 files
 com.otectus.immersivejewelry.client.render           2 files
 com.otectus.immersivejewelry.client.screen           4 files
-com.otectus.immersivejewelry.client.workstation      12 files
+com.otectus.immersivejewelry.client.workstation      14 files
 com.otectus.immersivejewelry.client.workstation.render 11 files
 com.otectus.immersivejewelry.command                 1 file
 com.otectus.immersivejewelry.config                  3 files
@@ -78,7 +78,7 @@ com.otectus.immersivejewelry.villager                1 file
 com.otectus.immersivejewelry.workstation             9 files
 com.otectus.immersivejewelry.workstation.order       2 files
 com.otectus.immersivejewelry.workstation.sim         8 files
-com.otectus.immersivejewelry.workstation.station     2 files
+com.otectus.immersivejewelry.workstation.station     3 files
 ```
 
 ## Registered content (63 entries)
@@ -280,8 +280,20 @@ runs cannot cover (`docs/WORKSTATION_VALIDATION.md`, 1.2.2 section).
   (`WorkInputPacket`) and discrete commands (`WorkCommandPacket`). Never add a packet that carries a score or an item.
 - Work persists as data, not sessions: `CutWork` in the stone's NBT, `BenchWork` in the bench or an
   `unfinished_jewelry` carrier. Leases are transient and never saved. Every item move goes through
-  `WheelOperations`/`BenchOperations`; Diegesis slots and custom actions are refused (`WorkstationLogic`).
-- Diegesis is pinned to its one tested release (`diegesis_version_range`). In use: `takes_items` placement nodes whose
+  `WheelOperations`/`BenchOperations`, except that since 1.3 the bench's supply jars and staging drawer are also Diegesis
+  slots (`supplies`, `staging`), bound to the bench's own arrays (`JewelersBenchBlockEntity` is the `StationHost`) and gated
+  by `WorkstationLogic.mayPlace/mayTake` (lease, reach, item, drawer open); every other slot and every custom action is
+  refused. Discrete commands carry a per-lease sequence and may name a position's generation (`Gen`): protocol 5.
+- Diegesis: `diegesis_version_range` is the tested release and anything newer (`[1.0.0-beta.11,)`; the lower bound is read at
+  run time as the tested release). Every use of the library is probed at start-up and guarded
+  (`integration/diegesis/DiegesisCompat`, `client/workstation/DiegesisAccess`, `GuardedBehavior`, `SceneComfort.fallback`);
+  `JewelersBenchBlockEntity` and `JewelryStations` import nothing from Diegesis (the library-bound halves are
+  `HostedBenchBlockEntity` and `DiegesisStations`). Never call `DiegesisClient` or a beta-specific `StationView` method
+  directly: go through `DiegesisAccess` or `DiegesisCompat.run(feature, ...)` and add the member to `DiegesisCompat.MEMBERS`
+  (`DiegesisCompatTest` fails until it is there). Adoption checklist in `docs/WORKSTATION_VALIDATION.md`. Beta 11 in use: the bench's two bound groups and the drawer's `placing` with surface
+  transforms and visibility, `hasRoomFor` before a shift-click into the drawer, camera-facing slot counts, `onKey` for station
+  keys (a scoped Forge bridge stays for the stations' own overlays and every release), `mirrorCamera` for the left working
+  side. In use since beta 10: `takes_items` placement nodes whose
   hints are answered by `WheelOperations.placement` / `BenchOperations.accepts` (GameTests keep them equal to custody),
   `onScroll`, the drawer filter and `carry_size`, and the recipe-viewer hooks for JEI lookups (`StationLookups`). Keys
   reach a station only while its own screen is shown, since child screens can cover it; the station takes a key first

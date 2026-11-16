@@ -116,6 +116,9 @@ public abstract class StationBlockEntity extends BlockEntity implements GeoBlock
         tag.putInt("AckStep", ackStep);
     }
 
+    /** Client: the subclass's transient part of an update ({@link #writeTransient}), before behaviours see the new state. */
+    protected void readTransient(CompoundTag tag) {}
+
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
@@ -127,6 +130,7 @@ public abstract class StationBlockEntity extends BlockEntity implements GeoBlock
         operator = tag.hasUUID("Operator") ? tag.getUUID("Operator") : null;
         operatorName = tag.contains("OperatorName") ? tag.getString("OperatorName") : null;
         ackStep = tag.getInt("AckStep");
+        readTransient(tag);
         clientVersion++;
         onClientUpdate();
     }

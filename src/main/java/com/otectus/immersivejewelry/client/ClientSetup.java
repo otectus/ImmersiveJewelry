@@ -70,7 +70,10 @@ public final class ClientSetup {
                     .filter(JewelryDesignRecipe::sketch).map(JewelryDesignRecipe::getId).sorted().toList();
         };
         // The demonstrations: the plugin, the handbook's Watch buttons and Ponder's scene time (client/compat/ponder only).
-        event.enqueueWork(com.otectus.immersivejewelry.client.compat.ponder.JewelryPonder::init);
+        // Optional: without Ponder the package is never loaded and the handbook's default launcher says lessons are unavailable.
+        if (com.otectus.immersivejewelry.client.presentation.OptionalLibraries.ponder()) {
+            event.enqueueWork(com.otectus.immersivejewelry.client.compat.ponder.JewelryPonder::init);
+        }
         event.enqueueWork(() -> {
             for (Item item : new Item[]{ModItems.RING.get(), ModItems.AMULET.get(), ModItems.BRACELET.get(), ModItems.CIRCLET.get()}) {
                 ItemProperties.register(item, CUT_PROPERTY, (stack, level, entity, seed) -> jewelryCut(stack));

@@ -18,7 +18,7 @@ public final class ModBlockEntities {
 
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<JewelersBenchBlockEntity>> JEWELERS_BENCH = BLOCK_ENTITIES.register("jewelers_bench",
-            () -> BlockEntityType.Builder.of(JewelersBenchBlockEntity::new, ModBlocks.JEWELERS_BENCH.get()).build(null));
+            () -> BlockEntityType.Builder.of(JewelersBenchBlockEntity::create, ModBlocks.JEWELERS_BENCH.get()).build(null));
 
     private ModBlockEntities() {}
 }
