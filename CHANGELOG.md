@@ -1,5 +1,238 @@
 # Changelog
 
+## 1.2.2 - The Jeweler's Handbook, demonstrations, rigs and body language
+
+The Jeweler's Handbook is now a full Patchouli book with live pages, every step of the craft has a Ponder demonstration
+played on the stations' own simulations, the wheel, the vise and the bench tools are articulated GeckoLib rigs, a working
+jeweler's body follows the work through playerAnimator, and worn jewelry shows on players. Worlds and work in progress
+carry over unchanged.
+
+### Upgrading from 1.2.1
+
+- **New required libraries** (exact ranges in `gradle.properties`): Patchouli `1.20.1-85-FORGE` and GeckoLib `4.8.4` on
+  clients and servers; Ponder `1.0.91`, Flywheel `1.0.5` and playerAnimator `1.0.2-rc1+1.20` on clients (a dedicated
+  server runs without them). These are the same releases Immersive Smithing 1.3 uses; Create 6 bundles a compatible
+  Ponder and Flywheel.
+- **Network protocol 4.** Client and server must both run 1.2.2 (one new server-to-client packet, below).
+- **Saves:** nothing changes. Wheels, benches, stones with work in them and Unfinished pieces load exactly as in 1.2.1;
+  the block entities keep their save format (they only gain a GeckoLib animation cache that is never saved).
+- **Client config:** a new `[presentation]` section: `bodyAnimation` (FULL, REDUCED, OFF), `reducedTutorialMotion`,
+  `showWornJewelry` and one switch per form. Forge adds it to an existing file.
+- **Key:** *Jeweler's Handbook / help* (H), in the *Immersive Jewelry* category.
+
+### The Jeweler's Handbook (Patchouli)
+
+- The same item (`immersive_jewelry:jewelers_handbook`), recipe and trade; it now opens a Patchouli book with search,
+  bookmarks and history. The old one-screen handbook is gone; all fourteen of its chapters, with their translations,
+  are in the new book, alongside eleven categories and 36 entries: first piece, stations and tools, controls and comfort,
+  leaving and resuming, appraisal, every gem, the four cuts and recutting, forms, metals and blank routes, the folio,
+  sketches and a design atlas, prongs, bezels, several stones and defects, the three finishes and refinishing, slots,
+  effects and inactive pieces, care and rework, working together, other mods, common refusals and pack making.
+- **Live cards** read this server's data: gem cards (trait, hardness, brittleness, cuts with favourites, source items,
+  automatically detected gems), cut comparisons, design cards (setting, stones, allowed cuts, gems and finishes, and
+  whether you know the design), finish cards (material or none, tuning), blank routes (Immersive Smithing and crafting
+  fallback as the server's recipes actually are), metals, the tool tiers from the real items, station keys as bound now,
+  the server's rules, an inspection of the piece in your hand, an estimated gem-on-form comparison, and what the bench can
+  do for the piece in your hand. Reading never appraises, crafts, equips or teaches a design.
+- **Help everywhere:** press H in the world for the book, over an item in an inventory for its entry, over a JEI recipe of
+  this mod for its entry, or at a station (or the folio's "?") for the step under way; hold H at a station for the
+  demonstration instead. Help first lets go of everything, leaves the station (nothing is lost, the work stays) and tells
+  you when you come back whether the station and its work are as you left them. Nothing resumes on its own.
+
+### Demonstrations (Ponder)
+
+- 33 lessons under the stations, tools, stones, sketch, compound, blanks and forms, in six index topics (First Piece,
+  Lapidary, Setting, Finishing, Care, Equipment): the first piece end to end, appraisal and sources, laps and tools, each
+  of the four cuts on a gem that takes it, mistakes and recutting, a stone that travels, blanks, the folio and sketches,
+  seating and prongs, bezels, three stones, a ten-design atlas, the three finishes, quality, retightening and repair,
+  taking stones out, refinishing and resuming packed work, wearing and effects, and working together.
+- Lessons run the stations' own simulations with scripted hands in Ponder's level only (a demonstrating jeweler posed by
+  the same body clips), so pause, replay and seeking rebuild exactly the same stone and setting. They never touch the
+  world, an inventory or the network. Long work is shown faster than life, and says so.
+- Every handbook entry with a demonstration has a Watch button; closing the lesson returns to that page.
+
+### Rigs and bodies (GeckoLib, playerAnimator)
+
+- The lap, its hub and the release lever, the vise (jaws closing on a new piece, the screw turning, posts for circlets and
+  bracelets) and the bench tools (pliers' jaws, tweezers' arms, the pusher, burnisher, brush and cloth) are GeckoLib rigs,
+  drawn in the stations' own frames and posed from synced state, so every watcher, a late one included, sees the same
+  thing. The Fine Pliers keep their own look. A missing rig falls back to the previous plain parts.
+- A working jeweler's arms, torso and head follow the work: grinding, lifting, cooling, mounting, changing a lap, seating,
+  squeezing prongs, pushing a bezel, polishing, burnishing, dabbing patina, prying stones, truing a frame, placing,
+  collecting and inspecting a piece. Poses come from the station's synced state only; they stop the moment the turn ends
+  and give way to riding, swimming, sleeping, gliding or using an item. First person is unchanged (the scene's own hands).
+- Worn jewelry is drawn on players: rings on the fingers, amulets on the chest, bracelets at the wrist, circlets on the head
+  (hidden under a helmet or chestplate). Curios slots use Curios' own renderer hook and its visibility toggles; the
+  built-in slots send a sanitized look (item, metal, stones, finish; never the maker, defects, history or other mods'
+  data) to nearby players (`WornAppearancePacket`, protocol 4).
+
+### For resource packs
+
+- Handbook text, Ponder captions and lesson names are lang keys (`book.immersive_jewelry.*`, `handbook.immersive_jewelry.*`,
+  `immersive_jewelry.ponder.*`, `lesson.immersive_jewelry.*`). The book's structure is under
+  `assets/immersive_jewelry/patchouli_books/jewelers_handbook/en_us/`.
+- Rigs: `geo/{lapidary_wheel,jewelers_bench,bench_tools}.geo.json`, `animations/...`, `textures/rig/...`; body clips:
+  `player_animation/<clip>.json` and `<clip>_reduced.json`. Bone and clip names are listed in `docs/ASSET_MANIFEST.md`.
+
+### For developers
+
+- The old `HandbookScreen` is removed; open the book through Patchouli (`immersive_jewelry:jewelers_handbook`).
+- The station block entities implement GeckoLib's `GeoBlockEntity` (no controllers).
+
+## 1.2.1 - Diegesis 1.0.0-beta.10
+
+The stations now run on Diegesis 1.0.0-beta.10 and use what it adds: a stack you carry shows where it would go, the
+inventory drawer lists what the station can use, and JEI's lookup keys work at the stations without leaving them.
+Worlds, work in progress, the server's rules and the network protocol (3) are unchanged.
+
+### Upgrading from 1.2.0
+
+- **Requires Diegesis 1.0.0-beta.10** (Forge; the accepted range is in `gradle.properties` as `diegesis_version_range`).
+  Update it on clients and servers together with Immersive Jewelry. 1.0.0-beta.9 is refused: the station scenes use
+  fields that its scene parser does not know.
+- **Client config:** new `drawerShowsEverything` in `[workstation]` (below); Forge adds it to an existing file.
+
+### At the stations
+
+- **Placement hints.** With a stack taken from the inventory drawer, the place it would go lights up: at the bench a
+  tray cell, a jar, the dock or the clamp as you point at it; at the wheel the empty quill or the lap as you point at
+  the quill, its handle or the lap.
+- **The inventory drawer** (Tab, or point at the bottom edge of the screen) lists only what the station can use: laps,
+  stones and raw gems at the wheel; blanks, finished and packed pieces, pliers, cut stones and finishing and repair
+  materials at the bench. `drawerShowsEverything` lists every stack you carry.
+- **JEI.** Its show-recipe and show-uses keys (R and U by default) look up the stack under the cursor, in the drawer or
+  on the station (a stone or lap on the wheel; a tray stone, a supply, the pliers or the piece in the clamp on the
+  bench). JEI's page opens over the station, and closing it returns to the work with nothing lost; while it is open, no
+  key reaches the station and anything held is let go. A station key keeps its meaning: R turns a stone held in the
+  tweezers and plans the cut of a stone on the wheel, and looks up only where it has nothing to do.
+
+### For resource packs
+
+- A pack that replaces a station scene (`assets/immersive_jewelry/diegesis/stations/<station>.json`) still loads and
+  works, but shows no placement hints until its placement nodes have `"takes_items": true`: `handle`, `stone` and `lap`
+  at the wheel; `piece`, `dock`, `tray_0` to `tray_7` and `supply_0` to `supply_2` at the bench. The inventory drawer's
+  new `carry_size` (the size of a stack carried over the scene, in scene pixels) is optional.
+
+## 1.2.0 - Hands-on workstations
+
+Cutting and setting are no longer screens. You step up to the Lapidary Wheel or the Jeweler's Bench, the camera settles
+over the work, and you grind, seat, close and polish with the station's own handle, tools and hands. Work is kept on the
+stone and on the bench, so it can be left, carried off and resumed. The stations are built on Diegesis.
+
+### Upgrading from 1.1.x
+
+- **Requires Diegesis** (Forge, `1.0.0-beta.9`; the accepted range is in `gradle.properties` as
+  `diegesis_version_range`). Install it on clients and servers.
+- **Network protocol 3.** Client and server must both run 1.2.0.
+- **Worlds carry over.** Wheels keep their lap and stone. A bench's piece moves into the new clamp; stones and finish
+  materials held for a 1.1 setting session go back onto the bench (stones into the tray, materials into the
+  supplies) the first time the bench loads, once. Anything that does not fit drops beside the bench. A 1.1 session that was
+  open when the world closed is not resumed; nothing in it was consumed.
+- **Server config:** `cuttingSecondsPerFacet`, `settingSecondsPerProng` and `readyDelayMs` are gone (there are no time
+  limits or countdowns any more); Forge drops them from the file. Every other key keeps its name and value; the
+  comments of the `minigames` section describe the stations now.
+- **Client config:** `largeMinigameMarkers` is gone (see `targetScale`). New `[workstation]` section, below.
+- **Resource packs:** the Lapidary Wheel model is new (`models/block/lapidary_wheel.json`, its moving parts are drawn
+  by the scene; `lapidary_wheel_parts.json` is the inventory icon's quill and lap). `lapidary_wheel_disc.json` is gone.
+  The bench model lost the vise, tool tray, jars, mandrel and loupe, which are now scene objects. Scene cameras,
+  glances, captions and pick zones are in `assets/immersive_jewelry/diegesis/stations/<station>.json`; a pack can move
+  them, but cannot widen any of the server's tolerances.
+
+### The Lapidary Wheel
+
+- **Walk up and use it** holding a stone to mount it (it is appraised as before), holding a lap to swap the lap;
+  sneak-use with an empty hand takes the stone. Use it with an empty hand to step up to the wheel.
+- **Plan at the specimen rack:** a small cut example per cut the stone allows; click one (or press the tool key) to plan
+  that cut. Planning is free until material has been removed; after that, choosing again asks for confirmation and
+  recuts the stone as it now is.
+- **Grind with the handle:** drag it down to bring the stone onto the turning lap and sideways to sweep it across. How
+  far you press is the force; a comfortable force cuts, too much scratches, too fast a sweep rocks the stone and rounds
+  its edges, and a stone kept in one place grinds a flat spot. The stone warms while it works: lift it, or dip it in the
+  cooling cup. Heat left too long chips it. A thin brass line marks each face's depth window; the sound changes as the
+  depth approaches.
+- **Turn the collar** (only with the stone lifted) to the next face; the fine trim corrects a stone glued a little
+  turned on its dop. The recommended order works opposite faces in turn.
+- **The loupe** shows the stone up close with every face's state (depth, evenness, rocking, scratches, chips, the
+  dop's turn).
+- **The release lever** finishes the cut when every face is in its window, or earlier when you confirm a rougher result.
+- **Four cuts, four motions:** round and brilliant are radial facets, the emerald cut grinds long sides before
+  corners, the cabochon is domed by keeping the stone moving.
+- **The work stays on the stone** (`Work` in its item NBT): step away, take it out, carry it to another wheel and go on.
+
+### The Jeweler's Bench
+
+- **Walk up and use it** holding a blank or a finished piece (it goes in the clamp), cut stones (the tray), pliers (the
+  dock) or a finish material (the supplies). Sneak-use with an empty hand takes things back. Use it with an empty hand
+  to sit down at it.
+- **The design folio** lists the designs for the clamp's form (star favourites and show only those), the finishes
+  each allows and the stones it needs, and can bring matching stones from your inventory to the tray. Its rework page
+  retightens, takes apart, repairs or refinishes a finished piece.
+- **Tweezers** pick a stone from the tray and let it go into a cup; where and how straight it lands is its seat.
+  Stones resting in their cups can still be lifted out until the first prong closes.
+- **Pliers** grip one prong and squeeze it until it meets the stone; let go to check. A prong short of the stone is
+  loose, one pushed past it leans in (and can chip a brittle stone). Opposite prongs in turn keep the stone level.
+  **Bezels** are closed with the bench's pusher, pressed in and swept round the rim.
+- **Confirm** when every stone is held (or take up the finishing tool) to move on to the finish. The finish is done by
+  hand: the cloth with compound for polished, the burnisher for burnished, the brush and then the cloth for antique.
+- **Unfinished work** stays in the bench. Packing it (sneak-use, or the pouch) gives an *Unfinished* piece
+  (`immersive_jewelry:unfinished_jewelry`) holding the frame, the stones and the work; using a bench with it unpacks
+  it there. It cannot be worn and is never recycled by Immersive Smithing.
+
+### Working at a station
+
+- One operator at a time. Leaving (Escape), walking off, taking damage, logging out, dying, changing dimension or the
+  station breaking ends the work at that moment: tools lift, nothing is finished, refunded or lost. Others nearby see
+  the work and hear it.
+- **Keys** (category *Immersive Jewelry: Workstations*, rebindable): raise/lower/left/right (arrows), use the tool
+  (Space), next/previous (X/Z), fine trim (C/V), tool (T), loupe (F), cool (G), confirm (Enter), folio (B), turn (R).
+  Every step of the work has a keyboard path; putting things on a station and taking them off also works by using it
+  (or sneak-using it) from where you stand.
+- **New client options** (`[workstation]`): `noZoom`, `instantTransitions`, `workstationHands`, `toggleToolUse`,
+  `stickyDrag`, `pointerSensitivity`, `targetScale`, `numericGuide`, `workHints`, `visualCues`, `toolSoundVolume`,
+  `gemTranslucency`, `assistedSweep`. `largerTargets` and `slowerMinigames` now ask the server for wider windows and a
+  gentler rate (where the server allows assists); `minigameScreenShake` jolts the wheel when a stone chips.
+- **Sounds:** the wheel's hum and grinding follow contact, force, the stone's hardness and how close the face is to its
+  depth; cloth, burnisher and brush loop while they touch; the pliers creak as they close; a quiet click at secure
+  contact; a soft dip at the cooling cup. Each has a subtitle.
+
+### Data packs
+
+- **Work profiles** (optional): `data/<ns>/immersive_jewelry/work_profiles/<path>.json` tune one interaction (facet,
+  dome, prong, bezel, polish, burnish, patina, repair): its pace, tolerance scale, force window and sweep tolerance,
+  all range-checked. A design, cut or finish can name one with `"work_profile"`; otherwise
+  `immersive_jewelry:defaults/<interaction>` applies (shipped; they repeat the built-in numbers). A profile can make the
+  work slower or more forgiving; it can never change what the work produces.
+
+### API
+
+- Signatures are unchanged. `IJewelryCraftGate` is now asked when the first closure would commit a new piece (after the
+  design, stones and finish are checked, before any stone or material is used). `IJewelryAssistSource` is applied when
+  a cut is planned, a setting is committed or a rework begins. `GemCutEvent` is posted just before the cut stone replaces the work
+  on the wheel; experience and advancements follow its final values. `JewelryCraftedEvent` fires just before the finished
+  piece replaces the work in the clamp.
+
+### Integrations and commands
+
+- **Jade** shows a station's cut and progress, the bench's stage, what the tray and dock hold, missing stones and who
+  is working there.
+- **JEI** texts describe the hands-on work.
+- `/immersivejewelry sessions` lists the operator leases (player, dimension, station, input step) instead of sessions.
+
+### Balance changes
+
+- No time limits, countdowns or deadlines anywhere: a cut or a setting takes as long as you take.
+- Cut quality comes from what happened to the stone: each face's depth against its window, flatness, rocking,
+  scratches, chips and the dop's turn. Setting quality comes from each point's closure, the stone's seat and how level
+  it sits.
+- A bezel is closed with the bench's built-in pusher (no pliers needed, full precision); pliers are needed for prongs.
+- Pliers lose durability once per setting, at the first closure; a lap wears once per cut, at the first contact.
+- The finish material (or the repair material) is used once, when the finishing tool first works the piece.
+- Moving from setting to finishing waits for you (confirm, or take up the finishing tool); it never happens on its own.
+
+### Removed
+
+- The cut-select, cutting, bench and setting screens, their packets, and the language keys only they used.
+
 ## 1.1.2 - Translations
 
 - Added Spanish, Brazilian Portuguese, Russian, and Simplified Chinese translations.

@@ -1,0 +1,26 @@
+{
+  "name": "book.immersive_jewelry.entry.wheel.recutting",
+  "icon": "immersive_jewelry:gem_dust",
+  "category": "immersive_jewelry:wheel",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.wheel.recutting.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.wheel.recutting.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.wheel.recutting.2"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "cut_mistakes_and_recut",
+      "entry": "immersive_jewelry:wheel/recutting",
+      "text": "book.immersive_jewelry.wheel.recutting.watch.3"
+    }
+  ]
+}

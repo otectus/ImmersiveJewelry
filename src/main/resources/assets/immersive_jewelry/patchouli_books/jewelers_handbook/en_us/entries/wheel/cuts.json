@@ -1,0 +1,36 @@
+{
+  "name": "handbook.immersive_jewelry.cuts.title",
+  "icon": "immersive_jewelry:emery_lap",
+  "category": "immersive_jewelry:wheel",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.cuts.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.cuts.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.cuts.2"
+    },
+    {
+      "type": "immersive_jewelry:cut_card",
+      "cut": "immersive_jewelry:round"
+    },
+    {
+      "type": "immersive_jewelry:cut_card",
+      "cut": "immersive_jewelry:brilliant"
+    },
+    {
+      "type": "immersive_jewelry:cut_card",
+      "cut": "immersive_jewelry:emerald"
+    },
+    {
+      "type": "immersive_jewelry:cut_card",
+      "cut": "immersive_jewelry:cabochon"
+    }
+  ]
+}

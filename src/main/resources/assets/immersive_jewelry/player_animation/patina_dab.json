@@ -1,0 +1,126 @@
+{
+  "version": 3,
+  "name": "patina_dab",
+  "description": "Immersive Jewelry: patina dab",
+  "author": "Immersive Jewelry",
+  "contact": 0,
+  "emote": {
+    "beginTick": 0,
+    "endTick": 14,
+    "stopTick": 14,
+    "isLoop": true,
+    "returnTick": 0,
+    "degrees": true,
+    "easeBeforeKeyframe": true,
+    "moves": [
+      {
+        "tick": 0,
+        "easing": "linear",
+        "head": {
+          "pitch": 20,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "torso": {
+          "pitch": 16,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "rightArm": {
+          "pitch": -50,
+          "yaw": -12,
+          "roll": 2
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "leftArm": {
+          "pitch": -44,
+          "yaw": 16,
+          "roll": -3
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 20,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 16,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -44,
+          "yaw": -12,
+          "roll": 2
+        }
+      },
+      {
+        "tick": 5,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -44,
+          "yaw": 16,
+          "roll": -3
+        }
+      },
+      {
+        "tick": 14,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 20,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 14,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 16,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 14,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -50,
+          "yaw": -12,
+          "roll": 2
+        }
+      },
+      {
+        "tick": 14,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -44,
+          "yaw": 16,
+          "roll": -3
+        }
+      }
+    ]
+  }
+}

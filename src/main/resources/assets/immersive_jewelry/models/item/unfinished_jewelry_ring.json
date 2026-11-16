@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "immersive_jewelry:item/blank/ring_blank",
+    "layer1": "immersive_jewelry:item/blank/ring_blank_highlight",
+    "layer2": "immersive_jewelry:item/unfinished_tag"
+  }
+}

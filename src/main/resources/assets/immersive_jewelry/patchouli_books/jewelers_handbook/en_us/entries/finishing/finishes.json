@@ -1,0 +1,50 @@
+{
+  "name": "handbook.immersive_jewelry.finishes.title",
+  "icon": "immersive_jewelry:polishing_compound",
+  "category": "immersive_jewelry:finishing",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.finishes.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.finishes.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.finishes.2"
+    },
+    {
+      "type": "immersive_jewelry:finish_card",
+      "finish": "immersive_jewelry:polished"
+    },
+    {
+      "type": "immersive_jewelry:finish_card",
+      "finish": "immersive_jewelry:burnished"
+    },
+    {
+      "type": "immersive_jewelry:finish_card",
+      "finish": "immersive_jewelry:antique"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "polished_finish",
+      "entry": "immersive_jewelry:finishing/finishes",
+      "text": "book.immersive_jewelry.finishing.finishes.watch.0"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "burnished_finish",
+      "entry": "immersive_jewelry:finishing/finishes",
+      "text": "book.immersive_jewelry.finishing.finishes.watch.1"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "antique_finish",
+      "entry": "immersive_jewelry:finishing/finishes",
+      "text": "book.immersive_jewelry.finishing.finishes.watch.2"
+    }
+  ]
+}

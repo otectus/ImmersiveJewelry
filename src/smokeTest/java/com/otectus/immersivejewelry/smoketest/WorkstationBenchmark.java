@@ -172,11 +172,11 @@ public final class WorkstationBenchmark {
                 boolean working = selected == 5 || selected >= 7;
                 if (level.getBlockEntity(pos) instanceof LapidaryWheelBlockEntity w) {
                     if (occupied) w.setStone(RoughGemItem.create(GemData.rough(ImmersiveJewelry.id("ruby"), 1, .8F, .1F)));
-                    if (working) w.lock(player.getUUID());
+                    if (working) w.setOperator(player.getUUID(), player.getGameProfile().getName());
                 }
                 if (level.getBlockEntity(pos) instanceof JewelersBenchBlockEntity b) {
-                    if (occupied) b.setWorkpiece(ClientSmokeTest.piece(defs, "ring", "ruby", "brilliant", new ResourceLocation("minecraft", "gold"), "polished", .9F));
-                    if (working) b.beginSession(player.getUUID(), List.of(), RoughGemItem.create(GemData.rough(ImmersiveJewelry.id("ruby"), 1, .8F, .1F)));
+                    if (occupied) b.setClamp(ClientSmokeTest.piece(defs, "ring", "ruby", "brilliant", new ResourceLocation("minecraft", "gold"), "polished", .9F));
+                    if (working) b.setOperator(player.getUUID(), player.getGameProfile().getName());
                 }
             }
             player.teleportTo(level, .5, BASE.getY() + (count > 1 ? 4 : 1), count > 1 ? 10.5 : 3.5, 180, count > 1 ? 28 : 30);

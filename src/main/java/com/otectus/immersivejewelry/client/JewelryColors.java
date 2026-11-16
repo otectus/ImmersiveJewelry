@@ -81,8 +81,10 @@ public final class JewelryColors {
         event.register((stack, layer) -> blank(stack, layer), ModItems.RING_BLANK.get(), ModItems.AMULET_FRAME.get(),
                 ModItems.BRACELET_BLANK.get(), ModItems.CIRCLET_FRAME.get());
         event.register((stack, layer) -> stone(stack, layer), ModItems.ROUGH_GEM.get(), ModItems.CUT_GEM.get());
-        // The wheel item shows its disc in the plain sandstone of a wheel without a lap.
-        event.register((stack, layer) -> layer == 0 ? com.otectus.immersivejewelry.item.LapItem.Tier.SANDSTONE.color : 0xFFFFFF, ModItems.LAPIDARY_WHEEL.get());
+        // Unfinished jewelry shows its frame's metal; the work tag keeps its own colours.
+        event.register((stack, layer) -> layer >= 2 ? 0xFFFFFF : com.otectus.immersivejewelry.item.UnfinishedJewelryItem.contents(stack)
+                .map(c -> c.frame().getItem() instanceof com.otectus.immersivejewelry.item.JewelryItem ? jewelry(c.frame(), layer) : blank(c.frame(), layer))
+                .orElse(FALLBACK_METAL), ModItems.UNFINISHED_JEWELRY.get());
     }
 
     public static int jewelry(ItemStack stack, int layer) {

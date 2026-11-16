@@ -28,7 +28,8 @@ public final class JewelryDesignSerializer implements RecipeSerializer<JewelryDe
                 List.copyOf(Json.ids(o, "allowed_finishes")),
                 Json.bool(o, "sketch", false),
                 Json.integer(o, "sort_order", 100, -1000, 1000),
-                Json.name(o, "name", "design." + key, Json.titleCase(id)));
+                Json.name(o, "name", "design." + key, Json.titleCase(id)),
+                Json.optionalId(o, "work_profile"));
     }
 
     @Override
@@ -36,7 +37,7 @@ public final class JewelryDesignSerializer implements RecipeSerializer<JewelryDe
         return new JewelryDesignRecipe(id, buf.readResourceLocation(), buf.readVarInt(), buf.readEnum(SettingStyle.class), buf.readVarInt(),
                 buf.readFloat(), buf.readFloat(), buf.readList(FriendlyByteBuf::readResourceLocation),
                 buf.readList(FriendlyByteBuf::readResourceLocation), buf.readList(FriendlyByteBuf::readResourceLocation),
-                buf.readBoolean(), buf.readVarInt(), buf.readComponent());
+                buf.readBoolean(), buf.readVarInt(), buf.readComponent(), buf.readNullable(FriendlyByteBuf::readResourceLocation));
     }
 
     @Override
@@ -53,5 +54,6 @@ public final class JewelryDesignSerializer implements RecipeSerializer<JewelryDe
         buf.writeBoolean(r.sketch());
         buf.writeVarInt(r.sortOrder());
         buf.writeComponent(r.name());
+        buf.writeNullable(r.workProfile(), FriendlyByteBuf::writeResourceLocation);
     }
 }

@@ -35,7 +35,21 @@ public final class DesignKnowledge {
         CompoundTag persisted = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
         persisted.put(KEY, list);
         player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
+        sync(player);
         return true;
+    }
+
+    /** Tells the player's client which sketch designs they know (the design folio shows it). */
+    public static void sync(Player player) {
+        if (!(player instanceof net.minecraft.server.level.ServerPlayer sp) || sp.connection == null
+                || sp instanceof net.minecraftforge.common.util.FakePlayer) return;
+        java.util.List<ResourceLocation> ids = new java.util.ArrayList<>();
+        for (net.minecraft.nbt.Tag t : learned(player)) {
+            ResourceLocation id = ResourceLocation.tryParse(t.getAsString());
+            if (id != null) ids.add(id);
+        }
+        com.otectus.immersivejewelry.network.ModNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> sp),
+                new com.otectus.immersivejewelry.network.packet.KnownDesignsPacket(ids, ServerConfig.get(ServerConfig.REQUIRE_DESIGN_SKETCHES)));
     }
 
     public static void forget(Player player, ResourceLocation design) {
@@ -44,6 +58,7 @@ public final class DesignKnowledge {
         CompoundTag persisted = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
         persisted.put(KEY, list);
         player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
+        sync(player);
     }
 
     /** Every design this player may use, sorted for display. */

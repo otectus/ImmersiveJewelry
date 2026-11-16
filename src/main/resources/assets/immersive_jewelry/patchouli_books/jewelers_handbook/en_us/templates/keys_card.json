@@ -1,0 +1,10 @@
+{
+  "components": [
+    {
+      "type": "patchouli:custom",
+      "class": "com.otectus.immersivejewelry.client.guide.KeysCard",
+      "x": 0,
+      "y": 0
+    }
+  ]
+}

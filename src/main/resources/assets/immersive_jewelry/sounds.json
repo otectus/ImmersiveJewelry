@@ -44,6 +44,18 @@
       "immersive_jewelry:block/lapidary_wheel/lap"
     ]
   },
+  "block.lapidary_wheel.hum": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.hum",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/hum"
+    ]
+  },
+  "block.lapidary_wheel.dip": {
+    "subtitle": "subtitles.immersive_jewelry.block.lapidary_wheel.dip",
+    "sounds": [
+      "immersive_jewelry:block/lapidary_wheel/dip"
+    ]
+  },
   "block.jewelers_bench.place": {
     "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.place",
     "sounds": [
@@ -86,6 +98,30 @@
     "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.repair",
     "sounds": [
       "immersive_jewelry:block/jewelers_bench/repair"
+    ]
+  },
+  "block.jewelers_bench.cloth": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.cloth",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/cloth"
+    ]
+  },
+  "block.jewelers_bench.burnish": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.burnish",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/burnish"
+    ]
+  },
+  "block.jewelers_bench.brush": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.brush",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/brush"
+    ]
+  },
+  "block.jewelers_bench.squeeze": {
+    "subtitle": "subtitles.immersive_jewelry.block.jewelers_bench.squeeze",
+    "sounds": [
+      "immersive_jewelry:block/jewelers_bench/squeeze"
     ]
   },
   "item.jewelry.equip": {

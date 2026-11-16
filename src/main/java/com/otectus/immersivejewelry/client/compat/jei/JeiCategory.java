@@ -32,6 +32,26 @@ abstract class JeiCategory<T> implements IRecipeCategory<T> {
         this.height = height;
     }
 
+    /**
+     * The handbook key over a recipe of this category opens the handbook entry about it (no lookup, no crafting: JEI
+     * stays a reference). Each category names its topic.
+     */
+    @Override
+    public boolean handleInput(T recipe, double mouseX, double mouseY, com.mojang.blaze3d.platform.InputConstants.Key input) {
+        var key = com.otectus.immersivejewelry.client.workstation.WorkstationKeys.HANDBOOK;
+        if (!key.getKey().equals(input)) return false;
+        com.otectus.immersivejewelry.client.guide.HandbookNavigator.open(helpTopic(recipe), false);
+        return true;
+    }
+
+    /** The handbook topic for a recipe of this category. */
+    protected abstract com.otectus.immersivejewelry.client.guide.HelpTopics.Topic helpTopic(T recipe);
+
+    protected static com.otectus.immersivejewelry.client.guide.HelpTopics.Topic topic(String entry,
+                                                                                       @org.jetbrains.annotations.Nullable com.otectus.immersivejewelry.client.guide.Lessons lesson) {
+        return new com.otectus.immersivejewelry.client.guide.HelpTopics.Topic(com.otectus.immersivejewelry.ImmersiveJewelry.id(entry), 0, lesson);
+    }
+
     @Override public RecipeType<T> getRecipeType() { return type; }
     @Override public Component getTitle() { return Component.translatable("jei.immersive_jewelry." + key); }
     @Override public int getWidth() { return width; }

@@ -27,16 +27,23 @@ com.otectus.immersivejewelry.api                     1 file
 com.otectus.immersivejewelry.api.effect              8 files
 com.otectus.immersivejewelry.api.event               5 files
 com.otectus.immersivejewelry.api.gem                 2 files
-com.otectus.immersivejewelry.api.integration         1 file
+com.otectus.immersivejewelry.api.integration         5 files
 com.otectus.immersivejewelry.api.jewelry             5 files
 com.otectus.immersivejewelry.block                   4 files
 com.otectus.immersivejewelry.blockentity             3 files
-com.otectus.immersivejewelry.client                  5 files
-com.otectus.immersivejewelry.client.compat.jei       5 files
+com.otectus.immersivejewelry.client                  6 files
+com.otectus.immersivejewelry.client.compat.jei       6 files
+com.otectus.immersivejewelry.client.compat.ponder    9 files
+com.otectus.immersivejewelry.client.guide            17 files
 com.otectus.immersivejewelry.client.particle         1 file
+com.otectus.immersivejewelry.client.presentation     2 files
+com.otectus.immersivejewelry.client.presentation.anim 4 files
+com.otectus.immersivejewelry.client.presentation.geo 3 files
+com.otectus.immersivejewelry.client.presentation.worn 4 files
 com.otectus.immersivejewelry.client.render           2 files
-com.otectus.immersivejewelry.client.screen           8 files
-com.otectus.immersivejewelry.client.sound            1 file
+com.otectus.immersivejewelry.client.screen           4 files
+com.otectus.immersivejewelry.client.workstation      12 files
+com.otectus.immersivejewelry.client.workstation.render 11 files
 com.otectus.immersivejewelry.command                 1 file
 com.otectus.immersivejewelry.config                  3 files
 com.otectus.immersivejewelry.data                    7 files
@@ -46,33 +53,35 @@ com.otectus.immersivejewelry.data.form               1 file
 com.otectus.immersivejewelry.data.gem                3 files
 com.otectus.immersivejewelry.data.metal              1 file
 com.otectus.immersivejewelry.data.trait              1 file
+com.otectus.immersivejewelry.data.work               1 file
 com.otectus.immersivejewelry.effect                  8 files
 com.otectus.immersivejewelry.effect.builtin          34 files
 com.otectus.immersivejewelry.equipment               1 file
-com.otectus.immersivejewelry.equipment.builtin       5 files
+com.otectus.immersivejewelry.equipment.builtin       6 files
 com.otectus.immersivejewelry.event                   1 file
 com.otectus.immersivejewelry.integration             1 file
 com.otectus.immersivejewelry.integration.curios      1 file
 com.otectus.immersivejewelry.integration.jade        1 file
 com.otectus.immersivejewelry.integration.smithing    2 files
-com.otectus.immersivejewelry.item                    11 files
+com.otectus.immersivejewelry.item                    12 files
 com.otectus.immersivejewelry.jewelry                 8 files
 com.otectus.immersivejewelry.loot                    1 file
 com.otectus.immersivejewelry.migration               1 file
-com.otectus.immersivejewelry.minigame                5 files
-com.otectus.immersivejewelry.minigame.cutting        4 files
-com.otectus.immersivejewelry.minigame.setting        4 files
 com.otectus.immersivejewelry.network                 1 file
-com.otectus.immersivejewelry.network.packet          18 files
+com.otectus.immersivejewelry.network.packet          11 files
 com.otectus.immersivejewelry.particle                1 file
 com.otectus.immersivejewelry.quality                 5 files
 com.otectus.immersivejewelry.recipe                  5 files
 com.otectus.immersivejewelry.registry                12 files
 com.otectus.immersivejewelry.util                    3 files
 com.otectus.immersivejewelry.villager                1 file
+com.otectus.immersivejewelry.workstation             9 files
+com.otectus.immersivejewelry.workstation.order       2 files
+com.otectus.immersivejewelry.workstation.sim         8 files
+com.otectus.immersivejewelry.workstation.station     2 files
 ```
 
-## Registered content (56 entries)
+## Registered content (63 entries)
 
 ### Blocks (2)
 
@@ -81,7 +90,7 @@ com.otectus.immersivejewelry.villager                1 file
 | `jewelers_bench` | `JEWELERS_BENCH` | `JewelersBenchBlock` | src/main/java/com/otectus/immersivejewelry/registry/ModBlocks.java |
 | `lapidary_wheel` | `LAPIDARY_WHEEL` | `LapidaryWheelBlock` | src/main/java/com/otectus/immersivejewelry/registry/ModBlocks.java |
 
-### Items (20)
+### Items (21)
 
 | id | field | type | declared in |
 |---|---|---|---|
@@ -105,6 +114,7 @@ com.otectus.immersivejewelry.villager                1 file
 | `ring` | `RING` | `JewelryItem` | src/main/java/com/otectus/immersivejewelry/registry/ModItems.java |
 | `ring_blank` | `RING_BLANK` | `JewelryBlankItem` | src/main/java/com/otectus/immersivejewelry/registry/ModItems.java |
 | `rough_gem` | `ROUGH_GEM` | `RoughGemItem` | src/main/java/com/otectus/immersivejewelry/registry/ModItems.java |
+| `unfinished_jewelry` | `UNFINISHED_JEWELRY` | `UnfinishedJewelryItem` | src/main/java/com/otectus/immersivejewelry/registry/ModItems.java |
 
 ### Block entities (2)
 
@@ -125,21 +135,27 @@ com.otectus.immersivejewelry.villager                1 file
 |---|---|---|---|
 | `main` | `MAIN` | `CreativeModeTab` | src/main/java/com/otectus/immersivejewelry/registry/ModCreativeTabs.java |
 
-### Sounds (22)
+### Sounds (28)
 
 | id | field | type | declared in |
 |---|---|---|---|
 | `block.jewelers_bench.bend` | `BENCH_BEND` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
+| `block.jewelers_bench.brush` | `BENCH_BRUSH` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
+| `block.jewelers_bench.burnish` | `BENCH_BURNISH` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
+| `block.jewelers_bench.cloth` | `BENCH_CLOTH` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.jewelers_bench.finish` | `BENCH_FINISH` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.jewelers_bench.place` | `BENCH_PLACE` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.jewelers_bench.polish` | `BENCH_POLISH` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.jewelers_bench.prong` | `BENCH_PRONG` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.jewelers_bench.repair` | `BENCH_REPAIR` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.jewelers_bench.seat` | `BENCH_SEAT` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
+| `block.jewelers_bench.squeeze` | `BENCH_SQUEEZE` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.lapidary_wheel.chip` | `WHEEL_CHIP` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
+| `block.lapidary_wheel.dip` | `WHEEL_DIP` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.lapidary_wheel.facet` | `WHEEL_FACET` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.lapidary_wheel.finish` | `WHEEL_FINISH` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.lapidary_wheel.grind` | `WHEEL_GRIND` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
+| `block.lapidary_wheel.hum` | `WHEEL_HUM` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.lapidary_wheel.lap` | `WHEEL_LAP` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.lapidary_wheel.mount` | `WHEEL_MOUNT` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
 | `block.lapidary_wheel.spin` | `WHEEL_SPIN` | `SoundEvent` | src/main/java/com/otectus/immersivejewelry/registry/ModSounds.java |
@@ -200,15 +216,15 @@ _No datagen providers detected — assets and data JSON are hand-written._
 |---|---|
 | blockstates | 2 |
 | block models | 4 |
-| item models | 40 |
-| block textures | 16 |
-| item textures | 8 |
+| item models | 47 |
+| block textures | 19 |
+| item textures | 9 |
 | recipes | 9 |
 | block loot tables | 2 |
 | block tags | 0 |
-| item tags | 6 |
+| item tags | 7 |
 | biome modifiers | 0 |
-| lang files | en_us.json |
+| lang files | en_us.json, es_es.json, pt_br.json, ru_ru.json, zh_cn.json |
 
 Also: `sounds.json` present.
 
@@ -216,42 +232,66 @@ Run `check_mod.py` for a full consistency check (missing models, lang keys, text
 
 <!-- MODMAP:AUTO:END — everything below is hand-maintained and preserved -->
 
+
 ## Item model sub-models
 
-`check_mod.py` notes 20 item models with no registered item: `ring_*`, `amulet_*`, `bracelet_*`, `circlet_*` and
-`cut_gem_*` for each of the four cuts. They are the gem-shape sub-models that the item property
-`immersive_jewelry:cut` selects (overrides in `ring.json`, `cut_gem.json`, ...), written by
-`tools/generate_resources.py`. Expected; not leftovers.
+`check_mod.py` notes 26 item models with no registered item: `ring_*`, `amulet_*`, `bracelet_*`, `circlet_*` and
+`cut_gem_*` for each of the four cuts (the gem-shape sub-models that the item property `immersive_jewelry:cut` selects,
+overrides in `ring.json`, `cut_gem.json`, ..., written by `tools/generate_resources.py`), `jewelers_pliers_held` and
+`fine_pliers_held` (the in-hand pliers), and `unfinished_jewelry_<form>` (the carrier's form, chosen by the item property
+`immersive_jewelry:form`). Expected; not leftovers.
 
 ## Current focus
 
-1.0.0 against the design spec (`docs/Immersive_Jewelry_Development_Spec.md`): the MVP loop and the 1.0 systems are
-built and pass the unit tests, the GameTests (with and without Curios and Immersive Smithing) and the client smoke test.
-Next is playtesting minigame feel and balance with players, and a pack test with real gem and metal mods.
+1.2.2 adds the four presentation libraries around the 1.2.x Diegesis stations
+(`Immersive_Jewelry_Patchouli_Ponder_GeckoLib_PlayerAnimator_Diegesis_Integration_Handoff.md`): the Jeweler's Handbook is a
+Patchouli book with live cards (`client/guide`), the demonstrations are Ponder lessons played on the stations' own
+simulations (`client/compat/ponder`), the stations' mechanisms and the bench tools are GeckoLib rigs posed from synced
+state (`client/presentation/geo`), the jeweler's body moves on playerAnimator (`client/presentation/anim`), and worn
+jewelry is drawn on players (`client/presentation/worn`, protocol 4). Asset and dependency inventory:
+`docs/ASSET_MANIFEST.md`. Next is the live two-client session, shader/optimisation stacks and audio checks the automated
+runs cannot cover (`docs/WORKSTATION_VALIDATION.md`, 1.2.2 section).
 
 ## Roadmap
 
-- [ ] Playtest cutting and setting (windows, time limits, heat) with players. Reference bot: careful cuts take
-  9.7-28.6 s at cut quality about 0.91 with no chips; setting about 0.95.
+- [ ] Playtest the stations with players: grinding pace per stone and lap, heat, prong feel, finishing, the
+  keyboard frontend. Reference bots (`src/testShared`: `FacetBot`, `SettingBot`, `SurfaceBot`) give the baseline in
+  `WorkstationSimTest`.
+- [ ] Two real clients at one station (observer view, lease refusal) and Embeddium/Oculus with shaders.
 - [ ] Pack test with real gem and metal mods: tag auto-detection, Smithing families, modded nuggets for repair.
 - [ ] Dedicated server boot through `runServer` (needs `run/eula.txt`, which is the user's to accept). The GameTest
   server already runs the GameTests on the dedicated-server dist.
 - [x] Jade overlays for the wheel and bench (`integration/jade`).
+- [x] 1.2.2: Patchouli handbook, Ponder lessons, GeckoLib rigs, playerAnimator poses, worn jewelry.
+- [ ] Two real clients on a dedicated server: watcher poses, worn-jewelry snapshot, handoff, help return token.
 
 ## Decisions
 
-- 1.1.0 progression hooks are consulted at one authoritative point each: `IJewelryCraftGate` in
-  `SessionManager.startSetting` before escrow, `IJewelryWearGate` in `WearerState.refresh` and `JewelrySlotsMenu.mayPlace`
-  (both sides, so the gate takes a `Player`), `IJewelryAssistSource` in the two `params(...)` builders (no protocol
-  change: the start packets already carry the parameters). `GemCutEvent` moved before `wheel.setStone` and became
-  settable (`setCutQuality`, `addExtraDust`); nothing in this repo or Immersive Apotheosis listened to it before.
+- Progression hooks are consulted at one authoritative point each: `IJewelryCraftGate` in `BenchOperations.commit`
+  (the first closure, before any stone or material is used), `IJewelryWearGate` in `WearerState.refresh` and
+  `JewelrySlotsMenu.mayPlace` (both sides, so the gate takes a `Player`), `IJewelryAssistSource` in
+  `WheelOperations.planCut`, `BenchOperations.commit` and `BenchOperations.begin` (rework); the eased parameters travel
+  in the synced work. `GemCutEvent` is posted
+  before `wheel.setStone` and is settable (`setCutQuality`, `addExtraDust`).
 - Deviations from the spec, with reasons, are in `docs/ARCHITECTURE.md` (Deviations summary). Do not re-litigate them.
-- Minigames are deterministic lockstep: fixed 20 ms steps (`StepClock`), simulations in `StrictMath` shared by both
-  sides. Clients send only per-step inputs; the server replays them and grades. `SessionTiming` refuses steps that
-  run ahead of real time. Never add a packet that carries a score or an item.
-- `MinigameScreen.scriptedInput` is a test seam (null in play): the smoke-test agent plays the reference bots
-  (`src/testShared`) through the real client screens and checks that the server's verdict equals the bot's replay.
-- Stones being cut stay in the wheel's block entity; bench escrow is refunded exactly once.
+- Station work is deterministic: fixed 20 ms `WorkSample` steps, simulations (`workstation/sim`) on `float` and
+  `StrictMath`, stepped by the server under an operator lease (`WorkSessionManager`: token, sequence, a real-time step
+  budget, heartbeat) and predicted/replayed by the operator's client. Clients send only per-step controls
+  (`WorkInputPacket`) and discrete commands (`WorkCommandPacket`). Never add a packet that carries a score or an item.
+- Work persists as data, not sessions: `CutWork` in the stone's NBT, `BenchWork` in the bench or an
+  `unfinished_jewelry` carrier. Leases are transient and never saved. Every item move goes through
+  `WheelOperations`/`BenchOperations`; Diegesis slots and custom actions are refused (`WorkstationLogic`).
+- Diegesis is pinned to its one tested release (`diegesis_version_range`). In use: `takes_items` placement nodes whose
+  hints are answered by `WheelOperations.placement` / `BenchOperations.accepts` (GameTests keep them equal to custody),
+  `onScroll`, the drawer filter and `carry_size`, and the recipe-viewer hooks for JEI lookups (`StationLookups`). Keys
+  reach a station only while its own screen is shown, since child screens can cover it; the station takes a key first
+  and only a key it did not use looks up (the turn keys return false when they have nothing to turn or plan, so R, also
+  JEI's show-recipe key, looks up there). JEI gets no GUI on the station's screen. Deliberately unused: menu stations,
+  `hidesBlocks`, `moveCamera`, the hotbar drawer, `setOutlineSeenOnly`, an overlay round the station (reasons in
+  `docs/ARCHITECTURE.md`).
+- Test seams: `WorkstationClient.focusedView()` / `behaviourAt(pos)` let the smoke-test agent hand scene events to the
+  behaviour Diegesis holds; keys go through `KeyboardHandler.keyPress`. GameTests drive the real lease and input path
+  with a `FakePlayer` and their own clock (`TestSupport.Operator`).
 - Definitions are parsed from JSON on both sides; the server syncs the resolved JSON and each side keeps its own
   snapshot (`JewelryDefinitions.server()` / `client()`).
 - Ingredient emptiness always goes through `Inventories.items` / `Inventories.isEmpty`: Forge stands a named Barrier
@@ -264,6 +304,15 @@ Next is playtesting minigame feel and balance with players, and a pack test with
   slots, tags, loot, advancements, particles, sounds.json);
   definitions, designs, crafting recipes, block models and lang are hand-written. Each tool has `--check`.
 - Jade joins the dev runtime only for `-PsmokeTest`: see Known issues.
+- Library ownership (1.2.2): Diegesis owns focus, camera, picking and scene lifecycle; GeckoLib owns articulated meshes only
+  (posed every render by `RigClip` at a phase named by synced state, never on GeckoLib's model-wide clock); playerAnimator
+  owns the third-person body (first person stays with the scene's own hands); Patchouli owns reading; Ponder owns
+  demonstrations, which run the real simulations in its own level only. Common code never imports Patchouli, Ponder or
+  playerAnimator (`LibraryResourcesTest` checks it); GeckoLib is common because the station block entities are its
+  animatables.
+- Generated assets of 1.2.2: `tools/generate_rigs.py` (rigs, clips, rig textures, body clips from `art/jewelry_rigs.py`
+  and `art/jewelry_poses.py`), `tools/generate_book.py` (the book's structure; its text is lang keys, and `--check` verifies
+  every locale has every key), `tools/generate_ponder.py` (the lesson structures).
 
 ## Known issues
 

@@ -1,0 +1,21 @@
+{
+  "name": "book.immersive_jewelry.entry.start.stations",
+  "icon": "immersive_jewelry:lapidary_wheel",
+  "category": "immersive_jewelry:start",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.stations.0"
+    },
+    {
+      "type": "immersive_jewelry:tools_card"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "laps_and_tools",
+      "entry": "immersive_jewelry:start/stations",
+      "text": "book.immersive_jewelry.start.stations.watch.1"
+    }
+  ]
+}

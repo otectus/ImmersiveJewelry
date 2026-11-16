@@ -36,11 +36,12 @@ import java.util.List;
  * @param allowedGems    empty = any gem
  * @param allowedFinishes empty = every finish
  * @param sketch         must be learned from a Design Sketch
+ * @param workProfile    optional hands-on tuning ({@code work_profiles}); null: the defaults for the setting style
  */
 public record JewelryDesignRecipe(ResourceLocation id, ResourceLocation form, int stones, SettingStyle style, int pointsPerStone,
                                   float tightness, float protection, List<ResourceLocation> allowedCuts,
                                   List<ResourceLocation> allowedGems, List<ResourceLocation> allowedFinishes, boolean sketch,
-                                  int sortOrder, Component name) implements Recipe<Container> {
+                                  int sortOrder, Component name, @Nullable ResourceLocation workProfile) implements Recipe<Container> {
 
     public boolean allowsCut(@Nullable ResourceLocation cut) {
         return cut != null && (allowedCuts.isEmpty() || allowedCuts.contains(cut));

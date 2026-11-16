@@ -1,0 +1,22 @@
+{
+  "name": "book.immersive_jewelry.entry.finishing.refinishing",
+  "icon": "minecraft:gunpowder",
+  "category": "immersive_jewelry:finishing",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.finishing.refinishing.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.finishing.refinishing.1"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "refinish_and_resume",
+      "entry": "immersive_jewelry:finishing/refinishing",
+      "text": "book.immersive_jewelry.finishing.refinishing.watch.2"
+    }
+  ]
+}

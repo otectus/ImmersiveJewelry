@@ -1,0 +1,30 @@
+{
+  "name": "handbook.immersive_jewelry.stones.title",
+  "icon": "minecraft:emerald",
+  "category": "immersive_jewelry:stones",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.stones.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.stones.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.stones.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.stones.sources.0"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "appraisal_and_sources",
+      "entry": "immersive_jewelry:stones/sources",
+      "text": "book.immersive_jewelry.stones.sources.watch.1"
+    }
+  ]
+}

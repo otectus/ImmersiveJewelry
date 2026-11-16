@@ -63,4 +63,9 @@ public class GemCuttingCategory extends JeiCategory<GemDefinition> {
             g.drawString(font, VanillaGui.clipped(font, Component.translatable("jei.immersive_jewelry.gem_trait", trait.name()), 124), 24, 48, VanillaGui.LABEL, false);
         }
     }
+
+    @Override
+    protected com.otectus.immersivejewelry.client.guide.HelpTopics.Topic helpTopic(GemDefinition recipe) {
+        return topic("stones/gems", com.otectus.immersivejewelry.client.guide.Lessons.APPRAISAL_AND_SOURCES);
+    }
 }

@@ -1,0 +1,427 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Pocky-l/diegesis/main/docs/schema/scene.schema.json",
+  "$comment": "Immersive Jewelry: the Jeweler's Bench. Nodes are pick and stroke zones only; the behaviour places them (client/workstation/render/BenchPainter) and draws the piece, tools, tray and supplies through the 'work' node. The camera looks obliquely at the clamp. Placement nodes take items (Diegesis takes_items): a stack carried from the drawer hovers them, the behaviour shows where it would go and its click becomes a Jewelry placement.",
+  "work_plane": 14.5,
+  "camera": {
+    "position": [
+      8.0,
+      27.0,
+      -5.0
+    ],
+    "target": [
+      8.0,
+      15.4,
+      7.2
+    ],
+    "fov": 46,
+    "transition": 0.4,
+    "keep_width": 1.6,
+    "glances": [
+      {
+        "id": "loupe",
+        "position": [
+          8.0,
+          19.6,
+          2.2
+        ],
+        "target": [
+          8.0,
+          17.0,
+          7.6
+        ],
+        "fov": 28,
+        "time": 0.35,
+        "back_zone": 0,
+        "hint": false
+      }
+    ]
+  },
+  "idle_visible": true,
+  "put_away": true,
+  "interface": {
+    "hide_player": true,
+    "inventory_panel": false,
+    "hover_outline": true,
+    "outline_color": "#FFE8C46A",
+    "sounds": true
+  },
+  "inventory_drawer": {
+    "side": "bottom",
+    "align": 0.86,
+    "style": "minimal",
+    "compact": true,
+    "carry_size": 1.0,
+    "background": "#C0101216",
+    "slot_color": "#66000000"
+  },
+  "clear_view": {
+    "blocks": false,
+    "entities": false,
+    "particles": true
+  },
+  "hud": {
+    "slide": true,
+    "seconds": 0.3
+  },
+  "captions": {
+    "edge": "bottom",
+    "color": "#FFF0E6D0",
+    "background": "#90101216"
+  },
+  "nodes": [
+    {
+      "id": "work",
+      "pickable": false
+    },
+    {
+      "id": "piece",
+      "strokes": true,
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -3.4,
+          -3.4,
+          -1.4
+        ],
+        "to": [
+          3.4,
+          3.4,
+          1.4
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.piece"
+    },
+    {
+      "id": "folio",
+      "collider": {
+        "from": [
+          -1.5,
+          -0.4,
+          -2.0
+        ],
+        "to": [
+          1.5,
+          0.4,
+          2.0
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.folio"
+    },
+    {
+      "id": "pouch",
+      "collider": {
+        "from": [
+          -0.9,
+          -0.9,
+          -0.7
+        ],
+        "to": [
+          0.9,
+          0.9,
+          0.7
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.pouch"
+    },
+    {
+      "id": "dock",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -1.2,
+          -0.5,
+          -1.6
+        ],
+        "to": [
+          1.2,
+          0.5,
+          1.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.dock"
+    },
+    {
+      "id": "loupe",
+      "collider": {
+        "from": [
+          -0.8,
+          -0.6,
+          -0.8
+        ],
+        "to": [
+          0.8,
+          0.6,
+          0.8
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.bench_loupe"
+    },
+    {
+      "id": "tray_0",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "tray_1",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "tray_2",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "tray_3",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "tray_4",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "tray_5",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "tray_6",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "tray_7",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.55,
+          -0.5,
+          -0.6
+        ],
+        "to": [
+          0.55,
+          0.5,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tray"
+    },
+    {
+      "id": "supply_0",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.6,
+          -0.8,
+          -0.6
+        ],
+        "to": [
+          0.6,
+          0.8,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.supply"
+    },
+    {
+      "id": "supply_1",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.6,
+          -0.8,
+          -0.6
+        ],
+        "to": [
+          0.6,
+          0.8,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.supply"
+    },
+    {
+      "id": "supply_2",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -0.6,
+          -0.8,
+          -0.6
+        ],
+        "to": [
+          0.6,
+          0.8,
+          0.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.supply"
+    },
+    {
+      "id": "tool_tweezers",
+      "collider": {
+        "from": [
+          -0.6,
+          -0.5,
+          -1.6
+        ],
+        "to": [
+          0.6,
+          0.5,
+          1.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tool.tweezers"
+    },
+    {
+      "id": "tool_pusher",
+      "collider": {
+        "from": [
+          -0.6,
+          -0.5,
+          -1.6
+        ],
+        "to": [
+          0.6,
+          0.5,
+          1.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tool.pusher"
+    },
+    {
+      "id": "tool_burnisher",
+      "collider": {
+        "from": [
+          -0.6,
+          -0.5,
+          -1.6
+        ],
+        "to": [
+          0.6,
+          0.5,
+          1.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tool.burnisher"
+    },
+    {
+      "id": "tool_brush",
+      "collider": {
+        "from": [
+          -0.6,
+          -0.5,
+          -1.6
+        ],
+        "to": [
+          0.6,
+          0.5,
+          1.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tool.brush"
+    },
+    {
+      "id": "tool_cloth",
+      "collider": {
+        "from": [
+          -0.6,
+          -0.5,
+          -1.6
+        ],
+        "to": [
+          0.6,
+          0.5,
+          1.6
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.tool.cloth"
+    }
+  ]
+}

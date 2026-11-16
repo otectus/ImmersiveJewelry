@@ -46,6 +46,8 @@ public final class DefinitionEvents {
         } else {
             ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), packet);
             JewelryWearers.invalidateAll();
+            // A reload while people work: active manipulation stops; the work keeps the parameters it was planned with.
+            if (event.getPlayerList() != null) com.otectus.immersivejewelry.workstation.WorkSessionManager.onReload(event.getPlayerList().getServer());
         }
     }
 

@@ -10,6 +10,7 @@ import com.otectus.immersivejewelry.item.JewelryItem;
 import com.otectus.immersivejewelry.item.LapItem;
 import com.otectus.immersivejewelry.item.PliersItem;
 import com.otectus.immersivejewelry.item.RoughGemItem;
+import com.otectus.immersivejewelry.item.UnfinishedJewelryItem;
 import com.otectus.immersivejewelry.jewelry.JewelryForms;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -58,6 +59,10 @@ public final class ModItems {
             () -> new DesignSketchItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<HandbookItem> JEWELERS_HANDBOOK = ITEMS.register("jewelers_handbook",
             () -> new HandbookItem(new Item.Properties().stacksTo(1)));
+
+    // Bench work packed up to carry: frame, committed stones and progress in one inert item (1.2.0).
+    public static final RegistryObject<UnfinishedJewelryItem> UNFINISHED_JEWELRY = ITEMS.register("unfinished_jewelry",
+            () -> new UnfinishedJewelryItem(new Item.Properties().stacksTo(1)));
 
     // Stations.
     public static final RegistryObject<Item> LAPIDARY_WHEEL = ITEMS.register("lapidary_wheel",

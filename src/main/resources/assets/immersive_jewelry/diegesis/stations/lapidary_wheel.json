@@ -1,0 +1,289 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Pocky-l/diegesis/main/docs/schema/scene.schema.json",
+  "$comment": "Immersive Jewelry: the Lapidary Wheel. Nodes are pick and stroke zones only; the behaviour places them on the quill rig (client/workstation/render/WheelPainter) and draws every moving part through the 'work' node. The camera shows the quill, the contact on the lap and the lap together. Placement nodes take items (Diegesis takes_items): a stack carried from the drawer hovers them, the behaviour shows where it would go and its click becomes a Jewelry placement.",
+  "work_plane": 13,
+  "camera": {
+    "position": [
+      8.0,
+      26.5,
+      -7.5
+    ],
+    "target": [
+      8.0,
+      13.6,
+      7.0
+    ],
+    "fov": 50,
+    "transition": 0.4,
+    "keep_width": 1.6,
+    "glances": [
+      {
+        "id": "loupe",
+        "position": [
+          6.9,
+          18.6,
+          1.4
+        ],
+        "target": [
+          8.2,
+          15.4,
+          6.2
+        ],
+        "fov": 30,
+        "time": 0.35,
+        "back_zone": 0,
+        "hint": false
+      }
+    ]
+  },
+  "idle_visible": true,
+  "put_away": true,
+  "interface": {
+    "hide_player": true,
+    "inventory_panel": false,
+    "hover_outline": true,
+    "outline_color": "#FFE8C46A",
+    "sounds": true
+  },
+  "inventory_drawer": {
+    "side": "bottom",
+    "align": 0.86,
+    "style": "minimal",
+    "compact": true,
+    "carry_size": 1.5,
+    "background": "#C0101216",
+    "slot_color": "#66000000"
+  },
+  "clear_view": {
+    "blocks": false,
+    "entities": false,
+    "particles": true
+  },
+  "hud": {
+    "slide": true,
+    "seconds": 0.3
+  },
+  "captions": {
+    "edge": "bottom",
+    "color": "#FFF0E6D0",
+    "background": "#90101216"
+  },
+  "nodes": [
+    {
+      "id": "work",
+      "pickable": false
+    },
+    {
+      "id": "handle",
+      "strokes": true,
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -1.3,
+          -1.3,
+          -1.3
+        ],
+        "to": [
+          1.3,
+          1.3,
+          1.3
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.handle"
+    },
+    {
+      "id": "collar",
+      "collider": {
+        "from": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "to": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.collar"
+    },
+    {
+      "id": "stone",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -1.1,
+          -1.1,
+          -1.1
+        ],
+        "to": [
+          1.1,
+          1.1,
+          1.1
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.stone"
+    },
+    {
+      "id": "cup",
+      "collider": {
+        "from": [
+          -1.5,
+          -0.9,
+          -1.5
+        ],
+        "to": [
+          1.5,
+          0.9,
+          1.5
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.cup"
+    },
+    {
+      "id": "loupe",
+      "collider": {
+        "from": [
+          -0.9,
+          -1.2,
+          -0.9
+        ],
+        "to": [
+          0.9,
+          1.2,
+          0.9
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.loupe"
+    },
+    {
+      "id": "lever",
+      "collider": {
+        "from": [
+          -0.7,
+          -1.1,
+          -0.7
+        ],
+        "to": [
+          0.7,
+          1.1,
+          0.7
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.lever"
+    },
+    {
+      "id": "lap",
+      "takes_items": true,
+      "collider": {
+        "from": [
+          -2.0,
+          -0.4,
+          -2.0
+        ],
+        "to": [
+          2.0,
+          0.4,
+          2.0
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.lap"
+    },
+    {
+      "id": "specimen_0",
+      "collider": {
+        "from": [
+          -0.38,
+          -0.5,
+          -0.45
+        ],
+        "to": [
+          0.38,
+          0.5,
+          0.45
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.specimen"
+    },
+    {
+      "id": "specimen_1",
+      "collider": {
+        "from": [
+          -0.38,
+          -0.5,
+          -0.45
+        ],
+        "to": [
+          0.38,
+          0.5,
+          0.45
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.specimen"
+    },
+    {
+      "id": "specimen_2",
+      "collider": {
+        "from": [
+          -0.38,
+          -0.5,
+          -0.45
+        ],
+        "to": [
+          0.38,
+          0.5,
+          0.45
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.specimen"
+    },
+    {
+      "id": "specimen_3",
+      "collider": {
+        "from": [
+          -0.38,
+          -0.5,
+          -0.45
+        ],
+        "to": [
+          0.38,
+          0.5,
+          0.45
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.specimen"
+    },
+    {
+      "id": "specimen_4",
+      "collider": {
+        "from": [
+          -0.38,
+          -0.5,
+          -0.45
+        ],
+        "to": [
+          0.38,
+          0.5,
+          0.45
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.specimen"
+    },
+    {
+      "id": "specimen_5",
+      "collider": {
+        "from": [
+          -0.38,
+          -0.5,
+          -0.45
+        ],
+        "to": [
+          0.38,
+          0.5,
+          0.45
+        ]
+      },
+      "tooltip": "workstation.immersive_jewelry.node.specimen"
+    }
+  ]
+}

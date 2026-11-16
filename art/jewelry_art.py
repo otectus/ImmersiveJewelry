@@ -456,6 +456,37 @@ def logo():
     return im
 
 
+def workstation_plain():
+    """Near-white base for the workstations' code-drawn parts (stones, frames, tools): tinted per vertex in the game.
+    A faint, regular grain keeps large flat faces from looking like flat fill; it stays above 230 so tints keep their
+    colour."""
+    im, px = canvas()
+    for y in range(16):
+        for x in range(16):
+            grain = ((x * 7 + y * 13) % 5) - 2
+            ridge = 2 if (x + y * 3) % 11 == 0 else 0
+            px[x, y] = gray(248 + grain * 2 - ridge)
+    return im
+
+
+def unfinished_tag():
+    """A small paper work tag on a string: the overlay that marks unfinished jewelry."""
+    im, px = canvas()
+    paper = ['#8a7a5c', '#c8b88e', '#ece0bc']
+    string = hexrgb('#5a4630')
+    for i in range(5):
+        px[11 - i, 2 + i] = string
+    for y in range(6, 12):
+        for x in range(4, 11):
+            edge = x in (4, 10) or y in (6, 11)
+            px[x, y] = hexrgb(paper[0] if edge else paper[2 if (x + y) % 4 else 1])
+    px[5, 7] = hexrgb('#3a2e20')
+    for x in range(6, 10):
+        px[x, 8] = hexrgb('#7a6a50')
+        px[x, 10] = hexrgb('#7a6a50')
+    return im
+
+
 # ================================================================================================ export table
 
 def textures():
@@ -507,6 +538,8 @@ def textures():
     out['block/wheel_copper.png'] = metal(COPPER, 17)
     out['block/wheel_lap.png'] = lap_face()
     out['block/wheel_rim.png'] = rim()
+    out['block/workstation_plain.png'] = workstation_plain()
+    out['item/unfinished_tag.png'] = unfinished_tag()
     for kind in ['ring', 'necklace', 'bracelet', 'head']:
         out[f'gui/slot/empty_{kind}.png'] = slot_icon(kind)
     for i in range(4):

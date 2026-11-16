@@ -1,0 +1,22 @@
+{
+  "name": "book.immersive_jewelry.entry.setting.bezels",
+  "icon": "immersive_jewelry:bracelet",
+  "category": "immersive_jewelry:setting",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.setting.bezels.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.setting.bezels.1"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "bezel_setting",
+      "entry": "immersive_jewelry:setting/bezels",
+      "text": "book.immersive_jewelry.setting.bezels.watch.2"
+    }
+  ]
+}

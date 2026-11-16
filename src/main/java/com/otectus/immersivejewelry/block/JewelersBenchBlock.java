@@ -1,8 +1,8 @@
 package com.otectus.immersivejewelry.block;
 
 import com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity;
-import com.otectus.immersivejewelry.minigame.StationInteractions;
-import com.otectus.immersivejewelry.minigame.SessionManager;
+import com.otectus.immersivejewelry.workstation.BenchOperations;
+import com.otectus.immersivejewelry.workstation.WorkSessionManager;
 import com.otectus.immersivejewelry.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,8 +21,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Jeweler's Bench (spec 6.1): place a blank or a finished piece on it, then use it with Jeweler's Pliers to
- * choose a design, stones and finish and set them, or to rework the piece. The Jeweler's workstation.
+ * The Jeweler's Bench: walk up with a frame, a carrier, stones, supplies or pliers to put them on the bench; sneak-use
+ * with an empty hand to take things (packing committed work into a carrier). Using it otherwise opens the station
+ * scene, where pieces are designed, set, finished and reworked by hand (see {@code workstation.BenchOperations}).
+ * The Jeweler's workstation.
  */
 public class JewelersBenchBlock extends StationBlock {
 
@@ -38,8 +40,9 @@ public class JewelersBenchBlock extends StationBlock {
                 Block.box(13, 0, 12, 15, 11, 14),
                 Block.box(3, 8, 8, 13, 11, 14),
                 Block.box(4.15, 7.5, 1.5, 11.85, 8.8, 6.5),
-                Block.box(1.5, 14, 12.25, 14.5, 17.75, 15),
-                Block.box(12, 14, 5.25, 14.5, 18, 7.75)));
+                Block.box(3, 14, 12.6, 13.2, 14.6, 14.8),
+                Block.box(12.4, 14, 5.2, 15.4, 14.5, 9.2),
+                Block.box(6.2, 14, 6.6, 9.8, 15.5, 8.8)));
     }
 
     @Nullable
@@ -58,7 +61,7 @@ public class JewelersBenchBlock extends StationBlock {
     @SuppressWarnings("deprecation")
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.is(newState.getBlock()) && !level.isClientSide && level.getBlockEntity(pos) instanceof JewelersBenchBlockEntity bench) {
-            SessionManager.onStationRemoved(level, pos);
+            WorkSessionManager.onStationRemoved(level, pos);
             bench.dropContents();
         }
         super.onRemove(state, level, pos, newState, moved);
@@ -71,7 +74,7 @@ public class JewelersBenchBlock extends StationBlock {
         if (player.isSecondaryUseActive() && player.getItemInHand(hand).getItem() instanceof BlockItem) return InteractionResult.PASS;
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (level.getBlockEntity(pos) instanceof JewelersBenchBlockEntity bench && player instanceof ServerPlayer sp) {
-            StationInteractions.useBench(sp, bench, hand);
+            BenchOperations.use(sp, bench, hand);
             return InteractionResult.CONSUME;
         }
         return InteractionResult.PASS;

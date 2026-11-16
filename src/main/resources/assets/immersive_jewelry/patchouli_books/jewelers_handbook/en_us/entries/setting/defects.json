@@ -1,0 +1,20 @@
+{
+  "name": "book.immersive_jewelry.entry.setting.defects",
+  "icon": "immersive_jewelry:fine_pliers",
+  "category": "immersive_jewelry:setting",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.setting.defects.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.setting.defects.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.setting.defects.2"
+    }
+  ]
+}

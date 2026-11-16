@@ -1,0 +1,30 @@
+{
+  "name": "handbook.immersive_jewelry.blanks.title",
+  "icon": "immersive_jewelry:ring_blank",
+  "category": "immersive_jewelry:metal",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.blanks.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.blanks.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.blanks.2"
+    },
+    {
+      "type": "immersive_jewelry:metal_card",
+      "show": "routes"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "blank_routes",
+      "entry": "immersive_jewelry:metal/blanks",
+      "text": "book.immersive_jewelry.metal.blanks.watch.0"
+    }
+  ]
+}

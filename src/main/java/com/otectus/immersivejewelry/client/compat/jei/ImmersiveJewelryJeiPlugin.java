@@ -26,6 +26,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -38,7 +39,8 @@ import java.util.List;
 /**
  * JEI (spec 57): explains every step without bypassing it. Cutting and designs come from the synced definitions and
  * recipes; blanks point at Immersive Smithing's own categories when it is installed (its recipes for our blanks are
- * real smithing recipes and appear there), and at the crafting fallback otherwise.
+ * real smithing recipes and appear there), and at the crafting fallback otherwise. At the workstations its keys look
+ * up what is under the cursor without leaving the station ({@link StationLookups}).
  */
 @JeiPlugin
 public class ImmersiveJewelryJeiPlugin implements IModPlugin {
@@ -146,6 +148,17 @@ public class ImmersiveJewelryJeiPlugin implements IModPlugin {
 
     private static void info(IRecipeRegistration registration, ItemStack stack, String key) {
         registration.addItemStackInfo(stack, Component.translatable("jei.immersive_jewelry.info." + key));
+    }
+
+    /** Lookups at the workstations: see {@link StationLookups}. */
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime runtime) {
+        StationLookups.runtime(runtime);
+    }
+
+    @Override
+    public void onRuntimeUnavailable() {
+        StationLookups.runtime(null);
     }
 
     @Override

@@ -32,8 +32,9 @@ import snownee.jade.api.config.IPluginConfig;
 
 /**
  * Jade overlays for the two stations. Discovered by Jade through the annotation, so nothing here loads without it.
- * The stations already sync what they hold (for their renderers), so the overlays read the client's block entity
- * and need no server data.
+ * The stations already sync what they hold and the state of their work (for their scenes), so the overlays read the
+ * client's block entity and need no server data. Short lines: what is there, the stage, who works it, what is missing.
+ * While the local player works a station its scene is open and Jade's overlay is not drawn over the work.
  */
 @WailaPlugin
 public class JewelryJadePlugin implements IWailaPlugin {
@@ -77,7 +78,13 @@ public class JewelryJadePlugin implements IWailaPlugin {
                 if (lap.isDamageableItem()) text.append(" ").append(line("wear", percent(1F - lap.getDamageValue() / (float) lap.getMaxDamage())));
                 tooltip.add(text.withStyle(ChatFormatting.GRAY));
             }
-            if (wheel.isWorking()) tooltip.add(line("in_use").withStyle(ChatFormatting.RED));
+            wheel.work().ifPresent(work -> {
+                tooltip.add(line("wheel.cut", JewelryNames.cut(defs, work.cut()), percent(work.sim().overallProgress())).withStyle(ChatFormatting.AQUA));
+                if (work.sim().ready()) tooltip.add(line("wheel.ready").withStyle(ChatFormatting.GREEN));
+                if (work.sim().chips() > 0) tooltip.add(line("wheel.chips", work.sim().chips()).withStyle(ChatFormatting.RED));
+                if (defs.cut(work.cut()) == null) tooltip.add(line("work_unavailable").withStyle(ChatFormatting.RED));
+            });
+            if (wheel.operatorName() != null) tooltip.add(line("operator", wheel.operatorName()).withStyle(ChatFormatting.RED));
         }
 
         @Override
@@ -92,9 +99,10 @@ public class JewelryJadePlugin implements IWailaPlugin {
         @Override
         public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
             if (!(accessor.getBlockEntity() instanceof JewelersBenchBlockEntity bench)) return;
-            ItemStack piece = bench.workpiece();
+            ItemStack piece = bench.clamp();
             if (piece.isEmpty()) {
                 tooltip.add(line("bench.empty").withStyle(ChatFormatting.GRAY));
+                stock(tooltip, bench);
                 return;
             }
             JewelryData jewelry = JewelryData.get(piece).orElse(null);
@@ -108,10 +116,33 @@ public class JewelryJadePlugin implements IWailaPlugin {
             } else {
                 tooltip.add(name);
             }
-            if (bench.isWorking()) {
-                tooltip.add(line("bench.progress", percent(bench.progress())).withStyle(ChatFormatting.AQUA));
-                tooltip.add(line("in_use").withStyle(ChatFormatting.RED));
+            var work = bench.work();
+            if (work != null) {
+                Component stage = line("stage." + work.kind().id() + "." + work.stage().name().toLowerCase(java.util.Locale.ROOT));
+                float progress = work.surface() != null ? work.surface().progress() : work.setting() != null ? secured(work.setting()) : 0F;
+                tooltip.add(line("bench.work", stage, percent(progress)).withStyle(ChatFormatting.AQUA));
+                if (work.stage() == com.otectus.immersivejewelry.workstation.order.BenchWork.Stage.PLAN && work.setting() != null
+                        && bench.seatedCount() < work.setting().params().sockets()) {
+                    tooltip.add(line("bench.needs_stones", work.setting().params().sockets() - bench.seatedCount()).withStyle(ChatFormatting.GOLD));
+                }
+            } else if (bench.hasUnreadableWork()) {
+                tooltip.add(line("work_unavailable").withStyle(ChatFormatting.RED));
             }
+            stock(tooltip, bench);
+            if (bench.operatorName() != null) tooltip.add(line("operator", bench.operatorName()).withStyle(ChatFormatting.RED));
+        }
+
+        private static float secured(com.otectus.immersivejewelry.workstation.sim.SettingSim sim) {
+            int done = 0;
+            for (int s = 0; s < sim.params().sockets(); s++) if (sim.secured(s)) done++;
+            return done / (float) sim.params().sockets();
+        }
+
+        private static void stock(ITooltip tooltip, JewelersBenchBlockEntity bench) {
+            int stones = 0;
+            for (int i = 0; i < JewelersBenchBlockEntity.TRAY; i++) stones += bench.tray(i).getCount();
+            if (stones > 0) tooltip.add(line("bench.tray", stones).withStyle(ChatFormatting.GRAY));
+            if (!bench.dock().isEmpty()) tooltip.add(line("bench.dock", bench.dock().getHoverName()).withStyle(ChatFormatting.GRAY));
         }
 
         @Override

@@ -5,6 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import com.otectus.immersivejewelry.data.work.WorkProfile;
+import com.otectus.immersivejewelry.recipe.SettingStyle;
+import com.otectus.immersivejewelry.workstation.BenchPlanner;
+import com.otectus.immersivejewelry.workstation.sim.FacetParams;
+import com.otectus.immersivejewelry.workstation.sim.SettingParams;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -26,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class WorkstationResourcesTest {
     private static final String ROOT = "/assets/immersive_jewelry/";
-    private static final List<String> MODELS = List.of("jewelers_bench", "lapidary_wheel", "lapidary_wheel_disc", "lapidary_wheel_full");
+    private static final List<String> MODELS = List.of("jewelers_bench", "lapidary_wheel", "lapidary_wheel_parts", "lapidary_wheel_full");
     private static final String[] FACES = {"west", "east", "down", "up", "north", "south"};
     private static final Pattern FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([s%])");
 
@@ -68,9 +73,9 @@ class WorkstationResourcesTest {
     }
 
     @Test
-    void wheelItemContainsExactlyTheFrameAndDisc() throws IOException {
+    void wheelItemContainsExactlyTheMachineAndItsPartsAtRest() throws IOException {
         JsonObject frame = json("models/block/lapidary_wheel.json");
-        JsonObject disc = json("models/block/lapidary_wheel_disc.json");
+        JsonObject disc = json("models/block/lapidary_wheel_parts.json");
         JsonObject full = json("models/block/lapidary_wheel_full.json");
         var elements = frame.getAsJsonArray("elements").deepCopy();
         elements.addAll(disc.getAsJsonArray("elements"));
@@ -193,6 +198,35 @@ class WorkstationResourcesTest {
 
     private static double coord(JsonObject element, String edge, int axis) {
         return element.getAsJsonArray(edge).get(axis).getAsDouble();
+    }
+
+    /** The shipped {@code defaults/<interaction>} profiles parse strictly and change nothing: they repeat the built-ins. */
+    @Test
+    void shippedDefaultWorkProfilesRepeatTheBuiltInNumbers() throws IOException {
+        for (WorkProfile.Interaction interaction : WorkProfile.Interaction.values()) {
+            String path = "/data/immersive_jewelry/immersive_jewelry/work_profiles/defaults/" + interaction.id() + ".json";
+            JsonObject json;
+            try (var reader = new InputStreamReader(resource(path), StandardCharsets.UTF_8)) {
+                json = JsonParser.parseReader(reader).getAsJsonObject();
+            }
+            WorkProfile profile = WorkProfile.parse(WorkProfile.defaultId(interaction), json);
+            assertEquals(interaction, profile.interaction(), path);
+            if (interaction.grinds()) {
+                assertEquals(FacetParams.Tuning.DEFAULT, new FacetParams.Tuning(profile.targetActiveSeconds(), profile.toleranceScale(),
+                        profile.forceMinimum(), profile.forceMaximum(), profile.sweepTolerance()), path);
+            } else if (interaction == WorkProfile.Interaction.PRONG || interaction == WorkProfile.Interaction.BEZEL) {
+                SettingStyle style = interaction == WorkProfile.Interaction.BEZEL ? SettingStyle.BEZEL : SettingStyle.PRONG;
+                assertEquals(setting(style, SettingParams.Tuning.DEFAULT),
+                        setting(style, new SettingParams.Tuning(profile.toleranceScale(), profile.targetActiveSeconds())), path);
+            } else {
+                assertEquals(BenchPlanner.SURFACE_SECONDS, profile.targetActiveSeconds(), 1e-6F, path);
+            }
+        }
+    }
+
+    private static SettingParams setting(SettingStyle style, SettingParams.Tuning tuning) {
+        return SettingParams.create(new SettingParams.Inputs(style, 2, style == SettingStyle.BEZEL ? 12 : 4, 1F, 1F, 1F, 0.4F, 1F,
+                false, false, tuning));
     }
 
     private static JsonObject json(String path) throws IOException {

@@ -4,11 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.otectus.immersivejewelry.ImmersiveJewelry;
 import com.otectus.immersivejewelry.api.gem.GemData;
-import com.otectus.immersivejewelry.client.render.LapidaryWheelRenderer;
 import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.item.CutGemItem;
 import com.otectus.immersivejewelry.item.RoughGemItem;
 import com.otectus.immersivejewelry.jewelry.JewelryFactory;
+import com.otectus.immersivejewelry.item.UnfinishedJewelryItem;
+import com.otectus.immersivejewelry.registry.ModBlocks;
 import com.otectus.immersivejewelry.registry.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -52,6 +53,10 @@ final class ArtSheet extends Screen {
         out.add(new Sample("Amulet frame", JewelryFactory.blank(ModItems.AMULET_FRAME.get(), JewelryFactory.metal(defs, GOLD), .8F)));
         out.add(new Sample("Bracelet blank", JewelryFactory.blank(ModItems.BRACELET_BLANK.get(), JewelryFactory.metal(defs, GOLD), .8F)));
         out.add(new Sample("Circlet frame", JewelryFactory.blank(ModItems.CIRCLET_FRAME.get(), JewelryFactory.metal(defs, GOLD), .8F)));
+        out.add(new Sample("Unfinished ring", UnfinishedJewelryItem.create(JewelryFactory.blank(ModItems.RING_BLANK.get(),
+                JewelryFactory.metal(defs, GOLD), .8F), List.of(), new net.minecraft.nbt.CompoundTag())));
+        out.add(new Sample("Unfinished amulet", UnfinishedJewelryItem.create(JewelryFactory.blank(ModItems.AMULET_FRAME.get(),
+                JewelryFactory.metal(defs, GOLD), .8F), List.of(), new net.minecraft.nbt.CompoundTag())));
         for (var entry : List.of(ModItems.JEWELERS_PLIERS, ModItems.FINE_PLIERS, ModItems.EMERY_LAP, ModItems.DIAMOND_LAP,
                 ModItems.POLISHING_COMPOUND, ModItems.GEM_DUST, ModItems.DESIGN_SKETCH, ModItems.JEWELERS_HANDBOOK,
                 ModItems.LAPIDARY_WHEEL, ModItems.JEWELERS_BENCH)) {
@@ -84,7 +89,9 @@ final class ArtSheet extends Screen {
             if (model.applyTransform(ItemDisplayContext.GUI, new PoseStack(), false)
                     == model.applyTransform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, new PoseStack(), false)) return false;
         }
-        return mc.getModelManager().getModel(LapidaryWheelRenderer.DISC) != mc.getModelManager().getMissingModel();
+        var shaper = mc.getModelManager().getBlockModelShaper();
+        return shaper.getBlockModel(ModBlocks.LAPIDARY_WHEEL.get().defaultBlockState()) != mc.getModelManager().getMissingModel()
+                && shaper.getBlockModel(ModBlocks.JEWELERS_BENCH.get().defaultBlockState()) != mc.getModelManager().getMissingModel();
     }
 
     @Override

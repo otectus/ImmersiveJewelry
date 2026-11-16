@@ -8,7 +8,7 @@ import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.data.gem.GemDefinition;
 import com.otectus.immersivejewelry.item.DesignSketchItem;
 import com.otectus.immersivejewelry.item.RoughGemItem;
-import com.otectus.immersivejewelry.minigame.cutting.CuttingService;
+import com.otectus.immersivejewelry.workstation.CutPlanner;
 import com.otectus.immersivejewelry.recipe.JewelryDesignRecipe;
 import com.otectus.immersivejewelry.registry.ModRecipeTypes;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -68,7 +68,7 @@ public class TreasureGemsModifier extends LootModifier {
                 for (GemDefinition g : gems) {
                     pick -= g.rarity().lootWeight();
                     if (pick < 0) {
-                        GemData stone = CuttingService.appraise(g, random);
+                        GemData stone = CutPlanner.appraise(g, random);
                         loot.add(RoughGemItem.create(stone));
                         break;
                     }

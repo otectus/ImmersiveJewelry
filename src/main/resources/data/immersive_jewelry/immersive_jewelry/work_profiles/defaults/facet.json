@@ -1,0 +1,11 @@
+{
+  "$comment": "Default tuning for flat facets (round, brilliant and emerald cuts). The built-in numbers, repeated: without target_active_seconds a cut takes 3.6 seconds of steady grinding per region; tolerance_scale scales every depth window; force_window is the comfortable share of the quill's travel; sweep_tolerance the sideways handle speed (lap widths per second) before the stone rocks. Cuts may name their own profile with \"work_profile\".",
+  "schema_version": 1,
+  "interaction": "facet",
+  "tolerance_scale": 1.0,
+  "force_window": {
+    "minimum": 0.28,
+    "maximum": 0.72
+  },
+  "sweep_tolerance": 1.6
+}

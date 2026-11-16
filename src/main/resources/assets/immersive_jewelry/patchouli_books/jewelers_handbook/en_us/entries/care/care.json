@@ -1,0 +1,20 @@
+{
+  "name": "handbook.immersive_jewelry.care.title",
+  "icon": "immersive_jewelry:fine_pliers",
+  "category": "immersive_jewelry:care",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.care.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.care.1"
+    },
+    {
+      "type": "immersive_jewelry:policy_card",
+      "topic": "care"
+    }
+  ]
+}

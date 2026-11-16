@@ -1,0 +1,28 @@
+{
+  "name": "handbook.immersive_jewelry.bench.title",
+  "icon": "immersive_jewelry:jewelers_bench",
+  "category": "immersive_jewelry:setting",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.bench.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.bench.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.bench.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.bench.3"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.bench.4"
+    }
+  ]
+}

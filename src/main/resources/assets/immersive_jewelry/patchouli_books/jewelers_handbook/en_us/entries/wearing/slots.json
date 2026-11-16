@@ -1,0 +1,26 @@
+{
+  "name": "handbook.immersive_jewelry.wearing.title",
+  "icon": "immersive_jewelry:ring",
+  "category": "immersive_jewelry:wearing",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.wearing.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.wearing.1"
+    },
+    {
+      "type": "immersive_jewelry:policy_card",
+      "topic": "wearing"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "wearing_and_effects",
+      "entry": "immersive_jewelry:wearing/slots",
+      "text": "book.immersive_jewelry.wearing.slots.watch.0"
+    }
+  ]
+}

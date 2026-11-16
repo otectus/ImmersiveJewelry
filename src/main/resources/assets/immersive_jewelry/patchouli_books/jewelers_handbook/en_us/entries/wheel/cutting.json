@@ -1,0 +1,48 @@
+{
+  "name": "handbook.immersive_jewelry.cutting.title",
+  "icon": "immersive_jewelry:cut_gem",
+  "category": "immersive_jewelry:wheel",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.cutting.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.cutting.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.cutting.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.cutting.3"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "round_cut",
+      "entry": "immersive_jewelry:wheel/cutting",
+      "text": "book.immersive_jewelry.wheel.cutting.watch.0"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "brilliant_cut",
+      "entry": "immersive_jewelry:wheel/cutting",
+      "text": "book.immersive_jewelry.wheel.cutting.watch.1"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "emerald_cut",
+      "entry": "immersive_jewelry:wheel/cutting",
+      "text": "book.immersive_jewelry.wheel.cutting.watch.2"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "cabochon_cut",
+      "entry": "immersive_jewelry:wheel/cutting",
+      "text": "book.immersive_jewelry.wheel.cutting.watch.3"
+    }
+  ]
+}

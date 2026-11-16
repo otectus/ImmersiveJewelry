@@ -1,0 +1,23 @@
+{
+  "name": "book.immersive_jewelry.entry.start.controls",
+  "icon": "minecraft:oak_sign",
+  "category": "immersive_jewelry:start",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.controls.0"
+    },
+    {
+      "type": "immersive_jewelry:keys_card"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.controls.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.controls.2"
+    }
+  ]
+}

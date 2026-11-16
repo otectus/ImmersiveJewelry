@@ -1,0 +1,11 @@
+{
+  "components": [
+    {
+      "type": "patchouli:custom",
+      "class": "com.otectus.immersivejewelry.client.guide.CutCard",
+      "x": 0,
+      "y": 0,
+      "cut": "#cut"
+    }
+  ]
+}

@@ -67,4 +67,9 @@ public class ReferenceCategory extends JeiCategory<ReferenceCategory.Entry> {
             y += 9;
         }
     }
+
+    @Override
+    protected com.otectus.immersivejewelry.client.guide.HelpTopics.Topic helpTopic(Entry recipe) {
+        return topic("start/welcome", com.otectus.immersivejewelry.client.guide.Lessons.FIRST_PIECE);
+    }
 }

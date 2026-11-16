@@ -8,12 +8,9 @@
     "end": "immersive_jewelry:block/bench_wood_end",
     "leather": "immersive_jewelry:block/bench_leather",
     "felt": "immersive_jewelry:block/bench_felt",
-    "steel": "immersive_jewelry:block/bench_steel",
     "iron": "immersive_jewelry:block/wheel_iron",
     "brass": "immersive_jewelry:block/bench_brass",
-    "gems": "immersive_jewelry:block/bench_gems",
-    "pin": "immersive_jewelry:block/bench_pin",
-    "lens": "immersive_jewelry:block/wheel_water"
+    "pin": "immersive_jewelry:block/bench_pin"
   },
   "elements": [
     {
@@ -2084,926 +2081,261 @@
       }
     },
     {
-      "name": "Tool tray floor",
+      "name": "Left front joinery peg",
       "from": [
-        1,
-        14,
-        12.5
+        2,
+        8.25,
+        1.75
       ],
       "to": [
-        15,
-        14.5,
-        16
+        3,
+        9.25,
+        2
       ],
       "faces": {
         "north": {
           "uv": [
             0,
             0,
-            14,
-            0.5
-          ],
-          "texture": "#top"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            14,
-            0.5
-          ],
-          "texture": "#top"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            3.5,
-            0.5
-          ],
-          "texture": "#top"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            3.5,
-            0.5
-          ],
-          "texture": "#top"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            14,
-            3.5
-          ],
-          "texture": "#top"
-        }
-      }
-    },
-    {
-      "name": "Tool tray back",
-      "from": [
-        1,
-        14.5,
-        15
-      ],
-      "to": [
-        15,
-        17,
-        16
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            14,
-            2.5
-          ],
-          "texture": "#top"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            14,
-            2.5
-          ],
-          "texture": "#top"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
             1,
-            2.5
-          ],
-          "texture": "#top"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            1,
-            2.5
-          ],
-          "texture": "#top"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            14,
             1
           ],
-          "texture": "#top"
-        }
-      }
-    },
-    {
-      "name": "Tool tray end",
-      "from": [
-        1,
-        14.5,
-        12.5
-      ],
-      "to": [
-        2,
-        17,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#wood"
-        },
-        "east": {
-          "uv": [
-            1,
-            2,
-            3.5,
-            4.5
-          ],
-          "texture": "#wood"
-        },
-        "west": {
-          "uv": [
-            1,
-            2,
-            3.5,
-            4.5
-          ],
-          "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#end"
-        }
-      }
-    },
-    {
-      "name": "Tool tray end",
-      "from": [
-        14,
-        14.5,
-        12.5
-      ],
-      "to": [
-        15,
-        17,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#wood"
-        },
-        "east": {
-          "uv": [
-            1,
-            2,
-            3.5,
-            4.5
-          ],
-          "texture": "#wood"
-        },
-        "west": {
-          "uv": [
-            1,
-            2,
-            3.5,
-            4.5
-          ],
-          "texture": "#wood"
-        },
-        "up": {
-          "uv": [
-            1,
-            2,
-            2,
-            4.5
-          ],
-          "texture": "#end"
-        }
-      }
-    },
-    {
-      "name": "Gem jar 0",
-      "from": [
-        3,
-        14.5,
-        13
-      ],
-      "to": [
-        5,
-        16.5,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            4,
-            4
-          ],
-          "texture": "#gems"
+          "texture": "#brass"
         },
         "east": {
           "uv": [
             0,
             0,
-            4,
-            4
+            0.25,
+            1
           ],
-          "texture": "#gems"
+          "texture": "#brass"
         },
         "west": {
           "uv": [
             0,
             0,
-            4,
-            4
+            0.25,
+            1
           ],
-          "texture": "#gems"
-        }
-      }
-    },
-    {
-      "name": "Cork stopper 0",
-      "from": [
-        3,
-        16.5,
-        13
-      ],
-      "to": [
-        5,
-        17,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "east": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "west": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "up": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        }
-      }
-    },
-    {
-      "name": "Gem jar 1",
-      "from": [
-        6,
-        14.5,
-        13
-      ],
-      "to": [
-        8,
-        16.5,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            4,
-            0,
-            8,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "east": {
-          "uv": [
-            4,
-            0,
-            8,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "west": {
-          "uv": [
-            4,
-            0,
-            8,
-            4
-          ],
-          "texture": "#gems"
-        }
-      }
-    },
-    {
-      "name": "Cork stopper 1",
-      "from": [
-        6,
-        16.5,
-        13
-      ],
-      "to": [
-        8,
-        17,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "east": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "west": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "up": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        }
-      }
-    },
-    {
-      "name": "Gem jar 2",
-      "from": [
-        9,
-        14.5,
-        13
-      ],
-      "to": [
-        11,
-        16.5,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "east": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#gems"
-        },
-        "west": {
-          "uv": [
-            8,
-            0,
-            12,
-            4
-          ],
-          "texture": "#gems"
-        }
-      }
-    },
-    {
-      "name": "Cork stopper 2",
-      "from": [
-        9,
-        16.5,
-        13
-      ],
-      "to": [
-        11,
-        17,
-        15
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "east": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "west": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        },
-        "up": {
-          "uv": [
-            4,
-            4,
-            6,
-            5
-          ],
-          "texture": "#end"
-        }
-      }
-    },
-    {
-      "name": "Mandrel foot",
-      "from": [
-        12.5,
-        14,
-        6
-      ],
-      "to": [
-        15,
-        14.5,
-        8.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.5
-          ],
-          "texture": "#iron"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.5
-          ],
-          "texture": "#iron"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.5
-          ],
-          "texture": "#iron"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.5
-          ],
-          "texture": "#iron"
+          "texture": "#brass"
         },
         "up": {
           "uv": [
             0,
             0,
-            2.5,
-            2.5
+            1,
+            0.25
           ],
-          "texture": "#iron"
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1,
+            0.25
+          ],
+          "texture": "#brass"
         }
       }
     },
     {
-      "name": "Steel mandrel base",
+      "name": "Right front joinery peg",
       "from": [
         13,
-        14.5,
-        6.5
-      ],
-      "to": [
-        14.5,
-        16.5,
-        8
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            1.5,
-            2.0
-          ],
-          "texture": "#steel"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            1.5,
-            2.0
-          ],
-          "texture": "#steel"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            1.5,
-            2.0
-          ],
-          "texture": "#steel"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            1.5,
-            2.0
-          ],
-          "texture": "#steel"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            1.5,
-            1.5
-          ],
-          "texture": "#steel"
-        }
-      }
-    },
-    {
-      "name": "Steel mandrel tip",
-      "from": [
-        13.5,
-        16.5,
-        7
+        8.25,
+        1.75
       ],
       "to": [
         14,
-        18,
-        7.5
+        9.25,
+        2
       ],
       "faces": {
         "north": {
           "uv": [
             0,
             0,
-            0.5,
-            1.5
+            1,
+            1
           ],
-          "texture": "#steel"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            0.5,
-            1.5
-          ],
-          "texture": "#steel"
+          "texture": "#brass"
         },
         "east": {
           "uv": [
             0,
             0,
-            0.5,
-            1.5
+            0.25,
+            1
           ],
-          "texture": "#steel"
+          "texture": "#brass"
         },
         "west": {
           "uv": [
             0,
             0,
-            0.5,
-            1.5
+            0.25,
+            1
           ],
-          "texture": "#steel"
+          "texture": "#brass"
         },
         "up": {
           "uv": [
             0,
             0,
-            0.5,
-            0.5
+            1,
+            0.25
           ],
-          "texture": "#steel"
+          "texture": "#brass"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1,
+            0.25
+          ],
+          "texture": "#brass"
         }
       }
     },
     {
-      "name": "Loupe bezel",
+      "name": "Stock shelf front rail",
       "from": [
-        1,
-        14,
-        7
-      ],
-      "to": [
-        3.5,
-        14.75,
-        9.5
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.75
-          ],
-          "texture": "#iron"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.75
-          ],
-          "texture": "#iron"
-        },
-        "east": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.75
-          ],
-          "texture": "#iron"
-        },
-        "west": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            0.75
-          ],
-          "texture": "#iron"
-        },
-        "up": {
-          "uv": [
-            0,
-            0,
-            2.5,
-            2.5
-          ],
-          "texture": "#iron"
-        }
-      }
-    },
-    {
-      "name": "Loupe lens",
-      "from": [
-        1.5,
-        14.75,
-        7.5
-      ],
-      "to": [
         3,
-        14.875,
+        4.75,
+        8.5
+      ],
+      "to": [
+        13,
+        5.75,
         9
       ],
       "faces": {
         "north": {
           "uv": [
+            1,
             2,
-            2,
-            5,
-            5
+            11,
+            3
           ],
-          "texture": "#lens"
+          "texture": "#wood"
         },
         "south": {
           "uv": [
+            1,
             2,
-            2,
-            5,
-            5
+            11,
+            3
           ],
-          "texture": "#lens"
+          "texture": "#wood"
         },
         "east": {
           "uv": [
+            1,
             2,
-            2,
-            5,
-            5
+            1.5,
+            3
           ],
-          "texture": "#lens"
+          "texture": "#wood"
         },
         "west": {
           "uv": [
+            1,
             2,
-            2,
-            5,
-            5
+            1.5,
+            3
           ],
-          "texture": "#lens"
+          "texture": "#wood"
         },
         "up": {
           "uv": [
+            1,
             2,
-            2,
-            5,
-            5
+            11,
+            2.5
           ],
-          "texture": "#lens"
+          "texture": "#end"
+        },
+        "down": {
+          "uv": [
+            1,
+            2,
+            11,
+            2.5
+          ],
+          "texture": "#end"
         }
       }
     },
     {
-      "name": "Left front joinery peg",
-      "from": [2, 8.25, 1.75],
-      "to": [3, 9.25, 2],
-      "faces": {
-        "north": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "east": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
-        "west": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
-        "up": {"uv": [0, 0, 1, 0.25], "texture": "#brass"},
-        "down": {"uv": [0, 0, 1, 0.25], "texture": "#brass"}
-      }
-    },
-    {
-      "name": "Right front joinery peg",
-      "from": [13, 8.25, 1.75],
-      "to": [14, 9.25, 2],
-      "faces": {
-        "north": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "east": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
-        "west": {"uv": [0, 0, 0.25, 1], "texture": "#brass"},
-        "up": {"uv": [0, 0, 1, 0.25], "texture": "#brass"},
-        "down": {"uv": [0, 0, 1, 0.25], "texture": "#brass"}
-      }
-    },
-    {
-      "name": "Stock shelf front rail",
-      "from": [3, 4.75, 8.5],
-      "to": [13, 5.75, 9],
-      "faces": {
-        "north": {"uv": [1, 2, 11, 3], "texture": "#wood"},
-        "south": {"uv": [1, 2, 11, 3], "texture": "#wood"},
-        "east": {"uv": [1, 2, 1.5, 3], "texture": "#wood"},
-        "west": {"uv": [1, 2, 1.5, 3], "texture": "#wood"},
-        "up": {"uv": [1, 2, 11, 2.5], "texture": "#end"},
-        "down": {"uv": [1, 2, 11, 2.5], "texture": "#end"}
-      }
-    },
-    {
       "name": "Drawer centre stile",
-      "from": [7.75, 8.25, 7.25],
-      "to": [8.25, 10.75, 7.75],
+      "from": [
+        7.75,
+        8.25,
+        7.25
+      ],
+      "to": [
+        8.25,
+        10.75,
+        7.75
+      ],
       "faces": {
-        "north": {"uv": [1, 2, 1.5, 4.5], "texture": "#wood"},
-        "south": {"uv": [1, 2, 1.5, 4.5], "texture": "#wood"},
-        "east": {"uv": [1, 2, 1.5, 4.5], "texture": "#wood"},
-        "west": {"uv": [1, 2, 1.5, 4.5], "texture": "#wood"},
-        "up": {"uv": [1, 2, 1.5, 2.5], "texture": "#end"},
-        "down": {"uv": [1, 2, 1.5, 2.5], "texture": "#end"}
-      }
-    },
-    {
-      "name": "Bench vise bed",
-      "from": [0.75, 14, 2.5],
-      "to": [4.25, 14.5, 4.5],
-      "faces": {
-        "north": {"uv": [0, 0, 3.5, 0.5], "texture": "#iron"},
-        "south": {"uv": [0, 0, 3.5, 0.5], "texture": "#iron"},
-        "east": {"uv": [0, 0, 2, 0.5], "texture": "#iron"},
-        "west": {"uv": [0, 0, 2, 0.5], "texture": "#iron"},
-        "up": {"uv": [0, 0, 3.5, 2], "texture": "#steel"}
-      }
-    },
-    {
-      "name": "Bench vise fixed jaw",
-      "from": [0.75, 14.5, 2.25],
-      "to": [1.5, 16.25, 4.75],
-      "faces": {
-        "north": {"uv": [0, 0, 0.75, 1.75], "texture": "#steel"},
-        "south": {"uv": [0, 0, 0.75, 1.75], "texture": "#steel"},
-        "east": {"uv": [0, 0, 2.5, 1.75], "texture": "#iron"},
-        "west": {"uv": [0, 0, 2.5, 1.75], "texture": "#iron"},
-        "up": {"uv": [0, 0, 0.75, 2.5], "texture": "#steel"},
-        "down": {"uv": [0, 0, 0.75, 2.5], "texture": "#iron"}
-      }
-    },
-    {
-      "name": "Bench vise sliding jaw",
-      "from": [3.5, 14.5, 2.25],
-      "to": [4.25, 16.25, 4.75],
-      "faces": {
-        "north": {"uv": [0, 0, 0.75, 1.75], "texture": "#steel"},
-        "south": {"uv": [0, 0, 0.75, 1.75], "texture": "#steel"},
-        "east": {"uv": [0, 0, 2.5, 1.75], "texture": "#iron"},
-        "west": {"uv": [0, 0, 2.5, 1.75], "texture": "#iron"},
-        "up": {"uv": [0, 0, 0.75, 2.5], "texture": "#steel"},
-        "down": {"uv": [0, 0, 0.75, 2.5], "texture": "#iron"}
-      }
-    },
-    {
-      "name": "Bench vise screw",
-      "from": [3.75, 13.75, 3],
-      "to": [4.75, 14.75, 4],
-      "faces": {
-        "north": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "south": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "east": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "west": {"uv": [0, 0, 1, 1], "texture": "#brass"},
-        "up": {"uv": [0, 0, 1, 1], "texture": "#brass"}
-      }
-    },
-    {
-      "name": "Tray divider",
-      "from": [5.25, 14.5, 12.75],
-      "to": [5.75, 16.25, 15],
-      "faces": {
-        "north": {"uv": [1, 2, 1.5, 3.75], "texture": "#wood"},
-        "east": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
-        "west": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
-        "up": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"}
-      }
-    },
-    {
-      "name": "Tray divider",
-      "from": [8.25, 14.5, 12.75],
-      "to": [8.75, 16.25, 15],
-      "faces": {
-        "north": {"uv": [1, 2, 1.5, 3.75], "texture": "#wood"},
-        "east": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
-        "west": {"uv": [1, 2, 3.25, 3.75], "texture": "#wood"},
-        "up": {"uv": [1, 2, 1.5, 4.25], "texture": "#end"}
+        "north": {
+          "uv": [
+            1,
+            2,
+            1.5,
+            4.5
+          ],
+          "texture": "#wood"
+        },
+        "south": {
+          "uv": [
+            1,
+            2,
+            1.5,
+            4.5
+          ],
+          "texture": "#wood"
+        },
+        "east": {
+          "uv": [
+            1,
+            2,
+            1.5,
+            4.5
+          ],
+          "texture": "#wood"
+        },
+        "west": {
+          "uv": [
+            1,
+            2,
+            1.5,
+            4.5
+          ],
+          "texture": "#wood"
+        },
+        "up": {
+          "uv": [
+            1,
+            2,
+            1.5,
+            2.5
+          ],
+          "texture": "#end"
+        },
+        "down": {
+          "uv": [
+            1,
+            2,
+            1.5,
+            2.5
+          ],
+          "texture": "#end"
+        }
       }
     }
   ]

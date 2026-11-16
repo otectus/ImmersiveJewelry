@@ -1,4 +1,192 @@
-# Workstation rendering and Russian localization validation
+# Workstation validation
+
+## 1.2.2: Patchouli, Ponder, GeckoLib, playerAnimator
+
+Validated on 2026-11-15 on the 1.2.1 setup (Linux, Java 17, Forge 47.4.23, Diegesis 1.0.0-beta.10, Curios and Immersive
+Smithing 1.0.0 in the dev runtime unless noted) with Patchouli 1.20.1-85-FORGE, Ponder 1.0.91, Flywheel 1.0.5, GeckoLib
+4.8.4 and playerAnimator 1.0.2-rc1+1.20. Evidence is in `build/reports/libraries-1.2.2/`.
+
+**Passed**
+
+- `build`: **PASS**, 72 unit tests (61 before, plus `LibraryResourcesTest` 6, `PoseRulesTest` 2, `DemoHandsTest` 3), no
+  failures or skips; `build/libs/immersive-jewelry-1.2.2.jar`, whose `mods.toml` declares Patchouli and GeckoLib on both
+  sides and Ponder, Flywheel and playerAnimator on clients, with the ranges of `gradle.properties`; no test agent in the
+  jar. [Log](../build/reports/libraries-1.2.2/logs/build.log).
+- `runGameTestServer`: **56/56**, and **56/56** with `-PnoSmithing -PnoCurios` (the dedicated-server dist, with Ponder and
+  playerAnimator on the classpath but never loaded by common code). New: `PresentationGameTests` (one GeckoLib cache per
+  station; the worn-appearance snapshot keeps the look and drops maker, defects, history and foreign data; body-pose
+  rules on real stations, with no replay on first sight).
+  [Log](../build/reports/libraries-1.2.2/logs/runGameTestServer.log),
+  [without Smithing and Curios](../build/reports/libraries-1.2.2/logs/runGameTestServer-noSmithing-noCurios.log).
+- Resource checks: `tools/generate_resources.py`, `generate_textures.py`, `generate_sounds.py`, `generate_rigs.py`,
+  `generate_book.py` (every key in all five locales) and `generate_ponder.py` all up to date; `check_mod.py` reports only
+  the documented item sub-models.
+- `IJ_LIBRARIES_ONLY=1 runClient -PsmokeTest`, second run: **all 40 pass/fail checks passed**
+  ([result](../build/reports/libraries-1.2.2/smoketest-result-run2.json)): the three rigs and their clips are baked and
+  draw without failing; all 38 body clips load; all 33 lessons compile in Ponder; the book is registered, opens, and opens
+  entries with live cards (gems, design atlas, cuts, finishes, controls, blank routes); a lesson opens from a Watch call,
+  plays, and closing it returns to the book page; three more lessons play (round cut, halo atlas, antique finish); the
+  jeweler's body layer poses the local player while operating the bench and stops when the lease ends; help at the wheel
+  leaves the station and opens the book. Screenshots: `build/reports/libraries-1.2.2/screenshots/`. No error from the mod
+  or the libraries in the client log (only fresh-world config defaults and the dev narrator library).
+
+**Failed, then fixed**
+
+- First client run: `ponder_returns_to_book` failed. Ponder opens its screen through a transition, so the navigator saw
+  "no lesson on screen" on the tick after opening and dropped the return. It now waits until the lesson has appeared
+  (giving up after 60 ticks). The first run also showed the lessons' stations facing away from Ponder's camera; the
+  structures now face north and the demonstrating jeweler stands on the camera's side. Both fixed in the second run.
+  [Run 1 log](../build/reports/libraries-1.2.2/logs/runClient-libraries-run1.log),
+  [run 2 log](../build/reports/libraries-1.2.2/logs/runClient-libraries-run2.log).
+
+**Not run** (need people, a second machine or other mod stacks)
+
+- Two real clients on a dedicated server: remote body poses, worn-jewelry snapshots between players, watcher view,
+  handoff, disconnect during contact, and the help return notice with another player changing the work.
+- A dedicated `runServer` boot (still needs the user's `run/eula.txt`); the GameTest server covers the dedicated dist.
+- Curios' renderer hook drawn on a player, and the built-in slots' layer on a remote player (the client run had Curios,
+  so the built-in layer was inactive; the snapshot is covered by GameTests).
+- The JEI handbook key over a recipe, H over an inventory item, and the folio's "?" (same code path as the help call that
+  passed).
+- Every lesson watched to the end by eye (four were played and screenshotted; all 33 compile), Russian and Chinese book
+  layout at high GUI scale, narrator, high contrast, reduced motion, left-handed and slim-skin views of the poses, audible
+  sound, Embeddium/Oculus with shaders, Create with the same Ponder, frame-time profiling of idle workshops with rigs, and
+  first-person-body or emote mods sharing playerAnimator.
+
+## 1.2.1: Diegesis 1.0.0-beta.10
+
+Validated on 2026-11-15 with the setup of the 1.2.0 run below, except for Diegesis: 1.0.0-beta.10 (CurseForge file
+9624632, byte-identical to the supplied `diegesis-forge-1.20.1-1.0.0-beta.10.jar`, SHA-256 `2b7c9f5b…666bed`; source
+tag `v1.0.0-beta.10`, commit 727c177). Same commands as below, plus the four compile tasks on their own. The checks
+listed here ran while `mod_version` was still 1.2.0; after the bump to 1.2.1, on otherwise the same tree, `build`
+passed again (61 unit tests; `build/libs/immersive-jewelry-1.2.1.jar`, whose `mods.toml` says version 1.2.1 and
+Diegesis `[1.0.0-beta.10,1.0.0-beta.11)`) and `runGameTestServer` passed **53/53** with the mod loaded as 1.2.1.
+[Build log](../build/reports/diegesis-1.0.0-beta.10/logs/gradle-ImmersiveJewelry-build-20261115-184138.log),
+[GameTest log](../build/reports/diegesis-1.0.0-beta.10/logs/gradle-ImmersiveJewelry-runGameTestServer-20261115-184148.log).
+
+- **Upgrade:** the unchanged sources compiled against beta.10 in all four source sets: beta.10's public API only adds
+  to beta.9's, apart from the `NodeDefinition` record constructor, which the mod does not call.
+  [Log](../build/reports/diegesis-1.0.0-beta.10/logs/gradle-ImmersiveJewelry-compileJava-20261115-140314.log).
+- `build`: **PASS**, 61 unit tests, no failures or skips.
+  [Log](../build/reports/diegesis-1.0.0-beta.10/logs/gradle-ImmersiveJewelry-build-20261115-182438.log).
+- `runGameTestServer`: **53/53**, and **53/53** with `-PnoSmithing -PnoCurios`. New: `DiegesisGameTests` (the loaded
+  Diegesis is within the declared range and 1.0.0-beta.9 is not; both scenes parse with the library's strict codec, with
+  the expected `takes_items` nodes, a compact on-request drawer with a carry size, no blocks or entities cleared from
+  view and clicks after arrival; both stations keep server authority, no vanilla menu, no library slots, one operator
+  within reach and their block in place), and placement-preview parity at the bench (20 cases) and the wheel (5 cases):
+  the hint always agrees with the custody move.
+  [Log](../build/reports/diegesis-1.0.0-beta.10/logs/gradle-ImmersiveJewelry-runGameTestServer-20261115-182450.log),
+  [without Smithing and Curios](../build/reports/diegesis-1.0.0-beta.10/logs/gradle-ImmersiveJewelry-runGameTestServer-20261115-182515.log).
+- `runClient -PsmokeTest` (two runs, the window left alone): the first found that JEI takes no keys on a station's
+  screen (it reads keys only on screens it has GUI properties for), so its show-recipe key did nothing at a station;
+  the station's own key handler now asks JEI. The second run **passed all 106 checks**
+  ([result](../build/reports/diegesis-1.0.0-beta.10/smoketest-result-run2.json),
+  [log](../build/reports/diegesis-1.0.0-beta.10/logs/client-latest-20261115-1819.log)),
+  among them, at the bench: a tray stone is the stack under the cursor; JEI lays nothing over the station; R over it
+  opens JEI's Gem Cutting page over the station with the station and lease kept; a key pressed under that page does not
+  reach the station; Escape returns to the station; a stone taken from the inventory through Diegesis
+  (`StationView.takeFromInventory`) lights up the tray cell it would go to; R with a stone in the tweezers turns the
+  stone (over the clamped frame, where it could also look up); a notch of the mouse wheel through Diegesis' scroll path
+  turns it back. Frame interval while focused: median 8.4 ms, p95 13.6 ms, p99 19.1 ms (vsync off).
+- Generators, `check_mod.py` and `git diff --check`: as below, unchanged.
+
+Evidence: [JEI page over the bench](../run/validation/diegesis-1.0.0-beta.10/smoketest_bench_jei_child.png),
+[station with JEI loaded](../run/validation/diegesis-1.0.0-beta.10/smoketest_bench_focus.png),
+[placement hint](../run/validation/diegesis-1.0.0-beta.10/smoketest_bench_place_hint.png),
+[filtered drawer](../run/validation/diegesis-1.0.0-beta.10/smoketest_bench_drawer.png).
+
+Not tested: the carry sizes were lowered (wheel 1.5, bench 1 scene pixel) after the client runs, and a stack carried
+far enough back to be drawn in the scene was not seen in any run; the agent injects hover events instead of moving
+the real pointer; a client without JEI, and EMI or REI; launching with beta.9 installed (the GameTest asserts the
+range refuses it; Forge's refusal screen was not opened); and what the 1.2.0 run below lists as not tested.
+
+## 1.2.0: hands-on workstations
+
+Validated on 2026-11-14: Minecraft 1.20.1, Forge 47.4.23, Java 17.0.20, Diegesis 1.0.0-beta.9 (CurseForge file 9601051),
+JEI 15.20.0.135, Curios 5.14.1, Immersive Smithing 1.0.0, Jade (smoke-test runtime only). Intel i7-13700HX; the client
+ran on Mesa Intel UHD Graphics (ADL-S GT1) under Hyprland 0.57.2, 1920x1200 display. Checkout `main` at `11a6a65` plus
+the uncommitted 1.2.0 work. Use `Q=/home/otectus/Projects/.mcmod-tools/gradlew-quiet.sh` and
+`R=/home/otectus/Projects/ImmersiveJewelry`.
+
+```sh
+"$Q" "$R" build compileGameTestJava compileSmokeTestJava
+"$Q" "$R" runGameTestServer
+"$Q" "$R" runGameTestServer -PnoSmithing -PnoCurios
+"$Q" "$R" runClient -PsmokeTest
+python3 tools/generate_resources.py --check
+python3 tools/generate_textures.py --check
+python3 tools/generate_sounds.py --check
+python3 /home/otectus/Projects/.mcmod-tools/check_mod.py "$R"
+git diff --check
+```
+
+Results:
+
+- `build compileGameTestJava compileSmokeTestJava`: **PASS**, 51 unit tests (simulations, leases and pacing,
+  resources, data, quality, migration), no failures or skips.
+  [Log](../build/reports/workstation-1.2.0/logs/gradle-ImmersiveJewelry-build-20261114-210408.log).
+- `runGameTestServer`: **48/48 required tests passed** (Curios and Immersive Smithing loaded): wheel and bench end to
+  end through the real lease and input path, conservation, persistence and resume, packing and unpacking, every rework,
+  breaking a station mid-work, damage ending a lease, stale or foreign input, legacy escrow migration, events and gates
+  (the unit tests cover pacing, duplicate and overlapping batches and the bounded backlog).
+  [Log](../build/reports/workstation-1.2.0/logs/gradle-ImmersiveJewelry-runGameTestServer-20261114-210633.log).
+  Without Smithing and Curios (built-in slots, crafted blanks): **48/48**.
+  [Log](../build/reports/workstation-1.2.0/logs/gradle-ImmersiveJewelry-runGameTestServer-20261114-210705.log).
+- Generators: resources **228/228**, textures **107/107**, sounds **35/35** current. `check_mod.py`: **0 errors,
+  0 warnings**, 26 notes (property-selected item sub-models, see `MODMAP.md`). `git diff --check`: clean.
+- **Server budget (handoff 14.3)**, `PerformanceGameTests`: eight operators grinding eight wheels at the real input pace
+  (2.5 steps a tick, batches of five) cost **0.030 ms per server tick** (0.029 ms without Smithing/Curios) against a
+  1 ms budget; every paced sample was admitted. A worked wheel's update tag is **1,502 bytes** uncompressed, sent at
+  most ten times a second to each watching player (about 15 KB/s before Minecraft's packet compression); one input batch
+  is **64 bytes** (about 640 B/s per operator).
+
+### Real client (`runClient -PsmokeTest`)
+
+The agent drives the real client and integrated server: blocks are used through `MultiPlayerGameMode#useItemOn`, keys
+go through `KeyboardHandler#keyPress`, pointer events are handed to the behaviour Diegesis holds. It logs the state of
+hand, focus, leases and both stations at every phase.
+
+- **Lapidary Wheel, complete** (two runs): walk-up mount and appraisal, focus and lease, a round cut planned at the
+  specimen rack, a pointer stroke on the handle that grinds, keyboard grinding to 45 %, leaving mid-cut (lease ended,
+  work kept on the stone, tools lifted), stepping back up and resuming, grinding every face into its window (about
+  60 s at the sandstone lap for a diamond), the loupe and Escape closing only the loupe, the release lever, taking the
+  cut stone. [Log](../build/reports/workstation-1.2.0/logs/gradle-ImmersiveJewelry-runClient-20261114-205336.log).
+- **Jeweler's Bench, up to finishing:** walk-up custody (blank to the clamp, pliers to the dock, the cut stone to the
+  tray, compound to the supplies), focus, the folio choosing the solitaire design, the tweezers seating the stone, the
+  framing at 1024x768, 1600x600 and GUI scale 4 while focused, the pliers closing every prong by keyboard (about 60 s),
+  and confirming into the finishing stage.
+- **Interrupted:** both full runs were ended by the game window being closed from outside (`Stopping!` with no agent
+  `finish`), at 20:47:16 and 20:58:33, while the user was working at the desktop; no result file was written by those
+  runs. The finishing by hand, taking the ring, the accessibility pass (no zoom, instant transitions, numeric guide,
+  high contrast, larger targets, hands off, keyboard planning), Jade, the handbook, JEI, the item sheets and the
+  jewelry-slots screen were therefore **not reached in a client run**. Their server paths are covered by the GameTests
+  above. The agent now writes its result after every phase so an interrupted run still leaves its checks.
+- Agent fixes found by these runs (test code only): items handed to the player no longer overwrite the main hand;
+  Escape is only pressed while a station is focused (a stray Escape opened the pause menu and paused the integrated
+  server); key pacing restarts with every phase; vsync is off for the agent, because a window on a hidden workspace had
+  its vsync'd frames throttled to about two a second (the stations advance with frames: at most 12 steps a frame).
+- Product fixes found by these runs: the station hint caption was drawn under the inventory drawer's tab at bottom
+  centre (the tab now sits at 86 % of the bottom edge in both scenes).
+
+Selected evidence: [wheel focus](../run/validation/1.2.0/smoketest_wheel_focus.png),
+[handle contact](../run/validation/1.2.0/smoketest_wheel_contact.png),
+[loupe](../run/validation/1.2.0/smoketest_wheel_loupe.png),
+[cut stone](../run/validation/1.2.0/smoketest_wheel_finished.png),
+[bench focus](../run/validation/1.2.0/smoketest_bench_focus.png),
+[tweezers](../run/validation/1.2.0/smoketest_bench_tweezers.png),
+[4:3](../run/validation/1.2.0/smoketest_bench_4x3.png), [1600x600](../run/validation/1.2.0/smoketest_bench_wide.png),
+[GUI scale 4](../run/validation/1.2.0/smoketest_bench_gui4.png),
+[prong work](../run/validation/1.2.0/smoketest_bench_prong_work.png),
+[prongs closed](../run/validation/1.2.0/smoketest_bench_prongs_closed.png).
+
+### Not tested
+
+Two real clients at one station (an observer and a refused second operator), a dedicated server with a remote
+client, Embeddium/Oculus with and without shaders, audible playback, and the client frame-time budget at 1080p (the
+agent's per-frame timings are written only when a run completes). Release with the interrupted client phases re-run:
+`"$Q" "$R" runClient -PsmokeTest` with the window left alone, then `run/smoketest/smoketest-result.json`.
+
+## 1.1.0: rendering and Russian localization
 
 Validated on 2026-10-05, Minecraft 1.20.1, Forge 47.4.23, Java 17.0.19. Checkout: `main`,
 `c6294f0`, origin `https://github.com/otectus/ImmersiveJewelry.git`. Existing uncommitted progression/API,

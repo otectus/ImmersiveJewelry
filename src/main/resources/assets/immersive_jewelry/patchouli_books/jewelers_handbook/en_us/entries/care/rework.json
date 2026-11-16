@@ -1,0 +1,39 @@
+{
+  "name": "book.immersive_jewelry.entry.care.rework",
+  "icon": "immersive_jewelry:jewelers_pliers",
+  "category": "immersive_jewelry:care",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.care.rework.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.care.rework.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.care.rework.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.care.rework.3"
+    },
+    {
+      "type": "immersive_jewelry:care_card"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "retighten_and_repair",
+      "entry": "immersive_jewelry:care/rework",
+      "text": "book.immersive_jewelry.care.rework.watch.4"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "remove_and_reuse",
+      "entry": "immersive_jewelry:care/rework",
+      "text": "book.immersive_jewelry.care.rework.watch.5"
+    }
+  ]
+}

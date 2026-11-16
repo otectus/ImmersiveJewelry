@@ -88,7 +88,7 @@ public final class JewelerTrades {
     private static MerchantOffer rough(RandomSource random, GemRarity rarity, int min, int max, int uses, int xp) {
         GemDefinition gem = pick(random, rarity);
         if (gem == null) return null;
-        GemData stone = com.otectus.immersivejewelry.minigame.cutting.CuttingService.appraise(gem, random);
+        GemData stone = com.otectus.immersivejewelry.workstation.CutPlanner.appraise(gem, random);
         return offer(new ItemStack(Items.EMERALD, Mth.nextInt(random, min, max)), RoughGemItem.create(stone), uses, xp);
     }
 

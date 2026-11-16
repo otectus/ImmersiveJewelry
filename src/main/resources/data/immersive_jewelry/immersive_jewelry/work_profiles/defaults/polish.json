@@ -1,0 +1,6 @@
+{
+  "$comment": "Default tuning for polishing (cloth and compound). The built-in numbers, repeated: 7 seconds of steady work for the whole surface. Finishes may name their own profile with \"work_profile\".",
+  "schema_version": 1,
+  "interaction": "polish",
+  "target_active_seconds": 7
+}

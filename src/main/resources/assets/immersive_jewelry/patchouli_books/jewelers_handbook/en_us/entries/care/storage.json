@@ -1,0 +1,16 @@
+{
+  "name": "book.immersive_jewelry.entry.care.storage",
+  "icon": "minecraft:chest",
+  "category": "immersive_jewelry:care",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.care.storage.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.care.storage.1"
+    }
+  ]
+}

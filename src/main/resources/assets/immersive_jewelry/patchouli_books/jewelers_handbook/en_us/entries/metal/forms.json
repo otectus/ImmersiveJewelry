@@ -1,0 +1,20 @@
+{
+  "name": "book.immersive_jewelry.entry.metal.forms",
+  "icon": "immersive_jewelry:amulet_frame",
+  "category": "immersive_jewelry:metal",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.metal.forms.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.metal.forms.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.metal.forms.2"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "book.immersive_jewelry.entry.metal.metals",
+  "icon": "minecraft:gold_ingot",
+  "category": "immersive_jewelry:metal",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.metal.metals.0"
+    },
+    {
+      "type": "immersive_jewelry:metal_card",
+      "show": "metals"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.metal.metals.1"
+    }
+  ]
+}

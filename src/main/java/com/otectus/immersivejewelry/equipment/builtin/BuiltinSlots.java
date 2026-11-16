@@ -67,7 +67,10 @@ public final class BuiltinSlots extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        if (owner != null && !owner.level().isClientSide) JewelryWearers.markDirty(owner);
+        if (owner != null && !owner.level().isClientSide) {
+            JewelryWearers.markDirty(owner);
+            WornAppearanceSync.markDirty(owner);
+        }
     }
 
     /** Puts the held piece into the first free matching slot. */

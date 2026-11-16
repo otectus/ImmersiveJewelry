@@ -17,6 +17,9 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> WHEEL_FACET = register("block.lapidary_wheel.facet");
     public static final RegistryObject<SoundEvent> WHEEL_FINISH = register("block.lapidary_wheel.finish");
     public static final RegistryObject<SoundEvent> WHEEL_LAP = register("block.lapidary_wheel.lap");
+    /** Loops while the wheel runs (the operator's scene). */
+    public static final RegistryObject<SoundEvent> WHEEL_HUM = register("block.lapidary_wheel.hum");
+    public static final RegistryObject<SoundEvent> WHEEL_DIP = register("block.lapidary_wheel.dip");
 
     public static final RegistryObject<SoundEvent> BENCH_PLACE = register("block.jewelers_bench.place");
     public static final RegistryObject<SoundEvent> BENCH_PRONG = register("block.jewelers_bench.prong");
@@ -25,6 +28,11 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> BENCH_POLISH = register("block.jewelers_bench.polish");
     public static final RegistryObject<SoundEvent> BENCH_FINISH = register("block.jewelers_bench.finish");
     public static final RegistryObject<SoundEvent> BENCH_REPAIR = register("block.jewelers_bench.repair");
+    /** Loops while the tool touches the piece (the operator's scene). */
+    public static final RegistryObject<SoundEvent> BENCH_CLOTH = register("block.jewelers_bench.cloth");
+    public static final RegistryObject<SoundEvent> BENCH_BURNISH = register("block.jewelers_bench.burnish");
+    public static final RegistryObject<SoundEvent> BENCH_BRUSH = register("block.jewelers_bench.brush");
+    public static final RegistryObject<SoundEvent> BENCH_SQUEEZE = register("block.jewelers_bench.squeeze");
 
     public static final RegistryObject<SoundEvent> JEWELRY_EQUIP = register("item.jewelry.equip");
     public static final RegistryObject<SoundEvent> SKETCH_LEARN = register("item.design_sketch.learn");

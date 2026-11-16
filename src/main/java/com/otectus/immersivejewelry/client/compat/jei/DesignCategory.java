@@ -91,4 +91,10 @@ public class DesignCategory extends JeiCategory<JewelryDesignRecipe> {
         }
         if (design.sketch()) g.drawString(font, VanillaGui.clipped(font, Component.translatable("jei.immersive_jewelry.design_sketch"), 112), 24, 53, VanillaGui.LABEL, false);
     }
+
+    @Override
+    protected com.otectus.immersivejewelry.client.guide.HelpTopics.Topic helpTopic(JewelryDesignRecipe recipe) {
+        var atlas = com.otectus.immersivejewelry.client.guide.Lessons.atlas(recipe.getId());
+        return topic("designs/atlas", atlas != null ? atlas : com.otectus.immersivejewelry.client.guide.Lessons.FOLIO_AND_SKETCH);
+    }
 }

@@ -2,24 +2,14 @@ package com.otectus.immersivejewelry.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.otectus.immersivejewelry.client.screen.BenchScreen;
-import com.otectus.immersivejewelry.client.screen.CutSelectScreen;
-import com.otectus.immersivejewelry.client.screen.CuttingScreen;
-import com.otectus.immersivejewelry.client.screen.MinigameScreen;
-import com.otectus.immersivejewelry.client.screen.SettingScreen;
 import com.otectus.immersivejewelry.data.DefinitionKind;
 import com.otectus.immersivejewelry.data.JewelryDefinitions;
-import com.otectus.immersivejewelry.network.packet.CloseSessionPacket;
-import com.otectus.immersivejewelry.network.packet.CutResultPacket;
-import com.otectus.immersivejewelry.network.packet.CutStartPacket;
-import com.otectus.immersivejewelry.network.packet.OpenBenchPacket;
-import com.otectus.immersivejewelry.network.packet.OpenCutSelectPacket;
-import com.otectus.immersivejewelry.network.packet.SettingResultPacket;
-import com.otectus.immersivejewelry.network.packet.SettingStartPacket;
 import com.otectus.immersivejewelry.network.packet.StationEffectPacket;
 import com.otectus.immersivejewelry.network.packet.StationNoticePacket;
 import com.otectus.immersivejewelry.network.packet.SyncDefinitionsPacket;
-import net.minecraft.client.Minecraft;
+import com.otectus.immersivejewelry.network.packet.WorkLeasePacket;
+import com.otectus.immersivejewelry.network.packet.KnownDesignsPacket;
+import com.otectus.immersivejewelry.client.workstation.WorkstationClient;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -51,35 +41,12 @@ public final class ClientPacketHandler {
         JewelryColors.clearSamples();
     }
 
-    public static void openCutSelect(OpenCutSelectPacket packet) {
-        Minecraft.getInstance().setScreen(new CutSelectScreen(packet));
+    public static void knownDesigns(KnownDesignsPacket packet) {
+        WorkstationClient.onKnownDesigns(packet.learned(), packet.requireSketches());
     }
 
-    public static void cutStart(CutStartPacket packet) {
-        Minecraft.getInstance().setScreen(new CuttingScreen(packet));
-    }
-
-    public static void cutResult(CutResultPacket packet) {
-        if (Minecraft.getInstance().screen instanceof CuttingScreen screen && screen.sessionId() == packet.sessionId()) screen.onResult(packet);
-    }
-
-    public static void openBench(OpenBenchPacket packet) {
-        if (Minecraft.getInstance().screen instanceof BenchScreen screen && screen.pos().equals(packet.pos())) screen.update(packet);
-        else Minecraft.getInstance().setScreen(new BenchScreen(packet));
-    }
-
-    public static void settingStart(SettingStartPacket packet) {
-        Minecraft.getInstance().setScreen(new SettingScreen(packet));
-    }
-
-    public static void settingResult(SettingResultPacket packet) {
-        if (Minecraft.getInstance().screen instanceof SettingScreen screen && screen.sessionId() == packet.sessionId()) screen.onResult(packet);
-    }
-
-    public static void closeSession(CloseSessionPacket packet) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.screen instanceof MinigameScreen screen && screen.sessionId() == packet.sessionId()) screen.closeByServer();
-        if (mc.player != null && !packet.reason().getString().isEmpty()) StationNotices.show(packet.reason(), true);
+    public static void workLease(WorkLeasePacket packet) {
+        WorkstationClient.onLease(packet.pos(), packet.token());
     }
 
     public static void stationNotice(StationNoticePacket packet) {

@@ -6,10 +6,15 @@ import com.otectus.immersivejewelry.block.StationBlock;
 import com.otectus.immersivejewelry.blockentity.JewelersBenchBlockEntity;
 import com.otectus.immersivejewelry.blockentity.LapidaryWheelBlockEntity;
 import com.otectus.immersivejewelry.client.JewelryColors;
-import com.otectus.immersivejewelry.client.render.LapidaryWheelRenderer;
 import com.otectus.immersivejewelry.data.JewelryDefinitions;
 import com.otectus.immersivejewelry.item.CutGemItem;
+import com.otectus.immersivejewelry.item.RoughGemItem;
+import com.otectus.immersivejewelry.jewelry.JewelryFactory;
 import com.otectus.immersivejewelry.registry.ModBlocks;
+import com.otectus.immersivejewelry.registry.ModItems;
+import com.otectus.immersivejewelry.workstation.BenchOperations;
+import com.otectus.immersivejewelry.workstation.WheelOperations;
+import com.otectus.immersivejewelry.api.gem.GemData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.renderer.RenderType;
@@ -33,14 +38,15 @@ import java.io.IOException;
 import com.google.gson.JsonParser;
 import com.google.gson.GsonBuilder;
 
-/** Test-only orientation/state/camera matrix and resource-pack reload check. Screenshots are evidence for review,
- * not an automated claim that every pixel is free of flicker. Enabled with IJ_STATION_VISUALS=1. */
+/** Test-only orientation/state/camera matrix (empty, loaded, worked: a planned cut on the wheel, a design with a seated
+ * stone on the bench) and resource-pack reload check of the station models. Screenshots are evidence for review, not an
+ * automated claim that every pixel is free of flicker. Enabled with IJ_STATION_VISUALS=1. */
 final class WorkstationVisualChecks {
     private static final BlockPos BASE = new BlockPos(0, -60, 0);
     private static int tick;
     private static CompletableFuture<Void> reload;
     private static List<String> previousPacks;
-    private static Object previousDisc;
+    private static Object previousWheel;
     private static net.minecraftforge.client.ChunkRenderTypeSet previousLayers;
 
     static void checkTints(Map<String, Object> checks) {
@@ -90,8 +96,9 @@ final class WorkstationVisualChecks {
                 var wheel = (LapidaryWheelBlockEntity) mc.level.getBlockEntity(BASE.offset(-1, 0, 0));
                 var bench = (JewelersBenchBlockEntity) mc.level.getBlockEntity(BASE.offset(1, 0, 0));
                 checks.put("station_matrix_" + scene + "_synced", wheel != null && bench != null
-                        && wheel.hasStone() == occupied && bench.hasWorkpiece() == occupied
+                        && wheel.hasStone() == occupied && !bench.clamp().isEmpty() == occupied
                         && wheel.isWorking() == working && bench.isWorking() == working
+                        && wheel.work().isPresent() == working && (bench.work() != null) == working
                         && wheel.getBlockState().getValue(StationBlock.FACING) == Direction.from2DDataValue(scene / 3));
             }
             tick++;
@@ -99,9 +106,8 @@ final class WorkstationVisualChecks {
         }
         if (tick == 1200) {
             prepareRenderPack(mc);
-            previousDisc = mc.getModelManager().getModel(LapidaryWheelRenderer.DISC);
-            previousLayers = mc.getModelManager().getModel(LapidaryWheelRenderer.DISC).getRenderTypes(
-                    ModBlocks.LAPIDARY_WHEEL.get().defaultBlockState(), RandomSource.create(42), ModelData.EMPTY);
+            previousWheel = wheelModel(mc);
+            previousLayers = wheelModel(mc).getRenderTypes(ModBlocks.LAPIDARY_WHEEL.get().defaultBlockState(), RandomSource.create(42), ModelData.EMPTY);
             previousPacks = List.copyOf(mc.getResourcePackRepository().getSelectedIds());
             mc.getResourcePackRepository().reload();
             List<String> selected = new ArrayList<>(previousPacks);
@@ -111,9 +117,9 @@ final class WorkstationVisualChecks {
             reload = mc.reloadResourcePacks();
             tick++;
         } else if (tick == 1201 && reload.isDone() && mc.getOverlay() == null) {
-            var disc = mc.getModelManager().getModel(LapidaryWheelRenderer.DISC);
-            checks.put("resource_reload_replaces_disc", disc != previousDisc && !reload.isCompletedExceptionally());
-            checks.put("resource_pack_disc_layer", disc.getRenderTypes(ModBlocks.LAPIDARY_WHEEL.get().defaultBlockState(),
+            var wheelModel = wheelModel(mc);
+            checks.put("resource_reload_replaces_wheel_model", wheelModel != previousWheel && !reload.isCompletedExceptionally());
+            checks.put("resource_pack_wheel_layer", wheelModel.getRenderTypes(ModBlocks.LAPIDARY_WHEEL.get().defaultBlockState(),
                     RandomSource.create(42), ModelData.EMPTY).contains(RenderType.cutoutMipped()));
             tick++;
         } else if (tick >= 1202 && tick < 1240) {
@@ -124,7 +130,7 @@ final class WorkstationVisualChecks {
             reload = mc.reloadResourcePacks();
             tick++;
         } else if (tick == 1241 && reload.isDone() && mc.getOverlay() == null) {
-            checks.put("resource_pack_restored", !reload.isCompletedExceptionally() && mc.getModelManager().getModel(LapidaryWheelRenderer.DISC)
+            checks.put("resource_pack_restored", !reload.isCompletedExceptionally() && wheelModel(mc)
                     .getRenderTypes(ModBlocks.LAPIDARY_WHEEL.get().defaultBlockState(), RandomSource.create(42), ModelData.EMPTY).asList().equals(previousLayers.asList()));
             checkTints(checks);
             shot(mc, "station_resource_pack_restored");
@@ -168,8 +174,19 @@ final class WorkstationVisualChecks {
             var defs = JewelryDefinitions.server();
             ItemStack jewelry = ClientSmokeTest.piece(defs, "ring", "ruby", "brilliant", new ResourceLocation("minecraft", "gold"), "polished", .9F);
             ItemStack stone = CutGemItem.create(JewelryData.get(jewelry).orElseThrow().principal());
-            if (scene % 3 != 0) { wheel.setStone(stone); bench.setWorkpiece(jewelry); }
-            if (scene % 3 == 2) { wheel.lock(player.getUUID()); bench.beginSession(player.getUUID(), List.of(), stone); }
+            if (scene % 3 != 0) {
+                wheel.setStone(RoughGemItem.create(GemData.rough(ImmersiveJewelry.id("ruby"), 1F, .8F, .1F)));
+                bench.setClamp(JewelryFactory.blank(ModItems.RING_BLANK.get(), JewelryFactory.metal(defs, new ResourceLocation("minecraft", "gold")), .85F));
+                bench.setTray(0, stone);
+            }
+            if (scene % 3 == 2) {
+                // Worked: a planned cut, a chosen design with the stone resting in its socket, an operator at each.
+                WheelOperations.planCut(player, wheel, ImmersiveJewelry.id("round"), false);
+                BenchOperations.selectDesign(player, bench, ImmersiveJewelry.id("designs/solitaire_ring"));
+                BenchOperations.seat(player, bench, 0, 0, 0F, 0F, 0F);
+                wheel.setOperator(player.getUUID(), player.getGameProfile().getName());
+                bench.setOperator(player.getUUID(), player.getGameProfile().getName());
+            }
             player.teleportTo(level, .5, BASE.getY() + 1, 5.5, 180, 24);
         });
     }
@@ -183,13 +200,13 @@ final class WorkstationVisualChecks {
         Path models = root.resolve("assets/immersive_jewelry/models/block");
         Files.createDirectories(models);
         Files.writeString(root.resolve("pack.mcmeta"), "{\"pack\":{\"pack_format\":15,\"description\":\"Test-only workstation rendering overrides\"}}");
-        for (String name : List.of("lapidary_wheel_disc", "jewelers_bench")) {
+        for (String name : List.of("lapidary_wheel", "jewelers_bench")) {
             try (var input = mc.getResourceManager().getResource(ImmersiveJewelry.id("models/block/" + name + ".json"))
                     .orElseThrow(() -> new IOException("Missing model " + name)).open()) {
                 var model = JsonParser.parseString(new String(input.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
-                if (name.equals("lapidary_wheel_disc")) {
+                if (name.equals("lapidary_wheel")) {
                     model.addProperty("render_type", "minecraft:cutout_mipped");
-                    model.getAsJsonObject("textures").addProperty("lap", "minecraft:block/oak_leaves");
+                    model.getAsJsonObject("textures").addProperty("copper", "minecraft:block/oak_leaves");
                 } else {
                     model.getAsJsonObject("textures").addProperty("wood", "minecraft:block/quartz_block_side");
                     model.getAsJsonObject("textures").addProperty("top", "minecraft:block/quartz_block_side");
@@ -197,6 +214,10 @@ final class WorkstationVisualChecks {
                 Files.writeString(models.resolve(name + ".json"), new GsonBuilder().setPrettyPrinting().create().toJson(model));
             }
         }
+    }
+
+    private static net.minecraft.client.resources.model.BakedModel wheelModel(Minecraft mc) {
+        return mc.getModelManager().getBlockModelShaper().getBlockModel(ModBlocks.LAPIDARY_WHEEL.get().defaultBlockState());
     }
 
     private static void shot(Minecraft mc, String name) {

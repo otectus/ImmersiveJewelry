@@ -8,7 +8,7 @@ import com.otectus.immersivejewelry.data.form.FormDefinition;
 import com.otectus.immersivejewelry.data.gem.GemDefinition;
 import com.otectus.immersivejewelry.data.trait.TraitDefinition;
 import com.otectus.immersivejewelry.jewelry.JewelryFactory;
-import com.otectus.immersivejewelry.minigame.setting.BenchService;
+import com.otectus.immersivejewelry.workstation.BenchPlanner;
 import com.otectus.immersivejewelry.recipe.JewelryDesignRecipe;
 import com.otectus.immersivejewelry.registry.ModRecipeTypes;
 import com.otectus.immersivejewelry.util.Inventories;
@@ -55,17 +55,17 @@ public final class DataGameTests {
         JewelryDefinitions d = JewelryDefinitions.server();
         h.assertTrue(Inventories.isEmpty(Ingredient.of(ItemTags.create(new ResourceLocation("forge", "nuggets/no_such_metal")))), "An empty tag has no items");
         h.assertTrue(d.gemForSource(new ItemStack(Items.BARRIER)) == null, "A barrier is not the rough stone of a gem whose tag is empty");
-        Ingredient copper = BenchService.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("minecraft", "copper")));
+        Ingredient copper = BenchPlanner.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("minecraft", "copper")));
         h.assertTrue(copper != null && copper.test(new ItemStack(Items.COPPER_INGOT)), "Copper frames repair with copper ingots");
-        Ingredient netherite = BenchService.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("minecraft", "netherite")));
+        Ingredient netherite = BenchPlanner.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("minecraft", "netherite")));
         h.assertTrue(netherite != null && netherite.test(new ItemStack(Items.NETHERITE_SCRAP)), "Netherite frames repair with scrap, as defined");
         // An undefined metal falls back from its nugget tag (empty: vanilla has no netherite nuggets) to its ingot tag.
-        Ingredient fallback = BenchService.repairIngredient(d, MetalRef.of(new ResourceLocation("gametest", "netherite")));
+        Ingredient fallback = BenchPlanner.repairIngredient(d, MetalRef.of(new ResourceLocation("gametest", "netherite")));
         h.assertTrue(fallback != null && fallback.test(new ItemStack(Items.NETHERITE_INGOT)), "An empty nugget tag falls back to ingots");
         // Silver's nuggets and ingots come from other mods; without them there is no repair, rather than a barrier.
-        h.assertTrue(BenchService.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("forge", "silver"))) == null
+        h.assertTrue(BenchPlanner.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("forge", "silver"))) == null
                 || !ForgeRegistries.ITEMS.tags().getTag(ItemTags.create(new ResourceLocation("forge", "ingots/silver"))).isEmpty(), "No silver, no repair");
-        Ingredient gold = BenchService.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("minecraft", "gold")));
+        Ingredient gold = BenchPlanner.repairIngredient(d, JewelryFactory.metal(d, new ResourceLocation("minecraft", "gold")));
         h.assertTrue(gold != null && gold.test(new ItemStack(Items.GOLD_NUGGET)), "Gold frames repair with gold nuggets");
         h.assertTrue(Inventories.display(Ingredient.of(ItemTags.create(new ResourceLocation("forge", "gems/no_such_gem"))), 1).isEmpty(),
                 "An empty tag displays as nothing, not a barrier");

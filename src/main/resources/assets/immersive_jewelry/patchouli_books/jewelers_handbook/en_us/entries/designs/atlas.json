@@ -1,0 +1,56 @@
+{
+  "name": "book.immersive_jewelry.entry.designs.atlas",
+  "icon": "immersive_jewelry:amulet",
+  "category": "immersive_jewelry:designs",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.atlas.0"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/solitaire_ring"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/bezel_ring"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/trilogy_ring"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/pendant_amulet"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/locket_amulet"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/halo_amulet"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/cuff_bracelet"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/link_bracelet"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/simple_circlet"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "immersive_jewelry:designs/diadem"
+    },
+    {
+      "type": "immersive_jewelry:design_card",
+      "design": "others"
+    }
+  ]
+}

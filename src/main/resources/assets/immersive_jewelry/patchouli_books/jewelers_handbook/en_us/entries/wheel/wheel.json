@@ -1,0 +1,26 @@
+{
+  "name": "handbook.immersive_jewelry.wheel.title",
+  "icon": "immersive_jewelry:lapidary_wheel",
+  "category": "immersive_jewelry:wheel",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.wheel.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.wheel.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.wheel.2"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "round_cut",
+      "entry": "immersive_jewelry:wheel/wheel",
+      "text": "book.immersive_jewelry.wheel.wheel.watch.0"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "components": [
+    {
+      "type": "patchouli:custom",
+      "class": "com.otectus.immersivejewelry.client.guide.WatchButton",
+      "x": 0,
+      "y": 0,
+      "lesson": "#lesson",
+      "entry": "#entry"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "#text",
+      "x": 0,
+      "y": 26,
+      "max_width": 116
+    }
+  ]
+}

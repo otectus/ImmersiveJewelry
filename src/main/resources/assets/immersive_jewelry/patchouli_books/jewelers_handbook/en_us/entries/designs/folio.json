@@ -1,0 +1,26 @@
+{
+  "name": "book.immersive_jewelry.entry.designs.folio",
+  "icon": "immersive_jewelry:jewelers_bench",
+  "category": "immersive_jewelry:designs",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.folio.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.folio.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.folio.2"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "folio_and_sketch",
+      "entry": "immersive_jewelry:designs/folio",
+      "text": "book.immersive_jewelry.designs.folio.watch.3"
+    }
+  ]
+}

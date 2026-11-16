@@ -1,0 +1,20 @@
+{
+  "name": "book.immersive_jewelry.entry.workshop.integrations",
+  "icon": "minecraft:spyglass",
+  "category": "immersive_jewelry:workshop",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.workshop.integrations.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.workshop.integrations.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.workshop.integrations.2"
+    }
+  ]
+}

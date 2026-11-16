@@ -42,6 +42,7 @@ import java.util.List;
 /** Client-only mod-bus registration. Reached only through DistExecutor, so it never loads on a server. */
 public final class ClientSetup {
     public static final ResourceLocation CUT_PROPERTY = ImmersiveJewelry.id("cut");
+    public static final ResourceLocation FORM_PROPERTY = ImmersiveJewelry.id("form");
     public static final KeyMapping OPEN_SLOTS = new KeyMapping("key.immersive_jewelry.jewelry_slots", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J, "key.categories.immersive_jewelry");
 
@@ -51,10 +52,12 @@ public final class ClientSetup {
         modBus.addListener(StationNotices::register);
         modBus.addListener(JewelryColors::register);
         modBus.addListener(ClientSetup::onParticles);
-        modBus.addListener(ClientSetup::onRegisterModels);
         modBus.addListener(ClientSetup::onModelsReloaded);
         modBus.addListener(ClientSetup::onKeys);
         MinecraftForge.EVENT_BUS.register(ClientEvents.class);
+        com.otectus.immersivejewelry.client.workstation.WorkstationClient.init(modBus);
+        com.otectus.immersivejewelry.client.presentation.Presentation.init(modBus);
+        com.otectus.immersivejewelry.client.guide.Handbook.init();
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
@@ -66,11 +69,14 @@ public final class ClientSetup {
             return level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.JEWELRY_DESIGN.get()).stream()
                     .filter(JewelryDesignRecipe::sketch).map(JewelryDesignRecipe::getId).sorted().toList();
         };
+        // The demonstrations: the plugin, the handbook's Watch buttons and Ponder's scene time (client/compat/ponder only).
+        event.enqueueWork(com.otectus.immersivejewelry.client.compat.ponder.JewelryPonder::init);
         event.enqueueWork(() -> {
             for (Item item : new Item[]{ModItems.RING.get(), ModItems.AMULET.get(), ModItems.BRACELET.get(), ModItems.CIRCLET.get()}) {
                 ItemProperties.register(item, CUT_PROPERTY, (stack, level, entity, seed) -> jewelryCut(stack));
             }
             ItemProperties.register(ModItems.CUT_GEM.get(), CUT_PROPERTY, (stack, level, entity, seed) -> stoneCut(stack));
+            ItemProperties.register(ModItems.UNFINISHED_JEWELRY.get(), FORM_PROPERTY, (stack, level, entity, seed) -> carrierForm(stack));
             MenuScreens.register(ModMenus.JEWELRY_SLOTS.get(), JewelrySlotsScreen::new);
         });
     }
@@ -80,6 +86,21 @@ public final class ClientSetup {
         JewelryData data = JewelryData.get(stack).orElse(null);
         if (data == null || data.principal() == null) return 0F;
         return cutIndex(data.principal().cut());
+    }
+
+    /** Unfinished jewelry draws its frame's form: ring 0.1, amulet 0.2, bracelet 0.3, circlet 0.4. */
+    private static float carrierForm(ItemStack stack) {
+        return com.otectus.immersivejewelry.item.UnfinishedJewelryItem.contents(stack).map(c -> {
+            ResourceLocation form = c.frame().getItem() instanceof com.otectus.immersivejewelry.item.JewelryBlankItem blank ? blank.form()
+                    : c.frame().getItem() instanceof com.otectus.immersivejewelry.item.JewelryItem item ? item.form() : null;
+            if (form == null) return 0.1F;
+            return switch (form.getPath()) {
+                case "amulet" -> 0.2F;
+                case "bracelet" -> 0.3F;
+                case "circlet" -> 0.4F;
+                default -> 0.1F;
+            };
+        }).orElse(0.1F);
     }
 
     private static float stoneCut(ItemStack stack) {
@@ -102,10 +123,6 @@ public final class ClientSetup {
         event.registerSpriteSet(ModParticles.GEM_DUST.get(), sprites -> new GemParticle.Provider(sprites, GemParticle.Kind.DUST));
         event.registerSpriteSet(ModParticles.GEM_SPARKLE.get(), sprites -> new GemParticle.Provider(sprites, GemParticle.Kind.SPARKLE));
         event.registerSpriteSet(ModParticles.METAL_SPARK.get(), GemParticle.SparkProvider::new);
-    }
-
-    private static void onRegisterModels(ModelEvent.RegisterAdditional event) {
-        event.register(LapidaryWheelRenderer.DISC);
     }
 
     private static void onModelsReloaded(ModelEvent.BakingCompleted event) {

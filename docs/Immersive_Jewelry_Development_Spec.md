@@ -382,6 +382,15 @@ It should not perform metal forging.
 
 ### Physical Presentation
 
+> **1.2.0:** the bench is worked in the world (see the cinematic hands-on overhaul handoff and `docs/ARCHITECTURE.md`,
+> "Hands-on workstations"). Stepping up with an empty hand opens its Diegesis scene: the clamp, the stone tray, the
+> pliers dock, the finish jars, the folio, the loupe and the tools (tweezers, pliers, bezel pusher, cloth, burnisher,
+> brush) are scene objects, and every state below is drawn from the bench's synced work, for its operator and for
+> anyone watching.
+>
+> **1.2.1:** a stack taken from the inventory drawer shows where it would go (a tray cell, a jar, the dock or the
+> clamp), and the drawer lists only what the bench can use.
+
 Where practical, display the current workpiece in-world on the bench.
 
 Possible visible states:
@@ -417,6 +426,12 @@ Desired presentation:
 - grinding sounds;
 - audio intensity based on pressure or contact;
 - subtle visual feedback when the player is cutting at the correct angle.
+
+> **1.2.0:** the wheel is worked in the world: a quill holds the stone over the turning lap, the handle lowers and
+> sweeps it, the collar indexes faces, a specimen rack plans the cut, a cooling cup and a loupe sit beside it and a
+> release lever finishes. Slurry and stone dust follow contact; the grind loop follows force and hardness.
+>
+> **1.2.1:** a stone or lap taken from the inventory drawer shows where it would go (the empty quill or the lap).
 
 ---
 
@@ -546,6 +561,15 @@ The game should communicate:
 ---
 
 ## 10.2 Interaction Concept
+
+> **1.2.0 (implemented):** a physical grind, not a GUI. Each face of the planned cut is a region with a depth window
+> (a thin brass line on the stone). The handle lowers the stone onto the lap: how far it is pressed is the force,
+> with a comfortable band, scratches above it and slow grinding below. Sweeping across the lap spreads the removal;
+> sweeping too fast rocks the stone (rounded edges), holding still grinds a flat spot (domes need the stone kept
+> moving). Heat builds with force and is shed by lifting or dipping in the cooling cup; too much chips the stone. The
+> collar turns to the next face only with the stone lifted, and a fine trim corrects the stone's turn on its dop. Cut
+> quality is read from depth, flatness, rocking, scratches, chips and the turn. There is no time limit. Keyboard: a
+> held key lowers the stone with an assisted sweep. The original recommendation follows.
 
 Recommended control model:
 
@@ -703,6 +727,13 @@ Recommended sequence:
 or another balanced sequence derived from the design.
 
 ---
+
+> **1.2.0 (implemented):** tweezers seat each stone (its seat and level come from where and how straight it lands);
+> pliers grip one prong and squeeze it until it meets the stone, and letting go shows the result: short of the stone
+> is loose, past it leans in (and can chip a brittle stone). Opposite prongs in turn keep the stone level. Bezels are
+> pressed in and swept round with the bench's pusher. Setting quality is read from every point's closure, the seat
+> and the level. Moving on to the finish waits for the player's confirmation; finishing is done by hand with the
+> finish's own tool.
 
 ## 12.2 Player Feedback
 
@@ -1358,6 +1389,12 @@ Use:
 
 # 33. Networking
 
+> **1.2.0:** sessions are replaced by operator leases and persistent work (handoff 7-9). A lease (token, input step,
+> sequence) lets one player work one station; it ends on every way out and is never saved. The client streams fixed
+> 20 ms control samples (`WorkInputPacket`, about ten batches a second, bounded size) and sends discrete commands
+> (`WorkCommandPacket`); the server admits samples against a real-time step budget, steps the deterministic simulation
+> itself and syncs the work. No packet carries a score or an item. Protocol version 3.
+
 The server is authoritative for:
 
 - minigame start;
@@ -1385,6 +1422,11 @@ Instead send enough input/result data for the server to validate the outcome.
 ---
 
 # 34. Gem Cutting Validation
+
+> **1.2.0:** the plan (seed, cut, gem, lap, difficulty and assist, data-driven tuning) is fixed when the cut is planned
+> and stored with the stone (`CutWork`). The server validates lease token, station, dimension, real position and reach,
+> sequence and step pacing for every batch, clamps every sample to its range, and grades the cut from the final state
+> exactly once.
 
 Recommended approach:
 
@@ -1416,6 +1458,10 @@ The game does not need esports-grade anti-cheat, but obvious packet spoofing sho
 ---
 
 # 35. Stone Setting Validation
+
+> **1.2.0:** the same lease and input path as cutting. The setting's parameters are fixed when the first closure
+> commits the piece; the bench's work (`BenchWork`) holds the closures, seats, payments and stage, and survives
+> leaving, logging out and packing into an unfinished-jewelry carrier.
 
 Use the same session model.
 
@@ -1863,6 +1909,12 @@ Include:
 - optional larger target zones;
 - optional slower minigame speed.
 
+> **1.2.0 (implemented, handoff 13):** every station action has a rebindable key and an assisted keyboard sweep; no
+> zoom, instant camera transitions, hold or toggle tool use, sticky drag, pointer sensitivity, larger pick zones, a
+> numeric guide, step hints with the key to press, visual cues for the important contact sounds, a tool-sound volume
+> and a hands toggle (client config `[workstation]`). Larger targets and a gentler rate are assist requests the server
+> honours only when `allowAccessibilityAssist` is on.
+
 Do not encode success only through color.
 
 Use:
@@ -1968,6 +2020,10 @@ Recommended categories:
 - reworking.
 
 For Immersive Smithing operations, link to or reuse its JEI category instead of duplicating all details.
+
+> **1.2.1:** at the workstations, JEI's show-recipe and show-uses keys look up the stack under the cursor (in the
+> inventory drawer or on the station); JEI's page opens over the station and closes back to it. Nothing at the station
+> changes.
 
 ---
 

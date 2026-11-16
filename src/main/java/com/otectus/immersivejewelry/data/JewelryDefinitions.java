@@ -9,6 +9,7 @@ import com.otectus.immersivejewelry.data.form.FormDefinition;
 import com.otectus.immersivejewelry.data.gem.GemDefinition;
 import com.otectus.immersivejewelry.data.metal.MetalDefinition;
 import com.otectus.immersivejewelry.data.trait.TraitDefinition;
+import com.otectus.immersivejewelry.data.work.WorkProfile;
 import com.otectus.immersivejewelry.util.Inventories;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -48,6 +49,7 @@ public final class JewelryDefinitions {
     private final Map<ResourceLocation, MetalDefinition> metals;
     private final Map<ResourceLocation, TraitDefinition> traits;
     private final Map<ResourceLocation, GemDefinition> gems;
+    private final Map<ResourceLocation, WorkProfile> workProfiles;
     private final Map<Item, FormDefinition> formsByItem = new HashMap<>();
     private final Map<Item, FormDefinition> formsByBlank = new HashMap<>();
     private volatile Map<Item, GemDefinition> gemsBySource;
@@ -75,6 +77,7 @@ public final class JewelryDefinitions {
             checked.put(id, gem);
         });
         gems = checked;
+        workProfiles = parse(json, DefinitionKind.WORK_PROFILES, WorkProfile::parse, w -> 0, errors);
         for (FormDefinition form : forms.values()) {
             Item item = ForgeRegistries.ITEMS.getValue(form.item());
             Item blank = ForgeRegistries.ITEMS.getValue(form.blank());
@@ -133,6 +136,19 @@ public final class JewelryDefinitions {
     public Collection<GemDefinition> gems() { return gems.values(); }
 
     @Nullable public FormDefinition form(@Nullable ResourceLocation id) { return id == null ? null : forms.get(id); }
+    public Collection<WorkProfile> workProfiles() { return workProfiles.values(); }
+
+    /**
+     * The tuning for an interaction: the named profile if it exists and is for that interaction, else
+     * {@code immersive_jewelry:defaults/<interaction>}, else null (the built-in numbers apply).
+     */
+    @Nullable
+    public WorkProfile workProfile(@Nullable ResourceLocation named, WorkProfile.Interaction interaction) {
+        WorkProfile profile = named == null ? null : workProfiles.get(named);
+        if (profile != null && profile.interaction() == interaction) return profile;
+        WorkProfile fallback = workProfiles.get(WorkProfile.defaultId(interaction));
+        return fallback != null && fallback.interaction() == interaction ? fallback : null;
+    }
     @Nullable public CutDefinition cut(@Nullable ResourceLocation id) { return id == null ? null : cuts.get(id); }
     @Nullable public FinishDefinition finish(@Nullable ResourceLocation id) { return id == null ? null : finishes.get(id); }
     @Nullable public TraitDefinition trait(@Nullable ResourceLocation id) { return id == null ? null : traits.get(id); }

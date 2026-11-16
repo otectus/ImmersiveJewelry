@@ -1,0 +1,118 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "pliers_squeeze": {
+      "animation_length": 1.0,
+      "bones": {
+        "jaw_left": {
+          "rotation": {
+            "0": [
+              0.0,
+              25.0,
+              0.0
+            ],
+            "0.7": {
+              "vector": [
+                0.0,
+                5.0,
+                0.0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1": [
+              0.0,
+              3.0,
+              0.0
+            ]
+          }
+        },
+        "jaw_right": {
+          "rotation": {
+            "0": [
+              0.0,
+              -25.0,
+              0.0
+            ],
+            "0.7": {
+              "vector": [
+                0.0,
+                -5.0,
+                0.0
+              ],
+              "easing": "easeInOutSine"
+            },
+            "1": [
+              0.0,
+              -3.0,
+              0.0
+            ]
+          }
+        }
+      }
+    },
+    "brush_dab": {
+      "animation_length": 1.0,
+      "bones": {
+        "bristles": {
+          "scale": {
+            "0": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "0.6": {
+              "vector": [
+                1.5,
+                1.2,
+                0.82
+              ],
+              "easing": "easeOutQuad"
+            },
+            "1": [
+              1.55,
+              1.25,
+              0.78
+            ]
+          }
+        }
+      }
+    },
+    "cloth_rub": {
+      "animation_length": 1.0,
+      "bones": {
+        "pad": {
+          "scale": {
+            "0": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "1": {
+              "vector": [
+                1.08,
+                1.08,
+                0.6
+              ],
+              "easing": "easeOutQuad"
+            }
+          },
+          "position": {
+            "0": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "1": {
+              "vector": [
+                0.0,
+                0.0,
+                -0.1
+              ],
+              "easing": "easeOutQuad"
+            }
+          }
+        }
+      }
+    }
+  }
+}

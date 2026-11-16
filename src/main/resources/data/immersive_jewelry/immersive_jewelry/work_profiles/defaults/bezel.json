@@ -1,0 +1,7 @@
+{
+  "$comment": "Default tuning for bezel settings (the bezel pusher). The built-in numbers, repeated: 14 seconds of steady work for a setting; tolerance_scale scales the secure band around a closed point. Designs may name their own profile with \"work_profile\".",
+  "schema_version": 1,
+  "interaction": "bezel",
+  "target_active_seconds": 14,
+  "tolerance_scale": 1.0
+}

@@ -68,6 +68,8 @@ public class ImmersiveJewelry {
         modBus.addListener(this::processIMC);
         MinecraftForge.EVENT_BUS.addListener(LegacyJewelcraft::onMissingMappings);
         Integrations.init(modBus);
+        // The workstations as Diegesis stations: the same declaration on both sides, during construction.
+        com.otectus.immersivejewelry.workstation.station.JewelryStations.register();
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSetup.init(modBus));
     }
 

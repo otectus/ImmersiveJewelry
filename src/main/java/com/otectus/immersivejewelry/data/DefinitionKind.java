@@ -7,7 +7,9 @@ public enum DefinitionKind {
     FINISHES("finishes"),
     METALS("metals"),
     TRAITS("traits"),
-    GEMS("gems");
+    GEMS("gems"),
+    /** Optional interaction tuning (1.2.0): {@code data/<ns>/immersive_jewelry/work_profiles/<path>.json}. */
+    WORK_PROFILES("work_profiles");
 
     private final String folder;
 

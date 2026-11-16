@@ -1,0 +1,22 @@
+{
+  "name": "book.immersive_jewelry.entry.workshop.multiplayer",
+  "icon": "minecraft:player_head",
+  "category": "immersive_jewelry:workshop",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.workshop.multiplayer.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.workshop.multiplayer.1"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "watching_and_handoff",
+      "entry": "immersive_jewelry:workshop/multiplayer",
+      "text": "book.immersive_jewelry.workshop.multiplayer.watch.2"
+    }
+  ]
+}

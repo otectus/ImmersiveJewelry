@@ -1,0 +1,90 @@
+{
+  "version": 3,
+  "name": "wheel_lift",
+  "description": "Immersive Jewelry: wheel lift",
+  "author": "Immersive Jewelry",
+  "contact": 0,
+  "emote": {
+    "beginTick": 0,
+    "endTick": 10,
+    "stopTick": 14,
+    "isLoop": false,
+    "returnTick": 0,
+    "degrees": true,
+    "easeBeforeKeyframe": true,
+    "moves": [
+      {
+        "tick": 0,
+        "easing": "linear",
+        "head": {
+          "pitch": 16,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "torso": {
+          "pitch": 10,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "rightArm": {
+          "pitch": -56,
+          "yaw": -12,
+          "roll": 2
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "leftArm": {
+          "pitch": -36,
+          "yaw": 22,
+          "roll": -4
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 8,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 10,
+          "yaw": 0,
+          "roll": 0
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -68,
+          "yaw": -10,
+          "roll": 2
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -36,
+          "yaw": 22,
+          "roll": -4
+        }
+      }
+    ]
+  }
+}

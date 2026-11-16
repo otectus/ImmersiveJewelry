@@ -1,0 +1,30 @@
+{
+  "name": "handbook.immersive_jewelry.welcome.title",
+  "icon": "immersive_jewelry:jewelers_handbook",
+  "category": "immersive_jewelry:start",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.welcome.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.welcome.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.welcome.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.welcome.0"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "first_piece",
+      "entry": "immersive_jewelry:start/welcome",
+      "text": "book.immersive_jewelry.start.welcome.watch.1"
+    }
+  ]
+}

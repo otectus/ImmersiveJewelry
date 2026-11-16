@@ -1,0 +1,24 @@
+{
+  "name": "book.immersive_jewelry.entry.stones.appraisal",
+  "icon": "immersive_jewelry:rough_gem",
+  "category": "immersive_jewelry:stones",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.stones.appraisal.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.stones.appraisal.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.stones.appraisal.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.stones.appraisal.3"
+    }
+  ]
+}

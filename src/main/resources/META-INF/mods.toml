@@ -27,6 +27,52 @@ Jewelry is made, not crafted. Cut rough stones on the Lapidary Wheel, forge the 
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="diegesis"
+    mandatory=true
+    versionRange="${diegesis_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+# The Jeweler's Handbook is a Patchouli book (registered from data on both sides).
+[[dependencies.${mod_id}]]
+    modId="patchouli"
+    mandatory=true
+    versionRange="${patchouli_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+# The stations and pliers are GeckoLib animatables (their mechanisms and jaws are GeckoLib rigs).
+[[dependencies.${mod_id}]]
+    modId="geckolib"
+    mandatory=true
+    versionRange="${geckolib_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+# The demonstrations are Ponder scenes: clients only, a dedicated server runs without Ponder and Flywheel.
+[[dependencies.${mod_id}]]
+    modId="ponder"
+    mandatory=true
+    versionRange="${ponder_version_range}"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId="flywheel"
+    mandatory=true
+    versionRange="${flywheel_version_range}"
+    ordering="AFTER"
+    side="CLIENT"
+
+# The jeweler's body poses: clients only; the server sends no animation data, poses follow the stations' synced state.
+[[dependencies.${mod_id}]]
+    modId="playeranimator"
+    mandatory=true
+    versionRange="${playeranimator_version_range}"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.${mod_id}]]
     modId="curios"
     mandatory=false
     versionRange="${curios_version_range}"

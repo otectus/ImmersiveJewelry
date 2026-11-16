@@ -10,7 +10,8 @@ predecessor whose ids, worlds and items migrate here (`migration/LegacyJewelcraf
 ## Quick Reference
 - **Mod ID**: `immersive_jewelry`
 - **Package**: `com.otectus.immersivejewelry`
-- **MC / Forge / Java / JEI / Curios / Smithing**: see `gradle.properties`
+- **MC / Forge / Java / JEI / Curios / Smithing / Diegesis / Patchouli / Ponder / Flywheel / GeckoLib / playerAnimator / Jade**: see
+  `gradle.properties`
 - **Mappings**: official
 - **Network protocol version**: `ModNetwork.VERSION`
 
@@ -19,31 +20,39 @@ Version numbers live only in `gradle.properties`; `processResources` expands the
 ## Build
 - `.mcmod-tools/gradlew-quiet.sh <dir> compileJava` - compile only
 - `... build` - unit tests and the reobfuscated jar in `build/libs/`
-- `... test` - JUnit (`src/test`); the reference minigame bots live in `src/testShared`
+- `... test` - JUnit (`src/test`); the reference bots (`FacetBot`, `SettingBot`, `SurfaceBot`), shared with the
+  GameTests, live in `src/testShared`
 - `... runGameTestServer` - headless GameTests (`src/gameTest`, template `immersive_jewelry:empty`, test definitions
   under `data/gametest_pack/`); exits non-zero on failure. `-PnoSmithing -PnoCurios` tests the fallbacks
   (crafted blanks, built-in jewelry slots)
 - `... runClient -PsmokeTest` - loads the smoke-test agent (`src/smokeTest`, with Jade): fresh flat world, stages the
-  stations, plays a cut and a setting through the real screens with the reference bots, checks the server verdicts,
-  saves `run/screenshots/smoketest_*.png`, writes `run/smoketest/smoketest-result.json`, quits
-- `python3 tools/generate_resources.py`, `tools/generate_textures.py`, `tools/generate_sounds.py` - `--check` (default)
-  verifies the committed files, `--write` regenerates them (textures from `art/jewelry_art.py`, sounds from
-  `art/jewelry_audio.py`; `generate_textures.py --preview <png>` renders a contact sheet)
+  stations, works a cut and a setting at them (keys through Minecraft's keyboard handler, pointer events to the
+  behaviour Diegesis holds), checks the results, saves `run/screenshots/smoketest_*.png`, writes
+  `run/smoketest/smoketest-result.json`, quits
+- `python3 tools/generate_resources.py`, `tools/generate_textures.py`, `tools/generate_sounds.py`, `tools/generate_rigs.py`,
+  `tools/generate_book.py`, `tools/generate_ponder.py` - `--check` (default) verifies the committed files, `--write`
+  regenerates them (textures from `art/jewelry_art.py`, sounds from `art/jewelry_audio.py`, GeckoLib rigs and body clips
+  from `art/jewelry_rigs.py` / `art/jewelry_poses.py`; `generate_textures.py --preview <png>` renders a contact sheet)
+- `IJ_LIBRARIES_ONLY=1 ... runClient -PsmokeTest` - only the library checks (handbook, lessons, rigs, poses, help)
 
 ## Structure
 ```
 api/          public Java API (ImmersiveJewelryAPI, JewelryEffect, events, GemData/JewelryData NBT records)
-data/         datapack definitions (data/<ns>/immersive_jewelry/{gems,gem_cuts,finishes,jewelry_forms,traits,metals}),
-              loader, sync, gem auto-detection
+data/         datapack definitions (data/<ns>/immersive_jewelry/{gems,gem_cuts,finishes,jewelry_forms,traits,metals,
+              work_profiles}), loader, sync, gem auto-detection
 jewelry/      resolving a piece (JewelryResolver), names, tooltips, JewelryFactory
 quality/      cut, workmanship and metalwork grades; Workmanship weights
 effect/       worn-piece dispatch (JewelryWearers, EffectEvents), client-predicted profile, built-in effect types
-minigame/     lockstep sessions (SessionManager, server only), cutting and setting simulations
+workstation/  the stations' server side: every custody move (WheelOperations, BenchOperations), work orders (order/),
+              operator leases (WorkSessionManager), simulations (sim/), Diegesis station types (station/)
 equipment/    worn-jewelry lookup; built-in slots when Curios is absent
 integration/  curios, smithing (reached only after a ModList check), jade (found by annotation)
 migration/    Jewelcraft Reforged aliases, remaps and NBT conversion
 block/ blockentity/ item/ recipe/ registry/ network/ config/ command/ event/ loot/ villager/ advancement/ particle/ util/
-client/       everything client-only: screens, renderers, colours, particles, packet handlers, JEI (client/compat/jei)
+client/       everything client-only: screens, renderers, colours, particles, packet handlers, JEI (client/compat/jei),
+              the stations' Diegesis behaviours and painters (client/workstation), the Patchouli handbook and its cards
+              (client/guide), Ponder lessons (client/compat/ponder), GeckoLib rigs, playerAnimator poses and worn jewelry
+              (client/presentation)
 ```
 
 ## Conventions
@@ -54,5 +63,8 @@ client/       everything client-only: screens, renderers, colours, particles, pa
   `ClientConfig` (presentation and accessibility). Read through their `get(...)` helpers.
 - Server is authoritative: clients send per-step inputs and choices only. Never add a packet that carries a score or an item.
 - All item NBT lives under the `immersive_jewelry` compound (`JewelryNbt`, versioned).
-- Player-facing text is always a translation key in `assets/immersive_jewelry/lang/en_us.json`.
+- Player-facing text is always a translation key in `assets/immersive_jewelry/lang/en_us.json`; the handbook and the
+  Ponder captions too (every locale carries every key: `LibraryResourcesTest`).
+- Patchouli, Ponder and playerAnimator are referenced only under `client/`; presentation (rigs, poses, books, lessons) never
+  changes work, items or effects.
 - Tag ingredients can be empty: test them with `Inventories.items` / `Inventories.isEmpty`, never `Ingredient#isEmpty`.

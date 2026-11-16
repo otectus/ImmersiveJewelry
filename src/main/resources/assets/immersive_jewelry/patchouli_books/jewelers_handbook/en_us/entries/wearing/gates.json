@@ -1,0 +1,20 @@
+{
+  "name": "book.immersive_jewelry.entry.wearing.gates",
+  "icon": "minecraft:enchanted_book",
+  "category": "immersive_jewelry:wearing",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.wearing.gates.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.wearing.gates.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.wearing.gates.2"
+    }
+  ]
+}

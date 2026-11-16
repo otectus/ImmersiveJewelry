@@ -1,0 +1,20 @@
+{
+  "name": "book.immersive_jewelry.entry.trouble.packs",
+  "icon": "minecraft:writable_book",
+  "category": "immersive_jewelry:trouble",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.trouble.packs.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.trouble.packs.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.trouble.packs.2"
+    }
+  ]
+}

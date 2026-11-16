@@ -1,0 +1,126 @@
+{
+  "version": 3,
+  "name": "tweezers_seat_reduced",
+  "description": "Immersive Jewelry: tweezers seat reduced",
+  "author": "Immersive Jewelry",
+  "contact": 0,
+  "emote": {
+    "beginTick": 0,
+    "endTick": 30,
+    "stopTick": 30,
+    "isLoop": true,
+    "returnTick": 0,
+    "degrees": true,
+    "easeBeforeKeyframe": true,
+    "moves": [
+      {
+        "tick": 0,
+        "easing": "linear",
+        "head": {
+          "pitch": 16.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "torso": {
+          "pitch": 12.8,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "rightArm": {
+          "pitch": -40.0,
+          "yaw": -8.0,
+          "roll": 4.8
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "leftArm": {
+          "pitch": -35.2,
+          "yaw": 12.8,
+          "roll": -2.4
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 17.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 12.8,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -41.5,
+          "yaw": -6.0,
+          "roll": 3.8
+        }
+      },
+      {
+        "tick": 15,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -35.2,
+          "yaw": 12.8,
+          "roll": -2.4
+        }
+      },
+      {
+        "tick": 30,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 16.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 30,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 12.8,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 30,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -40.0,
+          "yaw": -8.0,
+          "roll": 4.8
+        }
+      },
+      {
+        "tick": 30,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -35.2,
+          "yaw": 12.8,
+          "roll": -2.4
+        }
+      }
+    ]
+  }
+}

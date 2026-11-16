@@ -1,7 +1,9 @@
 """Editable sound source for Immersive Jewelry: every sound is synthesised here, deterministically.
 
 The audio identity is precision work, not smithing (spec 53): an abrasive wheel and its grinding hiss, glassy chips,
-small metallic clicks of pliers, the seat of a stone, bright chimes for finished work. No hammer blows.
+small metallic clicks of pliers, the seat of a stone, bright chimes for finished work. No hammer blows. The hands-on
+stations (1.2.0) loop a few of these while a tool touches (the motor hum, the grind, cloth, burnisher, brush, the pliers'
+creak); loops repeat seamlessly (whole cycles, noise shaped in the frequency domain) and silence means the tool is lifted.
 Each function returns mono float samples in -1..1 at RATE. tools/generate_sounds.py encodes them to OGG Vorbis.
 """
 import math
@@ -59,6 +61,38 @@ def tone(freq, seconds, decay, partials=((1.0, 1.0),), phase=0.0):
     for ratio, amp in partials:
         out += amp * np.sin(2 * math.pi * freq * ratio * x + phase)
     return out * np.exp(-x * decay)
+
+
+def loop_noise(n, seed, low, high):
+    """Band-limited noise that repeats seamlessly every n samples (shaped in the frequency domain, so periodic)."""
+    spectrum = np.fft.rfft(noise(n, seed))
+    freqs = np.fft.rfftfreq(n, 1 / RATE)
+    spectrum[(freqs < low) | (freqs > high)] = 0
+    out = np.fft.irfft(spectrum, n)
+    return out / (np.max(np.abs(out)) + 1e-9)
+
+
+def loop_tone(freq, seconds, partials=((1.0, 1.0),)):
+    """A steady tone rounded to a whole number of cycles over the loop, so it repeats without a click."""
+    n = int(seconds * RATE)
+    x = np.arange(n) / RATE
+    out = np.zeros(n)
+    for ratio, amp in partials:
+        cycles = max(1, round(freq * ratio * seconds))
+        out += amp * np.sin(2 * math.pi * cycles / seconds * x)
+    return out
+
+
+def looped(x, fn):
+    """Applies a (recursive) filter as if the loop had been playing already, so its start meets its end."""
+    return fn(np.concatenate([x, x]))[len(x):]
+
+
+def strokes(n, per_loop, depth, sharpness=1.0):
+    """Amplitude of a hand working back and forth: per_loop strokes in the loop, never fully silent."""
+    x = np.arange(n) / n
+    wave = np.abs(np.sin(math.pi * per_loop * x)) ** sharpness
+    return 1 - depth + depth * wave
 
 
 def pad(x, seconds):
@@ -129,6 +163,26 @@ def wheel_grind(variant):
     return normalize(fade(mix(grit * wobble, rasp), 0.01, 0.01), 0.55)
 
 
+def wheel_hum():
+    """The motor and lap turning with nothing touching: a low, steady hum to loop while the wheel runs."""
+    seconds = 1.0
+    n = int(seconds * RATE)
+    hum = loop_tone(55, seconds, ((1.0, 1.0), (2.0, 0.45), (3.0, 0.2), (4.0, 0.08)))
+    belt = loop_noise(n, 5, 120, 700) * 0.18
+    air = loop_noise(n, 6, 1500, 4000) * 0.05
+    return normalize(mix(hum * 0.7, belt, air), 0.4)
+
+
+def wheel_dip():
+    """The stone dipped in the cooling cup: a soft bloop and a few drops."""
+    n = int(0.45 * RATE)
+    x = np.arange(n) / RATE
+    bloop = np.sin(2 * math.pi * (900 - 1200 * np.minimum(x, 0.08)) * x) * np.exp(-x * 28)
+    splash = bandpass(noise(n, 7), 900, 5000) * env(n, 0.002, 22) * 0.5
+    drops = mix(at(tone(2100, 0.05, 80, GLASS) * 0.2, 0.17, 0.45), at(tone(2500, 0.05, 90, GLASS) * 0.14, 0.29, 0.45))
+    return normalize(fade(mix(bloop * 0.8, splash, drops), 0.002, 0.04), 0.55)
+
+
 def wheel_chip(variant):
     crack = highpass(noise(int(0.05 * RATE), 30 + variant), 2000) * env(int(0.05 * RATE), 0.0005, 120)
     ring = tone(2600 + 500 * variant, 0.35, 16, GLASS) * 0.5
@@ -188,6 +242,49 @@ def bench_polish():
     swish = bandpass(noise(n, 100), 1500, 7000) * np.sin(math.pi * x / 0.8) ** 2
     shimmer = at(tone(3500, 0.4, 9, BELL) * 0.15, 0.45, 0.8)
     return normalize(mix(swish, shimmer), 0.5)
+
+
+def bench_cloth():
+    """Cloth and compound worked round the piece: a soft, steady rub to loop while the cloth touches."""
+    seconds = 1.0
+    n = int(seconds * RATE)
+    rub = loop_noise(n, 120, 700, 4500) * strokes(n, 2, 0.7, 1.5)
+    hush = loop_noise(n, 121, 4500, 9000) * strokes(n, 2, 0.8, 2.0) * 0.25
+    return normalize(mix(rub, hush), 0.38)
+
+
+def bench_burnish():
+    """Polished steel gliding over metal: a smooth, faintly singing pressure to loop while the burnisher works."""
+    seconds = 1.0
+    n = int(seconds * RATE)
+    glide = loop_noise(n, 130, 1800, 6500) * strokes(n, 2, 0.6, 1.2) * 0.5
+    sing = loop_tone(2794, seconds, ((1.0, 1.0), (1.5, 0.3))) * strokes(n, 2, 0.9, 3.0) * 0.12
+    body = loop_noise(n, 131, 250, 900) * strokes(n, 2, 0.5) * 0.25
+    return normalize(mix(glide, sing, body), 0.36)
+
+
+def bench_brush():
+    """A stiff brush laying in the patina: bristles flicking over metal, looped while the brush touches."""
+    seconds = 1.0
+    n = int(seconds * RATE)
+    scratch = loop_noise(n, 140, 2500, 9000) * strokes(n, 3, 0.75, 1.0)
+    ticks = np.zeros(n)
+    rng = np.random.default_rng(141)
+    for start in rng.integers(0, n - 200, 46):
+        ticks[start:start + 160] += np.exp(-np.arange(160) / 25) * rng.uniform(0.3, 1.0)
+    flicks = looped(ticks * loop_noise(n, 142, 3000, 10000), lambda v: highpass(v, 2500)) * 0.6
+    return normalize(mix(scratch * 0.7, flicks), 0.36)
+
+
+def bench_squeeze():
+    """Pliers squeezing a prong: a quiet metal creak to loop while the jaws close (no hammer anywhere)."""
+    seconds = 0.8
+    n = int(seconds * RATE)
+    creak = loop_tone(140, seconds, ((1.0, 1.0), (2.0, 0.5), (3.0, 0.3), (5.0, 0.15)))
+    rough = loop_noise(n, 150, 400, 1800)
+    grain = looped(creak * (0.6 + 0.4 * rough), lambda v: bandpass(v, 300, 2400))
+    tension = loop_tone(1320, seconds, ((1.0, 1.0),)) * 0.06
+    return normalize(mix(grain, tension), 0.3)
 
 
 def bench_finish():
@@ -264,12 +361,18 @@ def sounds():
         'block/lapidary_wheel/facet': wheel_facet(),
         'block/lapidary_wheel/finish': wheel_finish(),
         'block/lapidary_wheel/lap': wheel_lap(),
+        'block/lapidary_wheel/hum': wheel_hum(),
+        'block/lapidary_wheel/dip': wheel_dip(),
         'block/jewelers_bench/place': bench_place(),
         'block/jewelers_bench/seat': bench_seat(),
         'block/jewelers_bench/bend': bench_bend(),
         'block/jewelers_bench/polish': bench_polish(),
         'block/jewelers_bench/finish': bench_finish(),
         'block/jewelers_bench/repair': bench_repair(),
+        'block/jewelers_bench/cloth': bench_cloth(),
+        'block/jewelers_bench/burnish': bench_burnish(),
+        'block/jewelers_bench/brush': bench_brush(),
+        'block/jewelers_bench/squeeze': bench_squeeze(),
         'item/jewelry/equip': jewelry_equip(),
         'item/design_sketch/learn': sketch_learn(),
         'jewelry/effect/ward': effect_ward(),

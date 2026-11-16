@@ -1,0 +1,90 @@
+{
+  "version": 3,
+  "name": "inspect_loupe_reduced",
+  "description": "Immersive Jewelry: inspect loupe reduced",
+  "author": "Immersive Jewelry",
+  "contact": 0,
+  "emote": {
+    "beginTick": 0,
+    "endTick": 20,
+    "stopTick": 20,
+    "isLoop": true,
+    "returnTick": 0,
+    "degrees": true,
+    "easeBeforeKeyframe": true,
+    "moves": [
+      {
+        "tick": 0,
+        "easing": "linear",
+        "head": {
+          "pitch": 4.8,
+          "yaw": -4.8,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "torso": {
+          "pitch": 8.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "rightArm": {
+          "pitch": -94.4,
+          "yaw": -25.6,
+          "roll": 4.8
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "leftArm": {
+          "pitch": -28.8,
+          "yaw": 17.6,
+          "roll": -3.2
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 4.8,
+          "yaw": -4.8,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 8.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -94.4,
+          "yaw": -25.6,
+          "roll": 4.8
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -28.8,
+          "yaw": 17.6,
+          "roll": -3.2
+        }
+      }
+    ]
+  }
+}

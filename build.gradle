@@ -60,7 +60,22 @@ minecraft {
 repositories {
     flatDir { dirs 'libs' }
     maven { url = 'https://maven.theillusivec4.top/' }
-    maven { url = 'https://maven.blamejared.com/' }
+    maven {
+        url = 'https://maven.blamejared.com/'
+        content { includeGroup 'mezz.jei'; includeGroup 'vazkii.patchouli' }
+    }
+    maven {
+        url = 'https://maven.createmod.net/'
+        content { includeGroup 'net.createmod.ponder'; includeGroup 'dev.engine-room.flywheel' }
+    }
+    maven {
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content { includeGroup 'software.bernie.geckolib'; includeGroup 'com.eliotlash.mclib' }
+    }
+    maven {
+        url = 'https://maven.kosmx.dev/'
+        content { includeGroup 'dev.kosmx.player-anim' }
+    }
     maven {
         url = 'https://www.cursemaven.com'
         content { includeGroup 'curse.maven' }
@@ -86,6 +101,20 @@ dependencies {
         runtimeOnly fg.deobf("local:immersive-smithing:${immersive_smithing_version}")
     }
 
+    // In-world workstation scenes, focus camera and picking (client/workstation adapter). Required on both sides.
+    implementation fg.deobf("curse.maven:diegesis-1790227:${diegesis_curse_file}")
+
+    // Library integrations (1.2.2, gradle.properties). Patchouli: the documented compile-against-API arrangement.
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+    // Ponder's POM names an older Flywheel build as a runtime dependency; the tested Flywheel is pinned instead.
+    implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")) { transitive = false }
+    runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
+    implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
+    // GeckoLib's keyframe values are mclib IValues; GeckoLib ships mclib inside its jar, so it is compile-only here.
+    compileOnly "com.eliotlash.mclib:mclib:${geckolib_mclib_version}"
+    implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${playeranimator_version}")
+
     // Station overlays (integration/jade). Jade discovers the plugin by annotation; nothing references it otherwise.
     compileOnly fg.deobf("curse.maven:jade-324717:${jade_curse_file}")
     // In a dev environment Jade refuses to start while any plugin's config keys lack translations, and Immersive
@@ -102,7 +131,10 @@ tasks.named('processResources', ProcessResources).configure {
                       mod_authors: mod_authors, minecraft_version_range: minecraft_version_range,
                       forge_version_range: forge_version_range, loader_version_range: loader_version_range,
                       curios_version_range: curios_version_range,
-                      immersive_smithing_version_range: immersive_smithing_version_range]
+                      immersive_smithing_version_range: immersive_smithing_version_range,
+                      diegesis_version_range: diegesis_version_range, patchouli_version_range: patchouli_version_range,
+                      geckolib_version_range: geckolib_version_range, ponder_version_range: ponder_version_range,
+                      flywheel_version_range: flywheel_version_range, playeranimator_version_range: playeranimator_version_range]
     inputs.properties properties
     filesMatching('META-INF/mods.toml') { expand properties }
 }

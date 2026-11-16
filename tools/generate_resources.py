@@ -43,9 +43,11 @@ INGOT_PATTERNS = {
 FAMILY = {'iron': 'minecraft:iron', 'gold': 'minecraft:gold', 'copper': 'minecraft:copper', 'netherite': 'minecraft:netherite'}
 
 SOUNDS = ['block.lapidary_wheel.mount', 'block.lapidary_wheel.spin', 'block.lapidary_wheel.grind', 'block.lapidary_wheel.chip',
-          'block.lapidary_wheel.facet', 'block.lapidary_wheel.finish', 'block.lapidary_wheel.lap', 'block.jewelers_bench.place',
+          'block.lapidary_wheel.facet', 'block.lapidary_wheel.finish', 'block.lapidary_wheel.lap', 'block.lapidary_wheel.hum',
+          'block.lapidary_wheel.dip', 'block.jewelers_bench.place',
           'block.jewelers_bench.prong', 'block.jewelers_bench.seat', 'block.jewelers_bench.bend', 'block.jewelers_bench.polish',
-          'block.jewelers_bench.finish', 'block.jewelers_bench.repair', 'item.jewelry.equip', 'item.design_sketch.learn',
+          'block.jewelers_bench.finish', 'block.jewelers_bench.repair', 'block.jewelers_bench.cloth', 'block.jewelers_bench.burnish',
+          'block.jewelers_bench.brush', 'block.jewelers_bench.squeeze', 'item.jewelry.equip', 'item.design_sketch.learn',
           'jewelry.effect.trigger', 'jewelry.effect.ward', 'jewelry.effect.sense', 'ui.cue', 'ui.fail', 'entity.villager.work_jeweler']
 SOUND_VARIANTS = {'block.lapidary_wheel.grind': 3, 'block.lapidary_wheel.chip': 2, 'block.jewelers_bench.prong': 3,
                   'entity.villager.work_jeweler': 2, 'jewelry.effect.trigger': 2}
@@ -101,15 +103,24 @@ def files():
             'textures': {'particle': f'{MOD}:item/{item}'},
             'base': {'parent': f'{MOD}:item/{item}_held'},
             'perspectives': {'gui': {'parent': 'minecraft:item/generated', 'textures': {'layer0': f'{MOD}:item/{item}'}}}})
-    # The inventory wheel uses the same authored geometry as the stationary frame and animated disc.
-    # Compose it here so edits to either model cannot leave a stale block-item silhouette.
+    # The inventory wheel shows the static machine with its live parts (lap, quill) at rest, composed here so an edit to
+    # either model cannot leave a stale block-item silhouette. In the world the live parts are drawn by the station.
     wheel = json.loads((ASSETS / 'models/block/lapidary_wheel.json').read_text())
-    disc = json.loads((ASSETS / 'models/block/lapidary_wheel_disc.json').read_text())
-    wheel['textures'].update({key: value for key, value in disc['textures'].items() if key != 'particle'})
-    wheel['elements'].extend(disc['elements'])
+    parts = json.loads((ASSETS / 'models/block/lapidary_wheel_parts.json').read_text())
+    wheel['textures'].update({key: value for key, value in parts['textures'].items() if key not in wheel['textures']})
+    wheel['elements'].extend(parts['elements'])
     put(ASSETS / 'models/block/lapidary_wheel_full.json', wheel)
+    # Unfinished jewelry: its frame's blank with a work tag, by form.
+    for i, (form, blank) in enumerate(FORMS):
+        put(ASSETS / f'models/item/unfinished_jewelry_{form}.json', {'parent': 'minecraft:item/generated', 'textures': {
+            'layer0': f'{MOD}:item/blank/{blank}', 'layer1': f'{MOD}:item/blank/{blank}_highlight', 'layer2': f'{MOD}:item/unfinished_tag'}})
+    ring_blank = FORMS[0][1]
+    put(ASSETS / 'models/item/unfinished_jewelry.json', {'parent': 'minecraft:item/generated', 'textures': {
+        'layer0': f'{MOD}:item/blank/{ring_blank}', 'layer1': f'{MOD}:item/blank/{ring_blank}_highlight', 'layer2': f'{MOD}:item/unfinished_tag'},
+        'overrides': [{'predicate': {f'{MOD}:form': (i + 1) / 10}, 'model': f'{MOD}:item/unfinished_jewelry_{form}'}
+                      for i, (form, blank) in enumerate(FORMS)]})
     for block in ['lapidary_wheel', 'jewelers_bench']:
-        # The wheel's disc spins in the world (a separate model); the item shows it in place.
+        # The wheel's lap and quill move in the world (drawn by the station); the item shows them at rest.
         put(ASSETS / f'models/item/{block}.json', {'parent': f'{MOD}:block/{block}' + ('_full' if block == 'lapidary_wheel' else '')})
         put(ASSETS / f'blockstates/{block}.json', {'variants': {
             f'facing={d}': ({'model': f'{MOD}:block/{block}'} | ({'y': y} if y else {}))

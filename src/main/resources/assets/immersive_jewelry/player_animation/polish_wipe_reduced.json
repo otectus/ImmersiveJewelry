@@ -1,0 +1,126 @@
+{
+  "version": 3,
+  "name": "polish_wipe_reduced",
+  "description": "Immersive Jewelry: polish wipe reduced",
+  "author": "Immersive Jewelry",
+  "contact": 0,
+  "emote": {
+    "beginTick": 0,
+    "endTick": 20,
+    "stopTick": 20,
+    "isLoop": true,
+    "returnTick": 0,
+    "degrees": true,
+    "easeBeforeKeyframe": true,
+    "moves": [
+      {
+        "tick": 0,
+        "easing": "linear",
+        "head": {
+          "pitch": 16.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "torso": {
+          "pitch": 12.8,
+          "yaw": -1.6,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "rightArm": {
+          "pitch": -36.8,
+          "yaw": -17.6,
+          "roll": 1.6
+        }
+      },
+      {
+        "tick": 0,
+        "easing": "linear",
+        "leftArm": {
+          "pitch": -35.2,
+          "yaw": 12.8,
+          "roll": -2.4
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 16.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 12.8,
+          "yaw": 0.4,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -37.8,
+          "yaw": -8.6,
+          "roll": 1.6
+        }
+      },
+      {
+        "tick": 10,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -35.2,
+          "yaw": 12.8,
+          "roll": -2.4
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "head": {
+          "pitch": 16.0,
+          "yaw": 0.0,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "torso": {
+          "pitch": 12.8,
+          "yaw": -1.6,
+          "roll": 0.0
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "rightArm": {
+          "pitch": -36.8,
+          "yaw": -17.6,
+          "roll": 1.6
+        }
+      },
+      {
+        "tick": 20,
+        "easing": "easeInOutSine",
+        "leftArm": {
+          "pitch": -35.2,
+          "yaw": 12.8,
+          "roll": -2.4
+        }
+      }
+    ]
+  }
+}

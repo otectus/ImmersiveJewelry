@@ -1,0 +1,52 @@
+{
+  "name": "book.immersive_jewelry.entry.stones.gems",
+  "icon": "minecraft:amethyst_shard",
+  "category": "immersive_jewelry:stones",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.stones.gems.0"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:diamond"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:emerald"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:amethyst"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:lapis"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:quartz"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:ruby"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:sapphire"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:topaz"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "immersive_jewelry:onyx"
+    },
+    {
+      "type": "immersive_jewelry:gem_card",
+      "gem": "generic"
+    }
+  ]
+}

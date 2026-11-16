@@ -14,11 +14,8 @@ public final class ServerConfig {
 
     public static final ForgeConfigSpec.DoubleValue CUTTING_DIFFICULTY;
     public static final ForgeConfigSpec.DoubleValue SETTING_DIFFICULTY;
-    public static final ForgeConfigSpec.IntValue CUTTING_SECONDS_PER_FACET;
-    public static final ForgeConfigSpec.IntValue SETTING_SECONDS_PER_PRONG;
     public static final ForgeConfigSpec.BooleanValue ALLOW_ASSIST;
     public static final ForgeConfigSpec.DoubleValue MIN_ASSIST_DIFFICULTY;
-    public static final ForgeConfigSpec.IntValue READY_DELAY_MS;
     public static final ForgeConfigSpec.IntValue TIMING_TOLERANCE_MS;
     public static final ForgeConfigSpec.IntValue MAX_LATENCY_COMPENSATION_MS;
     public static final ForgeConfigSpec.DoubleValue MAX_STATION_DISTANCE;
@@ -56,25 +53,23 @@ public final class ServerConfig {
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
 
-        b.comment("Minigame difficulty, time and validation").push("minigames");
-        CUTTING_DIFFICULTY = b.comment("Gem cutting difficulty. Above 1 narrows facet windows and adds wobble; below 1 relaxes them.")
+        // The section keeps its 1.1 name so existing server configs keep their values.
+        b.comment("Hands-on work at the Lapidary Wheel and Jeweler's Bench: difficulty, assistance and input validation.",
+                "There are no time limits: work keeps until it is finished.").push("minigames");
+        CUTTING_DIFFICULTY = b.comment("Gem cutting difficulty. Above 1 narrows the depth windows and the allowance for the stone's turn on its dop; below 1 relaxes them.")
                 .defineInRange("gemCuttingDifficultyMultiplier", 1.0, 0.25, 4.0);
-        SETTING_DIFFICULTY = b.comment("Stone setting difficulty. Above 1 narrows pressure windows.")
+        SETTING_DIFFICULTY = b.comment("Stone setting difficulty. Above 1 narrows the secure band of every prong and bezel.")
                 .defineInRange("stoneSettingDifficultyMultiplier", 1.0, 0.25, 4.0);
-        CUTTING_SECONDS_PER_FACET = b.comment("Time allowed per facet. Running out grades the facets as they are.")
-                .defineInRange("cuttingSecondsPerFacet", 9, 2, 120);
-        SETTING_SECONDS_PER_PRONG = b.comment("Time allowed per prong. Running out leaves the remaining prongs loose.")
-                .defineInRange("settingSecondsPerProng", 10, 2, 120);
-        ALLOW_ASSIST = b.comment("Honour the client accessibility options for larger target zones and slower minigames.")
+        ALLOW_ASSIST = b.comment("Honour the client accessibility options: wider work windows (larger targets) and a gentler work rate.")
                 .define("allowAccessibilityAssist", true);
         MIN_ASSIST_DIFFICULTY = b.comment("Floor on the difficulty relief other mods may grant a player at the wheel and bench",
                         "(IJewelryAssistSource). 1 refuses all assistance; 0.5 allows the difficulty to be halved.")
                 .defineInRange("minAssistDifficulty", 0.5, 0.25, 1.0);
-        READY_DELAY_MS = b.comment("Countdown before a minigame starts, in milliseconds.")
-                .defineInRange("readyDelayMs", 1200, 0, 10000);
-        TIMING_TOLERANCE_MS = b.comment("Jitter tolerance applied to client-reported input times.")
+        TIMING_TOLERANCE_MS = b.comment("Slack added to the backlog of work steps a player's input may catch up on after a network hitch.",
+                        "Input never runs faster than the clock (50 steps a second); older input is dropped, not fast-forwarded.")
                 .defineInRange("timingToleranceMs", 120, 0, 2000);
-        MAX_LATENCY_COMPENSATION_MS = b.comment("Upper bound of the latency compensation granted to a player's inputs.")
+        MAX_LATENCY_COMPENSATION_MS = b.comment("Upper bound of a player's latency allowance: extra input backlog, and extra time (past 400 ms)",
+                        "a tool may stay pressed without input before the server lifts it.")
                 .defineInRange("maxLatencyCompensationMs", 400, 0, 5000);
         MAX_STATION_DISTANCE = b.comment("Maximum distance in blocks between a player and the station they are working at.")
                 .defineInRange("maxStationDistance", 6.0, 2.0, 32.0);

@@ -1,0 +1,11 @@
+{
+  "components": [
+    {
+      "type": "patchouli:custom",
+      "class": "com.otectus.immersivejewelry.client.guide.PolicyCard",
+      "x": 0,
+      "y": 0,
+      "topic": "#topic"
+    }
+  ]
+}

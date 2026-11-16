@@ -1,0 +1,28 @@
+{
+  "name": "handbook.immersive_jewelry.effects.title",
+  "icon": "immersive_jewelry:amulet",
+  "category": "immersive_jewelry:wearing",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.effects.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.effects.1"
+    },
+    {
+      "type": "immersive_jewelry:piece_card"
+    },
+    {
+      "type": "immersive_jewelry:effect_card"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "quality_and_inspection",
+      "entry": "immersive_jewelry:wearing/effects",
+      "text": "book.immersive_jewelry.wearing.effects.watch.0"
+    }
+  ]
+}

@@ -36,7 +36,7 @@ public final class ApiGameTests {
 
     private static JewelryDesignRecipe design() {
         return new JewelryDesignRecipe(ImmersiveJewelry.id("test/api_ring"), ImmersiveJewelry.id("ring"), 1, SettingStyle.PRONG, 4,
-                1F, 0F, List.of(), List.of(), List.of(), false, 0, Component.literal("API ring"));
+                1F, 0F, List.of(), List.of(), List.of(), false, 0, Component.literal("API ring"), null);
     }
 
     @GameTest(template = "empty")

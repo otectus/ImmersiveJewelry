@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "immersive_jewelry:item/blank/ring_blank",
+    "layer1": "immersive_jewelry:item/blank/ring_blank_highlight",
+    "layer2": "immersive_jewelry:item/unfinished_tag"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "immersive_jewelry:form": 0.1
+      },
+      "model": "immersive_jewelry:item/unfinished_jewelry_ring"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:form": 0.2
+      },
+      "model": "immersive_jewelry:item/unfinished_jewelry_amulet"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:form": 0.3
+      },
+      "model": "immersive_jewelry:item/unfinished_jewelry_bracelet"
+    },
+    {
+      "predicate": {
+        "immersive_jewelry:form": 0.4
+      },
+      "model": "immersive_jewelry:item/unfinished_jewelry_circlet"
+    }
+  ]
+}

@@ -1,6 +1,5 @@
 package com.otectus.immersivejewelry.item;
 
-import com.otectus.immersivejewelry.client.screen.HandbookScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** The Jeweler's Handbook: the in-game guide (spec 59). All of its text is translatable. */
+/** The Jeweler's Handbook: the in-game guide (spec 59), a Patchouli book ({@code immersive_jewelry:jewelers_handbook}). */
 public class HandbookItem extends Item {
 
     public HandbookItem(Properties properties) {
@@ -25,7 +24,7 @@ public class HandbookItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (level.isClientSide) DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> HandbookScreen::open);
+        if (level.isClientSide) DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> com.otectus.immersivejewelry.client.guide.HandbookNavigator::openBook);
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
     }
 

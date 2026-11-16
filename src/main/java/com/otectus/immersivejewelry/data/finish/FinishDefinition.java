@@ -19,7 +19,7 @@ import java.util.Map;
 public record FinishDefinition(ResourceLocation id, float gemPotency, float integrity, float enchantability, float stability,
                                Map<EffectCategory, Float> categories, String visualProfile, int highlightColor, int recessColor,
                                float highlightMix, float shade, @Nullable Ingredient cost, int costCount, int sortOrder,
-                               Component name, Component description) {
+                               Component name, Component description, @Nullable ResourceLocation workProfile) {
 
     public static FinishDefinition parse(ResourceLocation id, JsonObject o) {
         Ingredient cost = null;
@@ -44,7 +44,8 @@ public record FinishDefinition(ResourceLocation id, float gemPotency, float inte
                 cost, count,
                 Json.integer(o, "sort_order", 100, -1000, 1000),
                 Json.name(o, "name", "finish." + key, Json.titleCase(id)),
-                Json.name(o, "description", "finish." + key + ".description", ""));
+                Json.name(o, "description", "finish." + key + ".description", ""),
+                Json.optionalId(o, "work_profile"));
     }
 
     public float category(EffectCategory category) {

@@ -1,0 +1,30 @@
+{
+  "name": "handbook.immersive_jewelry.setting.title",
+  "icon": "immersive_jewelry:jewelers_pliers",
+  "category": "immersive_jewelry:setting",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.setting.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.setting.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.setting.2"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.setting.3"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "seat_and_prongs",
+      "entry": "immersive_jewelry:setting/prongs",
+      "text": "book.immersive_jewelry.setting.prongs.watch.0"
+    }
+  ]
+}

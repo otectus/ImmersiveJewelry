@@ -20,9 +20,8 @@ import com.otectus.immersivejewelry.item.RoughGemItem;
 import com.otectus.immersivejewelry.jewelry.JewelryFactory;
 import com.otectus.immersivejewelry.jewelry.JewelryResolver;
 import com.otectus.immersivejewelry.jewelry.ResolvedJewelry;
-import com.otectus.immersivejewelry.minigame.JewelrySession;
-import com.otectus.immersivejewelry.minigame.SessionManager;
-import com.otectus.immersivejewelry.minigame.cutting.CuttingService;
+import com.otectus.immersivejewelry.workstation.WorkSessionManager;
+import com.otectus.immersivejewelry.workstation.CutPlanner;
 import com.otectus.immersivejewelry.network.ModNetwork;
 import com.otectus.immersivejewelry.network.packet.SyncDefinitionsPacket;
 import com.otectus.immersivejewelry.quality.Workmanship;
@@ -121,7 +120,7 @@ public final class JewelryCommands {
         if (gem == null) return fail(c, "unknown_gem", id(c, "gem"));
         ItemStack stack;
         if (cutId == null) {
-            stack = RoughGemItem.create(CuttingService.appraise(gem, c.getSource().getLevel().random));
+            stack = RoughGemItem.create(CutPlanner.appraise(gem, c.getSource().getLevel().random));
         } else {
             CutDefinition cut = defs.cut(cutId);
             if (cut == null) return fail(c, "unknown_cut", cutId);
@@ -215,7 +214,7 @@ public final class JewelryCommands {
         GemDefinition gem = JewelryDefinitions.server().gemForSource(held);
         if (gem == null) return fail(c, "not_gem_source", held.getHoverName());
         held.shrink(1);
-        ItemStack stone = RoughGemItem.create(CuttingService.appraise(gem, player.getRandom()));
+        ItemStack stone = RoughGemItem.create(CutPlanner.appraise(gem, player.getRandom()));
         if (!player.getInventory().add(stone)) player.drop(stone, false);
         return 1;
     }
@@ -249,12 +248,14 @@ public final class JewelryCommands {
         return 1;
     }
 
+    /** The operator leases in force: who works where, and how far their input stream has come. */
     private static int sessions(CommandContext<CommandSourceStack> c) {
-        Collection<JewelrySession> all = SessionManager.all();
+        Collection<WorkSessionManager.Lease> all = WorkSessionManager.all();
         c.getSource().sendSuccess(() -> Component.translatable("command.immersive_jewelry.sessions", all.size()), false);
-        for (JewelrySession s : all) {
-            Component line = debug("session", s.id, s.getClass().getSimpleName(), s.pos.toShortString(),
-                    s.nextStep(), s.maxSteps());
+        for (WorkSessionManager.Lease lease : all) {
+            ServerPlayer player = c.getSource().getServer().getPlayerList().getPlayer(lease.player);
+            Component line = debug("lease", player != null ? player.getGameProfile().getName() : lease.player.toString(),
+                    lease.station.dimension().location(), lease.station.pos().toShortString(), lease.nextStep(), lease.lastSeq());
             c.getSource().sendSuccess(() -> line, false);
         }
         return all.size();

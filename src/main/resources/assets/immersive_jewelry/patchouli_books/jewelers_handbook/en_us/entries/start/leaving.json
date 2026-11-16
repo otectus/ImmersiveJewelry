@@ -1,0 +1,26 @@
+{
+  "name": "book.immersive_jewelry.entry.start.leaving",
+  "icon": "immersive_jewelry:unfinished_jewelry",
+  "category": "immersive_jewelry:start",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.leaving.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.leaving.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.start.leaving.2"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "portable_stone",
+      "entry": "immersive_jewelry:start/leaving",
+      "text": "book.immersive_jewelry.start.leaving.watch.3"
+    }
+  ]
+}

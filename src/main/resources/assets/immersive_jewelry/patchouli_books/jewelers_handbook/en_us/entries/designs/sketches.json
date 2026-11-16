@@ -1,0 +1,24 @@
+{
+  "name": "handbook.immersive_jewelry.designs.title",
+  "icon": "immersive_jewelry:design_sketch",
+  "category": "immersive_jewelry:designs",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.designs.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "handbook.immersive_jewelry.designs.1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.designs.sketches.0"
+    },
+    {
+      "type": "immersive_jewelry:policy_card",
+      "topic": "designs"
+    }
+  ]
+}

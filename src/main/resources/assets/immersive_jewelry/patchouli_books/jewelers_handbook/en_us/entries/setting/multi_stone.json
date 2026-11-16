@@ -1,0 +1,22 @@
+{
+  "name": "book.immersive_jewelry.entry.setting.multi_stone",
+  "icon": "immersive_jewelry:circlet",
+  "category": "immersive_jewelry:setting",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.setting.multi_stone.0"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "book.immersive_jewelry.setting.multi_stone.1"
+    },
+    {
+      "type": "immersive_jewelry:watch",
+      "lesson": "three_stones",
+      "entry": "immersive_jewelry:setting/multi_stone",
+      "text": "book.immersive_jewelry.setting.multi_stone.watch.2"
+    }
+  ]
+}

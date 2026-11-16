@@ -46,6 +46,14 @@ public final class JewelryNames {
         return defs.metal(ref).name();
     }
 
+    /** A form's name: its finished item's name ("Ring"), or a readable fallback. */
+    public static Component formName(JewelryDefinitions defs, ResourceLocation form) {
+        var def = defs.form(form);
+        var item = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(def != null ? def.item() : form);
+        if (item != null && item != net.minecraft.world.item.Items.AIR) return item.getDescription();
+        return Component.literal(Json.titleCase(form));
+    }
+
     public static int gemColor(JewelryDefinitions defs, @Nullable ResourceLocation id) {
         GemDefinition gem = id == null ? null : defs.gem(id);
         return gem != null ? gem.color() : 0xB8C4CC;
